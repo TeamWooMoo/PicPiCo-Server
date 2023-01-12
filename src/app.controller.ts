@@ -3,7 +3,8 @@ import { Body, Controller, Get, Param, Post, Render } from '@nestjs/common';
 @Controller()
 export class AppController {
     @Post('/rooms')
-    createRoom(@Body() roomId: string) {
+    createRoom(@Body() roomInfo: any) {
+        let roomId = roomInfo['roomId'];
         console.log('POST: roomId: ', roomId);
         return { roomId: roomId };
     }
