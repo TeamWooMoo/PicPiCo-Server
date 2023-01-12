@@ -15,7 +15,7 @@ const CREDENTIALS = config.get<boolean>('SOCKET_SIGNALING_CREDENTIALS');
 @WebSocketGateway({
     cors: {
         origin: ORIGIN,
-        credentials: CREDENTIALS,
+        credentials: true,
     },
 })
 export class SignalingGateway {
