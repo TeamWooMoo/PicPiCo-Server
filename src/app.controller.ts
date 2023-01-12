@@ -1,7 +1,15 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Render } from '@nestjs/common';
 
 @Controller()
 export class AppController {
-    @Get()
-    getHello() {}
+    @Post('/rooms')
+    createRoom(@Body() roomId: string) {
+        console.log('POST: roomId: ', roomId);
+        return { roomId: roomId };
+    }
+
+    @Get('/rooms/:roomId')
+    getRoom(@Param('roomId') roomId: string) {
+        console.log('GET: roomId: ', roomId);
+    }
 }
