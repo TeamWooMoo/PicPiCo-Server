@@ -9,8 +9,9 @@ import { ConfigService } from '@nestjs/config';
 import { Server, Socket } from 'socket.io';
 
 const config = new ConfigService();
-const ORIGIN = config.get<string>('SOCKET_ORIGIN');
-const CREDENTIALS = config.get<boolean>('SOCKET_SIGNALING_CREDENTIALS');
+// const ORIGIN = config.get<string>('SOCKET_ORIGIN');
+const ORIGIN = 'http://143.248.229.89:3000';
+// const CREDENTIALS = config.get<boolean>('SOCKET_SIGNALING_CREDENTIALS');
 
 @WebSocketGateway({
     cors: {
@@ -23,7 +24,9 @@ export class SignalingGateway {
     server: Server;
 
     @SubscribeMessage('connection')
-    handleConnection(@ConnectedSocket() client: Socket) {}
+    handleConnection(@ConnectedSocket() client: Socket) {
+        console.log('socket connected!: ', client.id);
+    }
 
     @SubscribeMessage('join_room')
     handleJoinRoom(
