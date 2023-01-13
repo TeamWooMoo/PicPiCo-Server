@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { SignalingModule } from './signaling/signaling.module';
-import { ConfigurationModule } from './configuration/configuration.module';
+import { SocketModule } from './socket/socket.module';
 
 @Module({
-    imports: [SignalingModule, ConfigurationModule],
+    imports: [SocketModule],
     controllers: [AppController],
 })
 export class AppModule {}

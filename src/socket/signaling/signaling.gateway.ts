@@ -5,18 +5,13 @@ import {
     MessageBody,
     WebSocketServer,
 } from '@nestjs/websockets';
-import { ConfigService } from '@nestjs/config';
 import { Server, Socket } from 'socket.io';
-
-const config = new ConfigService();
-// const ORIGIN = config.get<string>('SOCKET_ORIGIN');
-const ORIGIN = 'http://143.248.229.89:3000';
-// const CREDENTIALS = config.get<boolean>('SOCKET_SIGNALING_CREDENTIALS');
+import { Config } from '../../configuration/configuration';
 
 @WebSocketGateway({
     cors: {
-        origin: ORIGIN,
-        credentials: true,
+        origin: Config.SOCKET_ORIGIN,
+        credentials: Config.SOCKET_SIGNALING_CREDENTIALS,
     },
 })
 export class SignalingGateway {
@@ -34,6 +29,8 @@ export class SignalingGateway {
         @MessageBody() data: any,
     ) {
         let [roomId, newSocketId] = data;
+        client.join(roomId);
+        console.log(`${roomId}: ${newSocketId} 입장`);
         client.to(roomId).emit('welcome', newSocketId);
     }
 
