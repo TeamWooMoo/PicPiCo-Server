@@ -1,6 +1,6 @@
 import { Controller, Get, Header, Query, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
-
+import { Response } from 'express';
 @Controller('auth')
 export class AuthController {
     constructor(
@@ -47,7 +47,6 @@ export class AuthController {
     this.authservice
       .login(_hostName, _headers)
       .then((e) => {
-        console.log(e.data);
         this.authservice.setToken(e.data['access_token']); 
         res.redirect('http://143.248.219.121:3000/auth/getuserinfo');
       })
@@ -59,7 +58,7 @@ export class AuthController {
 
   @Get('getuserinfo')
   @Header('Content-Type', 'text/html')
-  getuserinfo(@Res() res ): void {
+  async getuserinfo(@Res() res :Response ): Promise<any> {
 
     this.authservice
       .getUserInfo()
@@ -67,20 +66,22 @@ export class AuthController {
         
         const user_id = e.data['id'];
         const user_nickname = e.data['properties']['nickname'];
+
         res.redirect(`http://143.248.219.121:3000/auth/giveuserinfo?nickname=${user_nickname}&id=${user_id}`);
       })
   }
  
   @Get('giveuserinfo')
-  giveuserinfo(@Query() qs, @Res() res): string {
+  async giveuserinfo(@Query() qs, @Res() res: Response ): Promise<any> {
 
     const id = qs.id;
     const nickname = qs.nickname;
 
     console.log(id);
     console.log(nickname);
-    res.redirect('https://www.naver.com');    // 여기서 방 생성 페이지로 이동 
-    return nickname;
+    const jwt = await this.authservice.validateUser(id,nickname);
+    res.setHeader('Authorization', 'Bearer'+jwt.accessToken);
+    res.redirect("https://jaehyeonkim.shop");  //여기에다가 로그인 후 첫 페이지 경로를 넣어주면 됨
   }
 
   @Get('kakaoLogout')

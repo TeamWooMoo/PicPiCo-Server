@@ -1,3 +1,5 @@
+import { JwtService } from '@nestjs/jwt';
+import { Payload } from './security/payload.interface';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 
@@ -6,10 +8,13 @@ export class AuthService {
     check: boolean;
     accessToken: string;
     private http: HttpService;
-    constructor() {
+    constructor(
+        private jwtservice:JwtService,
+    ) {
     this.check = false;
     this.http = new HttpService();
     this.accessToken = '';
+    
   }
 
 
@@ -18,6 +23,12 @@ export class AuthService {
     return;
   }
 
+  async validateUser(_id:number,_nickname:string): Promise<{accessToken:string}|undefined> {
+    const payload: Payload = { id:_id ,nickname:_nickname };
+    return {
+        accessToken: this.jwtservice.sign(payload)
+    }
+  }
   async login(url: string, headers: any): Promise<any> {
     return await this.http.post(url, '', { headers }).toPromise();
   }
