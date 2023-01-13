@@ -28,6 +28,7 @@ export class SignalingGateway {
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any,
     ) {
+        console.log(data); // newSocketId  잘 들어오는지 확인하고 이상하면 나린이한테 뭐라고 하기
         let [roomId, newSocketId] = data;
         client.join(roomId);
         console.log(`${roomId}: ${newSocketId} 입장`);
