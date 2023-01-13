@@ -1,5 +1,5 @@
 export const Config = {
-    SOCKET_ORIGIN: 'http://54.180.123.135:3000',
+    SOCKET_ORIGIN: 'http://192.168.0.84:80',
     SOCKET_SIGNALING_CREDENTIALS: true,
 };
 export default Config;
