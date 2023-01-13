@@ -52,4 +52,13 @@ export class SignalingGateway {
         let [ice, peerSocketId, currentSocketId] = data;
         client.to(peerSocketId).emit(ice, currentSocketId);
     }
+
+    @SubscribeMessage('disconnection')
+    handleDisconnection(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: any,
+    ) {
+        let [reason] = data;
+        console.log(`${client.id} 연결 종료: ${reason}`);
+    }
 }
