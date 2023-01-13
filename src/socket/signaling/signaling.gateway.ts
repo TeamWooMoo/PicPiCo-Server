@@ -10,8 +10,8 @@ import { Config } from '../../configuration/configuration';
 
 @WebSocketGateway({
     cors: {
-        origin: Config.SOCKET_ORIGIN,
-        credentials: Config.SOCKET_SIGNALING_CREDENTIALS,
+        origin: Config.socket.SOCKET_ORIGIN,
+        credentials: Config.socket.SOCKET_SIGNALING_CREDENTIALS,
     },
 })
 export class SignalingGateway {
@@ -20,7 +20,7 @@ export class SignalingGateway {
 
     @SubscribeMessage('connection')
     handleConnection(@ConnectedSocket() client: Socket) {
-        console.log('socket connected!: ', client.id);
+        console.log('소켓 연결: ', client.id);
     }
 
     @SubscribeMessage('join_room')
@@ -28,10 +28,9 @@ export class SignalingGateway {
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any,
     ) {
-        console.log(data); // newSocketId  잘 들어오는지 확인하고 이상하면 나린이한테 뭐라고 하기
         let [roomId, newSocketId] = data;
         client.join(roomId);
-        console.log(`${roomId}: ${newSocketId} 입장`);
+        console.log(`${roomId} 방으로 ${newSocketId} 입장`);
         client.to(roomId).emit('welcome', newSocketId);
     }
 
@@ -51,5 +50,14 @@ export class SignalingGateway {
     handleWelcome(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
         let [ice, peerSocketId, currentSocketId] = data;
         client.to(peerSocketId).emit(ice, currentSocketId);
+    }
+
+    @SubscribeMessage('disconnection')
+    handleDisconnection(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: any,
+    ) {
+        let [reason] = data;
+        console.log(`${client.id} 연결 종료: ${reason}`);
     }
 }
