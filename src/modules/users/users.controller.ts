@@ -20,6 +20,6 @@ export class UsersController {
         const nickname = qs.nickname;
         console.log(id);
         console.log(nickname);
-        res.redirect('https://jaehyeonkim.shop');
     }
+
 }
