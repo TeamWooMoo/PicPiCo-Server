@@ -1,8 +1,8 @@
 const Socket = {
     // SOCKET_ORIGIN: 'https://picpico.site',
-    // SOCKET_ORIGIN: '*',
-    SOCKET_ORIGIN: 'http://192.249.31.25:3000',
-    SOCKET_SIGNALING_CREDENTIALS: true,
+    SOCKET_ORIGIN: '*',
+    // SOCKET_ORIGIN: 'http://192.249.31.25:3000',
+    SOCKET_SIGNALING_CREDENTIALS: false,
     DEFAULT_ROOM: 'DEFAULT_ROOM',
 };
 
