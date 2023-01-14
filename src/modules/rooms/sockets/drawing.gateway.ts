@@ -5,7 +5,7 @@ import {
     MessageBody,
     WebSocketServer,
 } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+import { MyServer, MySocket } from './socket.dto';
 import { Config } from '../../../config/configuration';
 
 @WebSocketGateway({
@@ -16,7 +16,7 @@ import { Config } from '../../../config/configuration';
 })
 export class DrawingGateway {
     @WebSocketServer()
-    server: Server;
+    server: MyServer;
 
     // @SubscribeMessage('message')
     // handleMessage(client: any, payload: any): string {
