@@ -7,6 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { MyServer, MySocket } from './socket.dto';
 import { Config } from '../../../config/configuration';
+import { RoomsService } from '../rooms.service';
 
 @WebSocketGateway({
     cors: {
@@ -15,6 +16,8 @@ import { Config } from '../../../config/configuration';
     },
 })
 export class SignalingGateway {
+    constructor(private readonly roomService: RoomsService) {}
+
     @WebSocketServer()
     server: MyServer;
 
@@ -31,13 +34,20 @@ export class SignalingGateway {
     }
 
     @SubscribeMessage('join_room')
-    handleJoinRoom(
+    async handleJoinRoom(
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
         let [roomId, newSocketId] = data;
+        if (await this.roomService.isRoom(roomId)) {
+            await this.roomService.joinRoom(roomId, newSocketId);
+        } else {
+            await this.roomService.createRoom(roomId, newSocketId);
+        }
+
         client.join(roomId);
         client.myRoomId = roomId;
+
         console.log(`${roomId} 방으로 ${newSocketId} 입장`);
         client.to(roomId).emit('welcome', newSocketId);
     }

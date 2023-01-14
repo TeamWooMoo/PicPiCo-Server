@@ -1,7 +1,13 @@
+const CORS = {
+    // ORIGIN: 'http://192.168.0.84:3000', // JNL
+    // ORIGIN: 'https://picpico.site', // [진짜 서버] 배포용
+    ORIGIN: '*', // [진짜 서버] 개발용
+    CREDENTIALS: false,
+};
+
 const Socket = {
-    // SOCKET_ORIGIN: 'https://picpico.site',
-    SOCKET_ORIGIN: '*',
-    // SOCKET_ORIGIN: 'http://192.249.31.25:3000',
+    // SOCKET_ORIGIN: 'https://picpico.site', // [진짜 서버] 배포용
+    SOCKET_ORIGIN: '*', // [진짜 서버] 개발용
     SOCKET_SIGNALING_CREDENTIALS: false,
     DEFAULT_ROOM: 'DEFAULT_ROOM',
 };
@@ -27,6 +33,7 @@ const JWT = {
 };
 
 export const Config = {
+    cors: CORS,
     socket: Socket,
     mongoDb: MongoDB,
     Kakao: Kakao,
