@@ -12,8 +12,24 @@ const MongoDB = {
     USER_PROVIDE: 'USER_MODEL',
 };
 
+const KakaoLoginLogic = {
+    _hostName: 'https://kauth.kakao.com',
+};
+
+const Kakao = {
+    _restApiKey: '40bf5ef38bca8060ebfe393174bc7a72',
+    _redirectUrl: 'https://picpico-server.site/auth/kakaoLoginLogicRedirect',
+    kakaoLoginLogic: KakaoLoginLogic,
+};
+
+const JWT = {
+    SECRET: 'secretsandokkymcaxiosecretsandokkymacs',
+};
+
 export const Config = {
     socket: Socket,
     mongoDb: MongoDB,
+    Kakao: Kakao,
+    JWT: JWT,
 };
 export default Config;
