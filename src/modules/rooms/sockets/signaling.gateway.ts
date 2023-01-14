@@ -57,7 +57,7 @@ export class SignalingGateway {
         console.log('연결 종료 중... : ', client.id);
     }
 
-    @SubscribeMessage('disconnection')
+    @SubscribeMessage('disconnect')
     handleDisconnection(
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any,
