@@ -4,7 +4,9 @@ import { Config } from '../configuration/configuration';
 export const databaseProviders = [
     {
         provide: Config.mongoDb.DATABASE_CONNECTION,
-        useFactory: (): Promise<typeof mongoose> =>
-            mongoose.connect(Config.mongoDb.MONGO_URL),
+        useFactory: (): Promise<typeof mongoose> => {
+            mongoose.set('strictQuery', true);
+            return mongoose.connect(Config.mongoDb.MONGO_URL);
+        },
     },
 ];
