@@ -26,7 +26,7 @@ export class AuthController {
   kakaoLoginLogic(@Res() res): void {
     const _hostName = 'https://kauth.kakao.com';
     const _restApiKey = '40bf5ef38bca8060ebfe393174bc7a72'; 
-    const _redirectUrl = 'http://143.248.219.121:3000/auth/kakaoLoginLogicRedirect';
+    const _redirectUrl = 'https://picpico-server.site/auth/kakaoLoginLogicRedirect';
     const url = `${_hostName}/oauth/authorize?client_id=${_restApiKey}&redirect_uri=${_redirectUrl}&response_type=code`;
     return res.redirect(url);
 
@@ -36,7 +36,7 @@ export class AuthController {
   kakaoLoginLogicRedirect(@Query() qs, @Res() res): void {
     //qs.code = 인가 코드 
     const _restApiKey = '40bf5ef38bca8060ebfe393174bc7a72'; 
-    const _redirect_uri = 'http://143.248.219.121:3000/auth/kakaoLoginLogicRedirect';
+    const _redirect_uri = 'https://picpico-server.site/auth/kakaoLoginLogicRedirect';
     const _hostName = `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${_restApiKey}&redirect_uri=${_redirect_uri}&code=${qs.code}`;
     const _headers = {
       headers: {
