@@ -2,6 +2,7 @@ const Socket = {
     // SOCKET_ORIGIN: 'https://picpico.site',
     SOCKET_ORIGIN: '*',
     SOCKET_SIGNALING_CREDENTIALS: false,
+    DEFAULT_ROOM: 'DEFAULT_ROOM',
 };
 
 const MongoDB = {
