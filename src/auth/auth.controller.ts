@@ -1,6 +1,7 @@
 import { Controller, Get, Header, Query, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
+import { Config } from '../config/configuration';
 
 @Controller('auth')
 export class AuthController {
@@ -22,42 +23,48 @@ export class AuthController {
     `;
     }
 
-  @Get('kakaoLoginLogic')
-  kakaoLoginLogic(@Res() res): void {
-    const _hostName = 'https://kauth.kakao.com';
-    const _restApiKey = '40bf5ef38bca8060ebfe393174bc7a72'; 
-    const _redirectUrl = 'https://picpico-server.site/auth/kakaoLoginLogicRedirect';
-    const url = `${_hostName}/oauth/authorize?client_id=${_restApiKey}&redirect_uri=${_redirectUrl}&response_type=code`;
-    return res.redirect(url);
+    @Get('kakaoLoginLogic')
+    kakaoLoginLogic(@Res() res): void {
+        console.log('kakaoLoginLogic');
+        // const _hostName = 'https://kauth.kakao.com';
+        // const _restApiKey = '40bf5ef38bca8060ebfe393174bc7a72';
+        // const _redirectUrl = 'https://picpico-server.site/auth/kakaoLoginLogicRedirect';
+        const _hostName = Config.Kakao.kakaoLoginLogic._hostName;
+        const _restApiKey = Config.Kakao._restApiKey;
+        const _redirectUrl = Config.Kakao._redirectUrl;
+        const url = `${_hostName}/oauth/authorize?client_id=${_restApiKey}&redirect_uri=${_redirectUrl}&response_type=code`;
+        return res.redirect(url);
+    }
 
-  }
-  
-  @Get('kakaoLoginLogicRedirect')
-  kakaoLoginLogicRedirect(@Query() qs, @Res() res): void {
-    //qs.code = 인가 코드 
-    const _restApiKey = '40bf5ef38bca8060ebfe393174bc7a72'; 
-    const _redirect_uri = 'https://picpico-server.site/auth/kakaoLoginLogicRedirect';
-    const _hostName = `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${_restApiKey}&redirect_uri=${_redirect_uri}&code=${qs.code}`;
-    const _headers = {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-      },
-    };
-    this.authservice
-      .login(_hostName, _headers)
-      .then((e) => {
-        this.authservice.setToken(e.data['access_token']); 
-        res.redirect('/auth/getuserinfo');
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.send('error');
-      });
-  }
+    @Get('kakaoLoginLogicRedirect')
+    kakaoLoginLogicRedirect(@Query() qs, @Res() res): void {
+        console.log('kakaoLoginLogicRedirect');
+        //qs.code = 인가 코드
+        const _restApiKey = Config.Kakao._restApiKey;
+        const _redirect_uri = Config.Kakao._redirectUrl;
+        const _hostName = `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${_restApiKey}&redirect_uri=${_redirect_uri}&code=${qs.code}`;
+        const _headers = {
+            headers: {
+                'Content-Type':
+                    'application/x-www-form-urlencoded;charset=utf-8',
+            },
+        };
+        this.authservice
+            .login(_hostName, _headers)
+            .then((e) => {
+                this.authservice.setToken(e.data['access_token']);
+                res.redirect('/auth/getuserinfo');
+            })
+            .catch((err) => {
+                console.log(err);
+                return res.send('error');
+            });
+    }
 
     @Get('getuserinfo')
     @Header('Content-Type', 'text/html')
     async getuserinfo(@Res() res: Response): Promise<any> {
+        console.log('getuserinfo');
         this.authservice.getUserInfo().then((e) => {
             const user_id = e.data['id'];
             const user_nickname = e.data['properties']['nickname'];
@@ -70,6 +77,7 @@ export class AuthController {
 
     @Get('giveuserinfo')
     async giveuserinfo(@Query() qs, @Res() res: Response): Promise<any> {
+        console.log('giveuserinfo');
         const id = qs.id;
         const nickname = qs.nickname;
 
