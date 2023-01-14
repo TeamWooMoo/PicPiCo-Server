@@ -41,8 +41,10 @@ export class SignalingGateway {
         let [roomId, newSocketId] = data;
         if (await this.roomService.isRoom(roomId)) {
             await this.roomService.joinRoom(roomId, newSocketId);
+            console.log('이미 존재하는 방');
         } else {
             await this.roomService.createRoom(roomId, newSocketId);
+            console.log('새로 만들어진 방');
         }
 
         client.join(roomId);

@@ -5,9 +5,9 @@ import { SocketsModule } from './sockets/socket.module';
 import { RedisModule } from 'src/cache/redis.module';
 
 @Module({
-    imports: [SocketsModule, RedisModule],
+    imports: [RedisModule],
     controllers: [RoomsController],
     providers: [RoomsService],
-    exports: [SocketsModule, RoomsService],
+    exports: [RoomsService, RedisModule],
 })
 export class RoomsModule {}
