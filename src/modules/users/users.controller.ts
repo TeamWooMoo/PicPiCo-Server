@@ -29,6 +29,10 @@ export class UsersController {
         const nickname = qs.nickname;
         console.log(id);
         console.log(nickname);
+<<<<<<< HEAD
+=======
         res.redirect('https://picpico.site/room');
+>>>>>>> master
     }
+
 }
