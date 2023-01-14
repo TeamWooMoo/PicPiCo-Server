@@ -24,7 +24,7 @@ export class AuthController {
     }
 
     @Get('kakaoLoginLogic')
-    kakaoLoginLogic(@Res() res): void {
+    kakaoLoginLogic(@Res() res) {
         console.log('kakaoLoginLogic');
         // const _hostName = 'https://kauth.kakao.com';
         // const _restApiKey = '40bf5ef38bca8060ebfe393174bc7a72';
@@ -39,7 +39,7 @@ export class AuthController {
             '&redirect_uri=' +
             _redirectUrl +
             '&response_type=code';
-        return res.redirect(url);
+        return res.send({url:url});
     }
 
     @Get('kakaoLoginLogicRedirect')
