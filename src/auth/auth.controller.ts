@@ -31,7 +31,7 @@ export class AuthController {
     return res.redirect(url);
 
   }
-
+  
   @Get('kakaoLoginLogicRedirect')
   kakaoLoginLogicRedirect(@Query() qs, @Res() res): void {
     //qs.code = 인가 코드 
@@ -47,7 +47,7 @@ export class AuthController {
       .login(_hostName, _headers)
       .then((e) => {
         this.authservice.setToken(e.data['access_token']); 
-        res.redirect('http://143.248.219.121:3000/auth/getuserinfo');
+        res.redirect('/auth/getuserinfo');
       })
       .catch((err) => {
         console.log(err);
