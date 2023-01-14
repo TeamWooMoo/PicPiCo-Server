@@ -38,6 +38,7 @@ export class SignalingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        console.log('join Room');
         let [roomId, newSocketId] = data;
         if (await this.roomService.isRoom(roomId)) {
             await this.roomService.joinRoom(roomId, newSocketId);
