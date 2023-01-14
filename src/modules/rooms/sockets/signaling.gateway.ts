@@ -6,7 +6,7 @@ import {
     WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Config } from '../../configuration/configuration';
+import { Config } from '../../../config/configuration';
 
 @WebSocketGateway({
     cors: {
@@ -50,6 +50,11 @@ export class SignalingGateway {
     handleWelcome(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
         let [ice, peerSocketId, currentSocketId] = data;
         client.to(peerSocketId).emit(ice, currentSocketId);
+    }
+
+    @SubscribeMessage('disconnecting')
+    handleDisconnecting(@ConnectedSocket() client: Socket) {
+        console.log('연결 종료 중... : ', client.id);
     }
 
     @SubscribeMessage('disconnection')

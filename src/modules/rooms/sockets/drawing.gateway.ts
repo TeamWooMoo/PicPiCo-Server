@@ -6,7 +6,7 @@ import {
     WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Config } from '../../configuration/configuration';
+import { Config } from '../../../config/configuration';
 
 @WebSocketGateway({
     cors: {
@@ -14,15 +14,12 @@ import { Config } from '../../configuration/configuration';
         credentials: Config.socket.SOCKET_SIGNALING_CREDENTIALS,
     },
 })
-export class CameraGateway {
+export class DrawingGateway {
     @WebSocketServer()
     server: Server;
 
-    @SubscribeMessage('capture')
-    handleJoinRoom(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() data: any,
-    ) {
-        // let [roomId, newSocketId] = data;
-    }
+    // @SubscribeMessage('message')
+    // handleMessage(client: any, payload: any): string {
+    //     return 'Hello world!';
+    // }
 }
