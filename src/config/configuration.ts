@@ -1,5 +1,6 @@
 const Socket = {
-    SOCKET_ORIGIN: 'https://nanasmemo.shop',
+    // SOCKET_ORIGIN: 'https://nanasmemo.shop',
+    SOCKET_ORIGIN: 'http://192.168.0.15:3000',
     SOCKET_SIGNALING_CREDENTIALS: true,
 };
 

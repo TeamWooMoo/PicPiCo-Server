@@ -8,16 +8,15 @@ export class UsersController {
 
     @Post()
     async signUp(@Body() newUser: UserDto) {
-        await this.usersService.create(newUser);
-        console.log(newUser);
-        return { newUser };
+        let createdUser = await this.usersService.create(newUser);
+        if (createdUser) {
+            return { newUser };
+        }
     }
 
     @Get()
     async login(@Query() query: any) {
         let { userId, name } = query;
-        console.log(`${userId}, ${name}`);
         const result = await this.usersService.fineOne(userId);
-        console.log(result);
     }
 }

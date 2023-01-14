@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { SocketModule } from './socket/socket.module';
 import { AuthModule } from './auth/auth.module';
 // import { UploadModule } from './uploads/uploads.module';
-import { DrawingGateway } from './socket/drawing/drawing.gateway';
-import { UsersModule } from './users/users.module';
+import { DrawingGateway } from './modules/rooms/sockets/drawing.gateway';
+import { UsersModule } from './modules/users/users.module';
+import { RoomsModule } from './modules/rooms/rooms.module';
 
 @Module({
-    imports: [SocketModule, UsersModule, AuthModule],
+    imports: [UsersModule, AuthModule, RoomsModule],
     controllers: [AppController],
     providers: [DrawingGateway],
 })
