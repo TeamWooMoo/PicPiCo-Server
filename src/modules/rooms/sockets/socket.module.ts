@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { SignalingGateway } from './signaling.gateway';
-import { PictureGateway } from './picture.gateway';
+import { CameraGateway } from './camera.gateway';
 import { DrawingGateway } from './drawing.gateway';
 
 @Module({
-    providers: [SignalingGateway, PictureGateway, DrawingGateway],
-    exports: [SignalingGateway, PictureGateway, DrawingGateway],
+    providers: [SignalingGateway, CameraGateway, DrawingGateway],
+    exports: [SignalingGateway, CameraGateway, DrawingGateway],
 })
 export class SocketsModule {}
