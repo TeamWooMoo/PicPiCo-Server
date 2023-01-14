@@ -32,7 +32,13 @@ export class AuthController {
         const _hostName = Config.Kakao.kakaoLoginLogic._hostName;
         const _restApiKey = Config.Kakao._restApiKey;
         const _redirectUrl = Config.Kakao._redirectUrl;
-        const url = `${_hostName}/oauth/authorize?client_id=${_restApiKey}&redirect_uri=${_redirectUrl}&response_type=code`;
+        const url =
+            _hostName +
+            '/oauth/authorize?client_id=' +
+            _restApiKey +
+            '&redirect_uri=' +
+            _redirectUrl +
+            '&response_type=code';
         return res.redirect(url);
     }
 
@@ -42,7 +48,12 @@ export class AuthController {
         //qs.code = 인가 코드
         const _restApiKey = Config.Kakao._restApiKey;
         const _redirect_uri = Config.Kakao._redirectUrl;
-        const _hostName = `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${_restApiKey}&redirect_uri=${_redirect_uri}&code=${qs.code}`;
+        const _hostName =
+            'https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=' +
+            _restApiKey +
+            '&redirect_uri=' +
+            _redirect_uri +
+            '&code=${qs.code}';
         const _headers = {
             headers: {
                 'Content-Type':
@@ -70,7 +81,11 @@ export class AuthController {
             const user_nickname = e.data['properties']['nickname'];
 
             res.redirect(
-                `/auth/giveuserinfo?nickname=${user_nickname}&id=${user_id}`,
+                '/auth/giveuserinfo?nickname=' +
+                    user_nickname +
+                    '&id=' +
+                    user_id,
+                // `/auth/giveuserinfo?nickname=${user_nickname}&id=${user_id}`,
             );
         });
     }
