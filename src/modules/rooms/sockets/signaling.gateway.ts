@@ -21,6 +21,9 @@ export class SignalingGateway {
     @SubscribeMessage('connection')
     handleConnection(@ConnectedSocket() client: Socket) {
         console.log('소켓 연결: ', client.id);
+        client.on('disconnect', (reason) => {
+            console.log(`${client.id} 연결 종료: ${reason}`);
+        });
     }
 
     @SubscribeMessage('join_room')
@@ -57,12 +60,11 @@ export class SignalingGateway {
         console.log('연결 종료 중... : ', client.id);
     }
 
-    @SubscribeMessage('disconnect')
-    handleDisconnection(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() data: any,
-    ) {
-        let [reason] = data;
-        console.log(`${client.id} 연결 종료: ${reason}`);
-    }
+    // @SubscribeMessage('disconnect')
+    // handleDisconnection(
+    //     @ConnectedSocket() client: Socket,
+    //     @MessageBody() data: any,
+    // ) {
+    //     let [reason] = data;
+    // }
 }
