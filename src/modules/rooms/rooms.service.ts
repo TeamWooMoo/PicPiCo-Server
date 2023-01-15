@@ -17,8 +17,9 @@ export class RoomsService {
         const room = await this.redisService.getRoom(roomId);
         for (let i = 0; i < room.members.length; i++) {
             if (room.members[i] === nickName) {
+                console.log('삭제 실시');
                 room.members.splice(i, 1);
-                i--;
+                break;
             }
         }
         await this.redisService.setRoom(roomId, room);
