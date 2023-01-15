@@ -20,4 +20,8 @@ export class RedisService {
     async reset() {
         await this.cacheManager.reset();
     }
+
+    async deleteRoom(roomId: string) {
+        await this.cacheManager.del(roomId);
+    }
 }

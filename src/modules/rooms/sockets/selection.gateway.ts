@@ -39,7 +39,7 @@ export class SelectionGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [roomId] = data;
+        let roomId = data;
         console.log('data= ', data);
         console.log('done_pic: ', roomId);
         // 사진 선택 완료
