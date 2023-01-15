@@ -14,9 +14,9 @@ export class RoomsService {
 
     // 방에서 나가기
     async leaveRoom(roomId: string, nickName: string) {
-        if (!this.isRoom(roomId)) return;
+        if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
-        if (room == null) return;
+        if (room === null) return;
         let removed = false;
         for (let i = 0; i < room.members.length; i++) {
             if (room.members[i] === nickName) {
@@ -45,23 +45,23 @@ export class RoomsService {
 
     // 카메라: 방에 입장하기
     async joinRoom(roomId: string, memberNickname: string): Promise<void> {
-        if (this.isRoom(roomId)) {
-            const room = await this.redisService.getRoom(roomId);
-            room.members.push(memberNickname);
-            await this.redisService.setRoom(roomId, room);
-        }
+        if (!(await this.isRoom(roomId))) return;
+        const room = await this.redisService.getRoom(roomId);
+        room.members.push(memberNickname);
+        await this.redisService.setRoom(roomId, room);
     }
 
     // 카메라: 방의 멤버들 리스트 꺼내기
     async getAllMembers(roomId: string): Promise<string[]> {
-        if (this.isRoom(roomId)) {
+        if (await this.isRoom(roomId)) {
             const room = await this.redisService.getRoom(roomId);
             return room.members;
         }
     }
 
     // 카메라: 방에 찍은 사진 보관하기
-    async takePicture(roomId: string, picNo: string, picture: string): uuid {
+    async takePicture(roomId: string, picNo: string, picture: string) {
+        if (!(await this.isRoom(roomId))) return;
         const pictureValue: PictureValue = {
             picture: picture,
             viewers: new Array<string>(),
@@ -77,7 +77,7 @@ export class RoomsService {
                 pictureValue.viewers.push(room.members[i]);
             }
         }
-        if (room.pictures == undefined) {
+        if (room.pictures === null) {
             console.log('[ERROR]  room.pictures === undefined');
         } else {
             console.log(room.pictures);
@@ -88,12 +88,14 @@ export class RoomsService {
 
     // 카메라: 찍은 사진 목록 모두 꺼내오기
     async getAllPictures(roomId: string) {
+        if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
         return room.pictures;
     }
 
     // 사진선택: 찍은 사진의 선택 여부 변경하기
     async selectPicture(roomId: string, picNo: uuid) {
+        if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
         let selectFlag = room.pictures.get(picNo).selected;
         room.pictures.get(picNo).selected = !selectFlag;
