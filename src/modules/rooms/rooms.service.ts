@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { RoomValueDto, PictureValue } from './rooms.dto';
-import { v4 as uuid } from 'uuid';
 import { RedisService } from '../../cache/redis.service';
 
 @Injectable()
@@ -86,7 +85,6 @@ export class RoomsService {
         } else {
             console.log(room.pictures);
             room.pictures[picNo] = pictureValue;
-            // room.pictures.set(picNo, pictureValue);
             console.log(room.pictures);
         }
         await this.redisService.setRoom(roomId, room);
@@ -100,11 +98,11 @@ export class RoomsService {
     }
 
     // 사진선택: 찍은 사진의 선택 여부 변경하기
-    async selectPicture(roomId: string, picNo: uuid) {
+    async selectPicture(roomId: string, picNo: string) {
         if (!(await this.isRoom(roomId))) return;
 
         const room = await this.redisService.getRoom(roomId);
-        let selectFlag = room.pictures.get(picNo).selected;
+        let selectFlag = room.pictures[picNo].selected;
         room.pictures.get(picNo).selected = !selectFlag;
         await this.redisService.setRoom(roomId, room);
     }
