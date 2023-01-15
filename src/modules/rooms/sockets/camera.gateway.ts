@@ -28,7 +28,7 @@ export class CameraGateway {
     ) {
         const [roomId, newNickName] = data;
         client.nickName = newNickName;
-        // client.myRoomId = roomId;
+        client.myRoomId = roomId;
 
         if (await this.roomService.isRoom(roomId)) {
             await this.roomService.joinRoom(roomId, newNickName);

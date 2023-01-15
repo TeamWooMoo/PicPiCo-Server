@@ -24,9 +24,9 @@ export class DrawingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [offX, offY] = data;
+        let [roomId, offX, offY] = data;
         console.log(`${offX}, ${offY}`);
-        console.log('stroke_canvas: client.myRoomId = ', client.myRoomId);
-        client.to(client.myRoomId).emit('stroke_canvas', offX, offY);
+        console.log('stroke_canvas: client.myRoomId = ', roomId);
+        client.to(roomId).emit('stroke_canvas', offX, offY);
     }
 }
