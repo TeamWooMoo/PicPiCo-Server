@@ -27,7 +27,7 @@ export class DrawingGateway {
         let [roomId, offX, offY] = data;
         client.join(roomId);
         console.log(client.rooms);
-        console.log(client.listeners);
+        console.log(client['adapter']);
 
         client.broadcast
             .to(roomId)
