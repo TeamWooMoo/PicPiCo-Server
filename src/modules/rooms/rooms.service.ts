@@ -15,6 +15,7 @@ export class RoomsService {
     // 방에서 나가기
     async leaveRoom(roomId: string, nickName: string) {
         const room = await this.redisService.getRoom(roomId);
+        if (room == null) return;
         let removed = false;
         for (let i = 0; i < room.members.length; i++) {
             if (room.members[i] === nickName) {
@@ -78,7 +79,12 @@ export class RoomsService {
     }
 
     // 사진선택: 찍은 사진의 선택 여부 변경하기
-    selectPicture(roomId: string, picNo: uuid, selected: boolean) {}
+    async selectPicture(roomId: string, picNo: uuid) {
+        const room = await this.redisService.getRoom(roomId);
+        let selectFlag = room.pictures.get(picNo).selected;
+        room.pictures.get(picNo).selected = !selectFlag;
+        await this.redisService.setRoom(roomId, room);
+    }
 
     // 꾸미기: 선택된 사진들만 불러오기
     getSelectedPictures(roomId: string): Map<string, PictureValue> {

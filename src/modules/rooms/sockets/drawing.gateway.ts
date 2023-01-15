@@ -7,6 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { MyServer, MySocket } from './socket.dto';
 import { Config } from '../../../config/configuration';
+import { RoomsService } from '../rooms.service';
 
 @WebSocketGateway({
     cors: {
@@ -15,11 +16,17 @@ import { Config } from '../../../config/configuration';
     },
 })
 export class DrawingGateway {
+    constructor(private readonly roomService: RoomsService) {}
+
     @WebSocketServer()
     server: MyServer;
 
-    // @SubscribeMessage('message')
-    // handleMessage(client: any, payload: any): string {
-    //     return 'Hello world!';
-    // }
+    @SubscribeMessage('stroke_canvas')
+    async handlePickPic(
+        @ConnectedSocket() client: MySocket,
+        @MessageBody() data: any,
+    ) {
+        let [offX, offY] = data;
+        client.to(client.myRoomId).emit('stroke_canvas', offX, offY);
+    }
 }
