@@ -13,11 +13,5 @@ import { SelectionGateway } from './selection.gateway';
         DrawingGateway,
         SelectionGateway,
     ],
-    // exports: [
-    //     SignalingGateway,
-    //     CameraGateway,
-    //     DrawingGateway,
-    //     SelectionGateway,
-    // ],
 })
 export class SocketsModule {}

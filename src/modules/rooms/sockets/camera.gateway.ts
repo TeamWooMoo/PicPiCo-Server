@@ -30,10 +30,6 @@ export class CameraGateway {
         client.nickName = newNickName;
         // client.myRoomId = roomId;
 
-        if (!(await this.roomService.isRoom(roomId))) {
-            console.log('순서가 보장이 안됨 ㅋㅋ');
-        }
-
         await this.roomService.joinRoom(roomId, newNickName);
         const nickNameArr = await this.roomService.getAllMembers(roomId);
 
