@@ -22,15 +22,15 @@ export class CameraGateway {
     server: MyServer;
 
     @SubscribeMessage('add_member')
-    handleAddMember(
+    async handleAddMember(
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [roomIdm, newNickName] = data;
+        let [roomId, newNickName] = data;
         // nickName 배열에 저장
-        await this.roomService.joinRoom(roomId, newSocketId);
+        await this.roomService.joinRoom(roomId, newNickName);
         //
-        let nickNameArr;
+        let nickNameArr = [];
         client.to(client.myRoomId).emit('add_member', nickNameArr);
     }
 
