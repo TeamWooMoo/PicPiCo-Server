@@ -69,13 +69,19 @@ export class RoomsService {
 
         const room = await this.redisService.getRoom(roomId);
 
+        console.log(room.pictures);
+
         // 첫번째로 찍은 사진에 모든 멤버를 다 넣어줌
         if (room.pictures.size === 0) {
             for (let i = 0; i < room.members.length; i++) {
                 pictureValue.viewers.push(room.members[i]);
             }
         }
-        room.pictures.set(picNo, pictureValue);
+        if (room.pictures === undefined) {
+            console.log('[ERROR]  room.pictures === undefined');
+        } else {
+            room.pictures.set(picNo, pictureValue);
+        }
         await this.redisService.setRoom(roomId, room);
     }
 

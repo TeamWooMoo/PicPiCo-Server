@@ -27,6 +27,7 @@ export class DrawingGateway {
         @MessageBody() data: any,
     ) {
         let [offX, offY] = data;
+        console.log('stroke_canvas()!!!!');
         client.to(client.myRoomId).emit('stroke_canvas', offX, offY);
     }
 }
