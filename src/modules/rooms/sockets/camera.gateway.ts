@@ -23,7 +23,7 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [roomIdm, nickName] = data;
+        let [roomIdm, newNickName] = data;
         // nickName 배열에 저장
         //
         let nickNameArr;
