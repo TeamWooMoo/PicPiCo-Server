@@ -27,10 +27,8 @@ export class CameraGateway {
         @MessageBody() data: any,
     ) {
         let [roomId, newNickName] = data;
-        // nickName 배열에 저장
         await this.roomService.joinRoom(roomId, newNickName);
-        //
-        let nickNameArr = [];
+        let nickNameArr = await this.roomService.getAllMembers(roomId);
         client.to(client.myRoomId).emit('add_member', nickNameArr);
     }
 

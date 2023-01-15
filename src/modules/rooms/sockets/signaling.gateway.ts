@@ -25,10 +25,17 @@ export class SignalingGateway {
     handleConnection(@ConnectedSocket() client: MySocket) {
         console.log('소켓 연결: ', client.id);
         client.myRoomId = Config.socket.DEFAULT_ROOM;
-        client.on('disconnect', (reason) => {
+        client.on('disconnect', async (reason) => {
             console.log(`${client.id} 연결 종료: ${reason}`);
             if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
-                client.to(client.myRoomId).emit('gone', client.id);
+                await this.roomService.leaveRoom(
+                    client.myRoomId,
+                    client.nickName,
+                );
+                const members = await this.roomService.getAllMembers(
+                    client.myRoomId,
+                );
+                client.to(client.myRoomId).emit('gone', client.id, members);
             }
         });
     }

@@ -12,6 +12,18 @@ export class RoomsService {
         return (await this.redisService.getRoom(roomId)) != null;
     }
 
+    // 방에서 나가기
+    async leaveRoom(roomId: string, nickName: string) {
+        const room = await this.redisService.getRoom(roomId);
+        for (let i = 0; i < room.members.length; i++) {
+            if (room.members[i] === 'b') {
+                room.members.splice(i, 1);
+                i--;
+            }
+        }
+        this.redisService.setRoom(roomId, room);
+    }
+
     // 카메라: 새로운 방 만들기
     async createRoom(roomId: string, hostId: string): Promise<void> {
         console.log('createRoom()');
@@ -26,13 +38,19 @@ export class RoomsService {
 
     // 카메라: 방에 입장하기
     async joinRoom(roomId: string, member: string): Promise<void> {
-        const room = await this.redisService.getRoom(roomId);
-        room.members.push(member);
+        if (this.isRoom(roomId)) {
+            const room = await this.redisService.getRoom(roomId);
+            room.members.push(member);
+            this.redisService.setRoom(roomId, room);
+        }
     }
 
     // 카메라: 방의 멤버들 리스트 꺼내기
-    getAllMembers(roomId: string): Array<string> {
-        return;
+    async getAllMembers(roomId: string): Promise<string[]> {
+        if (this.isRoom(roomId)) {
+            const room = await this.redisService.getRoom(roomId);
+            return room.members;
+        }
     }
 
     // 카메라: 방에 찍은 사진 보관하기
