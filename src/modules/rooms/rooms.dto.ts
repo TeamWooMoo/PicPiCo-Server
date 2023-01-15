@@ -1,6 +1,6 @@
 export interface RoomValueDto {
     host: string;
-    members: [];
+    members: Array<string>;
     pictures: Map<string, PictureValue>;
 }
 

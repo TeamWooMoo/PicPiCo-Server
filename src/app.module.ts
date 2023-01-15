@@ -5,10 +5,10 @@ import { AuthModule } from './auth/auth.module';
 import { DrawingGateway } from './modules/rooms/sockets/drawing.gateway';
 import { UsersModule } from './modules/users/users.module';
 import { RoomsModule } from './modules/rooms/rooms.module';
-// import { CacheModule } from './cache/cache.module';
+import { SocketsModule } from './modules/rooms/sockets/socket.module';
 
 @Module({
-    imports: [UsersModule, AuthModule, RoomsModule],
+    imports: [UsersModule, AuthModule, RoomsModule, SocketsModule],
     controllers: [AppController],
     providers: [DrawingGateway],
 })
