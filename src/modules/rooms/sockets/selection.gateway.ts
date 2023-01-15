@@ -31,7 +31,7 @@ export class SelectionGateway {
         client.to(client.myRoomId).emit('pick_pic', picIdx);
     }
 
-    @SubscribeMessage('done_pic')
+    @SubscribeMessage('done_pick')
     handleDonePic(
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
