@@ -26,10 +26,13 @@ export class DrawingGateway {
     ) {
         let [roomId, offX, offY] = data;
         // console.log(client.);
-        client
+        client.broadcast
             .to(roomId)
-            .except(client.id)
             .emit('stroke_canvas', offX, offY, client.id);
+        // client
+        //     .to(roomId)
+        //     .except(client.id)
+
         // client.broadcast.emit('stroke_canvas', offX, offY);
     }
 }
