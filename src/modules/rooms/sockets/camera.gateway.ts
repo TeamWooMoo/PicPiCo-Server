@@ -53,10 +53,8 @@ export class CameraGateway {
         // 서버는 모든 클라이언트들에게
         // 지금까지 take_pic으로 전달받은 사진들을 하나의 자료구조에 담아 전달
         // client.to(client.myRoomId).emit('done_take', imgList);
-        const pictures = await this.roomService.getAllPictures(client.myRoomId);
-        console.log(
-            '<<<<<<<<<<<<<<<<<<<<<<<<<<<< pictures >>>>>>>>>>>>>>>>>>>>>>>>>>>>',
-        );
-        console.log(pictures);
+        // const pictures = await this.roomService.getAllPictures(client.myRoomId);
+        client.to(client.myRoomId).emit('done_take', []);
+        // console.log(pictures);
     }
 }
