@@ -7,6 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { MyServer, MySocket } from './socket.dto';
 import { Config } from '../../../config/configuration';
+import { RoomsService } from '../rooms.service';
 
 @WebSocketGateway({
     cors: {
@@ -15,29 +16,49 @@ import { Config } from '../../../config/configuration';
     },
 })
 export class SignalingGateway {
+    constructor(private readonly roomService: RoomsService) {}
+
     @WebSocketServer()
     server: MyServer;
 
     @SubscribeMessage('connection')
     handleConnection(@ConnectedSocket() client: MySocket) {
-        console.log('소켓 연결: ', client.id);
         client.myRoomId = Config.socket.DEFAULT_ROOM;
-        client.on('disconnect', (reason) => {
+
+        client.on('disconnect', async (reason) => {
             console.log(`${client.id} 연결 종료: ${reason}`);
+
             if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
                 client.to(client.myRoomId).emit('gone', client.id);
+                console.log(`${client.id} gone.`);
+
+                await this.roomService.leaveRoom(
+                    client.myRoomId,
+                    client.nickName,
+                );
+                const members = await this.roomService.getAllMembers(
+                    client.myRoomId,
+                );
+                client.to(client.myRoomId).emit('reset_member', members);
             }
         });
     }
 
     @SubscribeMessage('join_room')
-    handleJoinRoom(
+    async handleJoinRoom(
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        console.log('join Room');
+
         let [roomId, newSocketId] = data;
+        if (!(await this.roomService.isRoom(roomId))) {
+            await this.roomService.createRoom(roomId, newSocketId);
+        }
+
         client.join(roomId);
         client.myRoomId = roomId;
+
         console.log(`${roomId} 방으로 ${newSocketId} 입장`);
         client.to(roomId).emit('welcome', newSocketId);
     }
@@ -66,8 +87,8 @@ export class SignalingGateway {
         client.to(peerSocketId).emit(ice, currentSocketId);
     }
 
-    @SubscribeMessage('disconnecting')
-    handleDisconnecting(@ConnectedSocket() client: MySocket) {
-        console.log('연결 종료 중... : ', client.id);
-    }
+    // @SubscribeMessage('disconnecting')
+    // handleDisconnecting(@ConnectedSocket() client: MySocket) {
+    //     console.log('연결 종료 중... : ', client.id);
+    // }
 }
