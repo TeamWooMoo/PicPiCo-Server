@@ -58,7 +58,7 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [roomId] = data;
+        let roomId = data;
         console.log('done_take: client.myRoomId = ', roomId);
         // 사진 촬영 종료를 알림
         // 서버는 모든 클라이언트들에게
