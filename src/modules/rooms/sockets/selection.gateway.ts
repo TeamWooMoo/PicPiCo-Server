@@ -36,6 +36,7 @@ export class SelectionGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        console.log('done_pic: ', client.myRoomId);
         // 사진 선택 완료
     }
 }
