@@ -36,7 +36,7 @@ export class RoomsService {
     async createRoom(roomId: string, hostId: string): Promise<void> {
         const newRoomValue: RoomValueDto = {
             host: hostId,
-            members: Array<string>(),
+            members: new Array<string>(),
             pictures: new Map<string, PictureValue>(),
         };
         await this.redisService.setRoom(roomId, newRoomValue);
@@ -63,11 +63,18 @@ export class RoomsService {
     async takePicture(roomId: string, picNo: string, picture: string): uuid {
         const pictureValue: PictureValue = {
             picture: picture,
-            viewers: [],
+            viewers: new Array<string>(),
             selected: false,
         };
-        // const picNo = uuid();
+
         const room = await this.redisService.getRoom(roomId);
+
+        // 첫번째로 찍은 사진에 모든 멤버를 다 넣어줌
+        if (room.pictures.size === 0) {
+            for (let i = 0; i < room.members.length; i++) {
+                pictureValue.viewers.push(room.members[i]);
+            }
+        }
         room.pictures.set(picNo, pictureValue);
         await this.redisService.setRoom(roomId, room);
     }
