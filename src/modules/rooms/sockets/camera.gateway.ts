@@ -29,7 +29,7 @@ export class CameraGateway {
         let [roomId, newNickName] = data;
         await this.roomService.joinRoom(roomId, newNickName);
         let nickNameArr = await this.roomService.getAllMembers(roomId);
-        client.to(client.myRoomId).emit('add_member', nickNameArr);
+        client.to(client.myRoomId).emit('reset_member', nickNameArr);
     }
 
     @SubscribeMessage('take_pic')

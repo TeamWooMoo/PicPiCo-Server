@@ -28,6 +28,7 @@ export class SignalingGateway {
         client.on('disconnect', async (reason) => {
             console.log(`${client.id} 연결 종료: ${reason}`);
             if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
+                client.to(client.myRoomId).emit('gone', client.id);
                 await this.roomService.leaveRoom(
                     client.myRoomId,
                     client.nickName,
@@ -35,7 +36,7 @@ export class SignalingGateway {
                 const members = await this.roomService.getAllMembers(
                     client.myRoomId,
                 );
-                client.to(client.myRoomId).emit('gone', client.id, members);
+                client.to(client.myRoomId).emit('reset_member', members);
             }
         });
     }
@@ -47,12 +48,11 @@ export class SignalingGateway {
     ) {
         console.log('join Room');
         let [roomId, newSocketId] = data;
-        if (await this.roomService.isRoom(roomId)) {
-            // await this.roomService.joinRoom(roomId, newSocketId);
-            console.log('이미 존재하는 방');
-        } else {
+        if (!(await this.roomService.isRoom(roomId))) {
             await this.roomService.createRoom(roomId, newSocketId);
             console.log('새로 만들어진 방');
+        } else {
+            console.log('이미 존재하는 방');
         }
 
         client.join(roomId);

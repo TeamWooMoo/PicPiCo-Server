@@ -8,9 +8,10 @@ export class RoomsController {
     constructor(private readonly roomService: RoomsService) {}
 
     @Post()
-    createRoom(@Body() roomInfo: any) {
+    async createRoom(@Body() roomInfo: any) {
         let roomId = roomInfo['roomId'];
         // Id가 roomId인 room을 메모리에 저장
+        // await this.roomService.createRoom(roomId);
         console.log('POST: roomId: ', roomId);
         return { roomId: roomId };
     }
@@ -20,7 +21,6 @@ export class RoomsController {
         console.log('GET: roomId: ', roomId);
         if (await this.roomService.isRoom(roomId)) {
             res.send({ roomId: roomId });
-            // return ;
         } else {
             res.status(404).send('잘못된 방 아이디 입니다.');
         }
