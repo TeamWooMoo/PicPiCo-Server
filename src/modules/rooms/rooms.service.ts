@@ -102,9 +102,13 @@ export class RoomsService {
         if (!(await this.isRoom(roomId))) return;
 
         const room = await this.redisService.getRoom(roomId);
-        let selectFlag = room.pictures[picNo].selected;
-        room.pictures.get(picNo).selected = !selectFlag;
-        await this.redisService.setRoom(roomId, room);
+        if (room.pictures[picNo]) {
+            let selectFlag = room.pictures[picNo].selected;
+            room.pictures.get(picNo).selected = !selectFlag;
+            await this.redisService.setRoom(roomId, room);
+        } else {
+            console.log(`picNo ${picNo}는 없어요..`);
+        }
     }
 
     // 꾸미기: 선택된 사진들만 불러오기
