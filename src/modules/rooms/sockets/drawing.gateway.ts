@@ -25,6 +25,7 @@ export class DrawingGateway {
         @MessageBody() data: any,
     ) {
         let [roomId, offX, offY] = data;
+        client.join(roomId);
         console.log(client.rooms);
 
         client.broadcast
