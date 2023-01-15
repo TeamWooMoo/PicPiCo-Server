@@ -24,6 +24,7 @@ export class SignalingGateway {
     @SubscribeMessage('connection')
     handleConnection(@ConnectedSocket() client: MySocket) {
         client.myRoomId = Config.socket.DEFAULT_ROOM;
+        console.log('[ Connection ] client.id = ', client.id);
 
         client.on('disconnect', async (reason) => {
             console.log(`${client.id} 연결 종료: ${reason}`);
