@@ -7,6 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { MyServer, MySocket } from './socket.dto';
 import { Config } from '../../../config/configuration';
+import { RoomsService } from '../rooms.service';
 
 @WebSocketGateway({
     cors: {
@@ -15,6 +16,8 @@ import { Config } from '../../../config/configuration';
     },
 })
 export class CameraGateway {
+    constructor(private readonly roomService: RoomsService) {}
+
     @WebSocketServer()
     server: MyServer;
 
@@ -25,6 +28,7 @@ export class CameraGateway {
     ) {
         let [roomIdm, newNickName] = data;
         // nickName 배열에 저장
+        await this.roomService.joinRoom(roomId, newSocketId);
         //
         let nickNameArr;
         client.to(client.myRoomId).emit('add_member', nickNameArr);
