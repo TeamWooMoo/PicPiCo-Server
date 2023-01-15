@@ -30,13 +30,17 @@ export class CameraGateway {
         client.nickName = newNickName;
         // client.myRoomId = roomId;
 
-        await this.roomService.joinRoom(roomId, newNickName);
-        const nickNameArr = await this.roomService.getAllMembers(roomId);
+        if (await this.roomService.isRoom(roomId)) {
+            await this.roomService.joinRoom(roomId, newNickName);
+            const nickNameArr = await this.roomService.getAllMembers(roomId);
 
-        console.log('add_member(): nickNameArr = ', nickNameArr);
+            console.log('add_member(): nickNameArr = ', nickNameArr);
 
-        client.emit('reset_member', nickNameArr);
-        client.to(client.myRoomId).emit('reset_member', nickNameArr);
+            client.emit('reset_member', nickNameArr);
+            client.to(client.myRoomId).emit('reset_member', nickNameArr);
+        } else {
+            client.disconnect(true);
+        }
     }
 
     @SubscribeMessage('take_pic')
