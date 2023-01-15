@@ -27,6 +27,7 @@ export class CameraGateway {
         @MessageBody() data: any,
     ) {
         const [roomId, newNickName] = data;
+        client.nickName = newNickName;
         await this.roomService.joinRoom(roomId, newNickName);
         const nickNameArr = await this.roomService.getAllMembers(roomId);
         client.to(client.myRoomId).emit('reset_member', nickNameArr);
