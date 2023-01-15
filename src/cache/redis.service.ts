@@ -4,7 +4,9 @@ import { RoomValueDto } from '../modules/rooms/rooms.dto';
 
 @Injectable()
 export class RedisService {
-    constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
+    constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {
+        this.reset();
+    }
 
     async getRoom(roomId: string): Promise<RoomValueDto> | null {
         const room = await this.cacheManager.get<RoomValueDto>(roomId);
@@ -13,5 +15,9 @@ export class RedisService {
 
     async setRoom(roomId: string, roomValue: RoomValueDto): Promise<void> {
         await this.cacheManager.set(roomId, roomValue);
+    }
+
+    async reset() {
+        await this.cacheManager.reset();
     }
 }

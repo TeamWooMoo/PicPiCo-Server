@@ -8,6 +8,6 @@ export interface RoomValueDto {
 
 export interface PictureValue {
     picture: string; // image data or image url
-    viewers: [];
+    viewers: Array<string>;
     selected: boolean;
 }

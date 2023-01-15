@@ -7,6 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { MyServer, MySocket } from './socket.dto';
 import { Config } from '../../../config/configuration';
+import { RoomsService } from '../rooms.service';
 
 @WebSocketGateway({
     cors: {
@@ -15,25 +16,30 @@ import { Config } from '../../../config/configuration';
     },
 })
 export class SelectionGateway {
+    constructor(private readonly roomService: RoomsService) {}
+
     @WebSocketServer()
     server: MyServer;
 
     @SubscribeMessage('pick_pic')
-    handleAddMember(
+    async handlePickPic(
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [picNo] = data;
-        // 사진 선택 또는 선택 취소
-        client.to(client.myRoomId).emit('pick_pic', picNo);
+        let [picIdx] = data;
+        console.log('picIdx = ', picIdx);
+        console.log('pick_pic: ', client.myRoomId);
+
+        await this.roomService.selectPicture(client.myRoomId, picIdx);
+        client.to(client.myRoomId).emit('pick_pic', picIdx);
     }
 
-    @SubscribeMessage('done_pic')
-    handleTakePic(
+    @SubscribeMessage('done_pick')
+    handleDonePic(
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        console.log('done_pic: ', client.myRoomId);
         // 사진 선택 완료
-        // 선택된 사진들을 꾸미기로 전달
     }
 }
