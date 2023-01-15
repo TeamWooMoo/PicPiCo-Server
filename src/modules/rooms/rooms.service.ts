@@ -79,11 +79,14 @@ export class RoomsService {
             }
         }
 
+        console.log(typeof room.pictures);
+
         if (room.pictures === null) {
             console.log('[ERROR]  room.pictures === undefined');
         } else {
             console.log(room.pictures);
-            room.pictures.set(picNo, pictureValue);
+            room.pictures[picNo] = pictureValue;
+            // room.pictures.set(picNo, pictureValue);
             console.log(room.pictures);
         }
         await this.redisService.setRoom(roomId, room);
