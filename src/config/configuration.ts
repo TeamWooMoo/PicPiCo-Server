@@ -10,6 +10,7 @@ const CORS = {
         'http://192.249.31.25:3000',
         'http://143.248.191.4:3000',
         'http://143.248.219.121:3000',
+        'https://picpico.site',
     ],
     // ORIGIN: 'https://picpico.site', // [진짜 서버] 배포용
     // ORIGIN: '*', // [진짜 서버] 개발용
@@ -23,6 +24,7 @@ const Socket = {
         'http://192.168.0.15:3000',
         'http://143.248.191.4:3000',
         'http://143.248.219.121:3000',
+        'https://picpico.site',
     ],
     // SOCKET_ORIGIN: 'http://192.168.0.49:3000', // KJH
     // SOCKET_ORIGIN: 'https://picpico.site', // [진짜 서버] 배포용
