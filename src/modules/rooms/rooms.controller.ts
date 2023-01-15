@@ -17,11 +17,13 @@ export class RoomsController {
 
     @Get(':roomId')
     getRoom(@Param('roomId') roomId: string, @Res() res: Response) {
+        console.log('GET: roomId: ', roomId);
         // Id가 roomId인 room을 메모리에서 꺼냄
         // Id가 roomId인 room이 있는지 없는지?
-        this.roomService.isRoom(roomId);
-        console.log('GET: roomId: ', roomId);
-        res.status(404).send('잘못된 방 아이디 입니다.');
-        // return { roomId: roomId };
+        if (this.roomService.isRoom(roomId)) {
+            return { roomId: roomId };
+        } else {
+            res.status(404).send('잘못된 방 아이디 입니다.');
+        }
     }
 }
