@@ -59,17 +59,22 @@ export class RoomsService {
     }
 
     // 카메라: 방에 찍은 사진 보관하기
-    async takePicture(roomId: string, picture: string): uuid {
+    async takePicture(roomId: string, picNo: string, picture: string): uuid {
         const pictureValue: PictureValue = {
-            picture: '',
+            picture: picture,
             viewers: [],
             selected: false,
         };
-        const picNo = uuid();
-        pictureValue.picture = picture;
+        // const picNo = uuid();
         const room = await this.redisService.getRoom(roomId);
         room.pictures.set(picNo, pictureValue);
         await this.redisService.setRoom(roomId, room);
+    }
+
+    // 카메라: 찍은 사진 목록 모두 꺼내오기
+    async getAllPictures(roomId: string) {
+        const room = await this.redisService.getRoom(roomId);
+        return room.pictures;
     }
 
     // 사진선택: 찍은 사진의 선택 여부 변경하기
