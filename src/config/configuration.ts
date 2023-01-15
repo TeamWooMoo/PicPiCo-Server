@@ -7,7 +7,7 @@ const CORS = {
 };
 
 const Socket = {
-    ORIGIN: 'http://192.168.0.84:3000', // JNL
+    SOCKET_ORIGIN: 'http://192.168.0.84:3000', // JNL
     // SOCKET_ORIGIN: 'http://192.168.0.49:3000', // KJH
     // SOCKET_ORIGIN: 'https://picpico.site', // [진짜 서버] 배포용
     // SOCKET_ORIGIN: '*', // [진짜 서버] 개발용
