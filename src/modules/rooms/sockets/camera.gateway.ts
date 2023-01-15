@@ -26,23 +26,26 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [roomId, newNickName] = data;
+        const [roomId, newNickName] = data;
+        client.nickName = newNickName;
+
         await this.roomService.joinRoom(roomId, newNickName);
-        let nickNameArr = await this.roomService.getAllMembers(roomId);
-        client.to(client.myRoomId).emit('add_member', nickNameArr);
+        const nickNameArr = await this.roomService.getAllMembers(roomId);
+
+        client.to(client.myRoomId).emit('reset_member', nickNameArr);
     }
 
     @SubscribeMessage('take_pic')
-    handleTakePic(
+    async handleTakePic(
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        // let [imgFile] = data;
-        // 촬영된 이미지파일을 전달받아서 s3에 저장한다
+        let [index, picture] = data;
+        await this.roomService.takePicture(client.myRoomId, index, picture);
     }
 
     @SubscribeMessage('done_take')
-    handleDoneTake(
+    async handleDoneTake(
         @ConnectedSocket() client: MySocket,
         // @MessageBody() data: any,
     ) {
@@ -50,5 +53,10 @@ export class CameraGateway {
         // 서버는 모든 클라이언트들에게
         // 지금까지 take_pic으로 전달받은 사진들을 하나의 자료구조에 담아 전달
         // client.to(client.myRoomId).emit('done_take', imgList);
+        const pictures = await this.roomService.getAllPictures(client.myRoomId);
+        console.log(
+            '<<<<<<<<<<<<<<<<<<<<<<<<<<<< pictures >>>>>>>>>>>>>>>>>>>>>>>>>>>>',
+        );
+        console.log(pictures);
     }
 }
