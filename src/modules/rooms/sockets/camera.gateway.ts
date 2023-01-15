@@ -28,6 +28,7 @@ export class CameraGateway {
     ) {
         const [roomId, newNickName] = data;
         client.nickName = newNickName;
+        // client.myRoomId = roomId;
 
         await this.roomService.joinRoom(roomId, newNickName);
         const nickNameArr = await this.roomService.getAllMembers(roomId);
@@ -44,6 +45,7 @@ export class CameraGateway {
         @MessageBody() data: any,
     ) {
         let [index, picture] = data;
+        console.log('take_pic: ', client.myRoomId);
         await this.roomService.takePicture(client.myRoomId, index, picture);
     }
 
@@ -57,6 +59,7 @@ export class CameraGateway {
         // 지금까지 take_pic으로 전달받은 사진들을 하나의 자료구조에 담아 전달
         // client.to(client.myRoomId).emit('done_take', imgList);
         // const pictures = await this.roomService.getAllPictures(client.myRoomId);
+        console.log('done_take: ', client.myRoomId);
         client.to(client.myRoomId).emit('done_take', []);
         // console.log(pictures);
     }

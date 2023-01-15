@@ -27,6 +27,7 @@ export class SelectionGateway {
         @MessageBody() data: any,
     ) {
         let [picIdx] = data;
+        console.log('pick_pic: ', client.myRoomId);
         await this.roomService.selectPicture(client.myRoomId, picIdx);
         client.to(client.myRoomId).emit('pick_pic', picIdx);
     }
