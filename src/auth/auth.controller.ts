@@ -53,7 +53,7 @@ export class AuthController {
             _restApiKey +
             '&redirect_uri=' +
             _redirect_uri +
-            '&code=${qs.code}';
+            '&code='+qs.code;
         const _headers = {
             headers: {
                 'Content-Type':
