@@ -34,6 +34,7 @@ export class CameraGateway {
         console.log('add_member(): ');
         console.log(nickNameArr);
 
+        client.emit('reset_member', nickNameArr);
         client.to(client.myRoomId).emit('reset_member', nickNameArr);
     }
 
