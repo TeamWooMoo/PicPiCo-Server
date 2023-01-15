@@ -16,7 +16,7 @@ export class RoomsService {
     async leaveRoom(roomId: string, nickName: string) {
         const room = await this.redisService.getRoom(roomId);
         for (let i = 0; i < room.members.length; i++) {
-            if (room.members[i] === 'b') {
+            if (room.members[i] === nickName) {
                 room.members.splice(i, 1);
                 i--;
             }
