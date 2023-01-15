@@ -15,19 +15,24 @@ export class RoomsService {
     // 방에서 나가기
     async leaveRoom(roomId: string, nickName: string) {
         const room = await this.redisService.getRoom(roomId);
+        let removed = false;
         for (let i = 0; i < room.members.length; i++) {
             if (room.members[i] === nickName) {
-                console.log('삭제 실시');
                 room.members.splice(i, 1);
+                removed = true;
                 break;
             }
         }
+        console.log(
+            removed
+                ? '삭제 완료'
+                : `삭제 대상인 ${nickName}이 존재하지 않습니다.`,
+        );
         await this.redisService.setRoom(roomId, room);
     }
 
     // 카메라: 새로운 방 만들기
     async createRoom(roomId: string, hostId: string): Promise<void> {
-        console.log('createRoom()');
         const newRoomValue: RoomValueDto = {
             host: hostId,
             members: Array<string>(),

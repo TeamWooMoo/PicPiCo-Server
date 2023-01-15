@@ -28,8 +28,10 @@ export class CameraGateway {
     ) {
         const [roomId, newNickName] = data;
         client.nickName = newNickName;
+
         await this.roomService.joinRoom(roomId, newNickName);
         const nickNameArr = await this.roomService.getAllMembers(roomId);
+
         client.to(client.myRoomId).emit('reset_member', nickNameArr);
     }
 
@@ -38,6 +40,7 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        console.log(data);
         // let [imgFile] = data;
         // 촬영된 이미지파일을 전달받아서 s3에 저장한다
     }
