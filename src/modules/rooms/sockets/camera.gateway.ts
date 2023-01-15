@@ -26,9 +26,9 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [roomId, newNickName] = data;
+        const [roomId, newNickName] = data;
         await this.roomService.joinRoom(roomId, newNickName);
-        let nickNameArr = await this.roomService.getAllMembers(roomId);
+        const nickNameArr = await this.roomService.getAllMembers(roomId);
         client.to(client.myRoomId).emit('reset_member', nickNameArr);
     }
 

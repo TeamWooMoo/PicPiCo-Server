@@ -21,7 +21,7 @@ export class RoomsService {
                 i--;
             }
         }
-        this.redisService.setRoom(roomId, room);
+        await this.redisService.setRoom(roomId, room);
     }
 
     // 카메라: 새로운 방 만들기
@@ -40,7 +40,7 @@ export class RoomsService {
         if (this.isRoom(roomId)) {
             const room = await this.redisService.getRoom(roomId);
             room.members.push(memberNickname);
-            this.redisService.setRoom(roomId, room);
+            await this.redisService.setRoom(roomId, room);
         }
     }
 
