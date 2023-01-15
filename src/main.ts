@@ -15,6 +15,7 @@ async function bootstrap() {
 
     // app.engine('html', require('ejs').renderFile);
     // app.setViewEngine('html');
+    process.setMaxListeners(20);
 
     const handleListen = () =>
         console.log(

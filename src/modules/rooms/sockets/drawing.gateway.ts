@@ -16,8 +16,6 @@ import { RoomsService } from '../rooms.service';
     },
 })
 export class DrawingGateway {
-    constructor(private readonly roomService: RoomsService) {}
-
     @WebSocketServer()
     server: MyServer;
 
@@ -27,7 +25,8 @@ export class DrawingGateway {
         @MessageBody() data: any,
     ) {
         let [offX, offY] = data;
-        console.log('stroke_canvas()!!!!');
+        console.log(`${offX}, ${offY}`);
+        console.log('stroke_canvas: client.myRoomId = ', client.myRoomId);
         client.to(client.myRoomId).emit('stroke_canvas', offX, offY);
     }
 }

@@ -24,6 +24,7 @@ export class SignalingGateway {
     @SubscribeMessage('connection')
     handleConnection(@ConnectedSocket() client: MySocket) {
         client.myRoomId = Config.socket.DEFAULT_ROOM;
+        console.log('[ Connection ] client.id = ', client.id);
 
         client.on('disconnect', async (reason) => {
             console.log(`${client.id} 연결 종료: ${reason}`);
@@ -49,18 +50,16 @@ export class SignalingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        console.log('join Room');
+        console.log('join Room()');
 
         let [roomId, newSocketId] = data;
-        if (!(await this.roomService.isRoom(roomId))) {
-            await this.roomService.createRoom(roomId, newSocketId);
+        if (await this.roomService.isRoom(roomId)) {
+            client.join(roomId);
+            client.myRoomId = roomId;
+
+            console.log(`${roomId} 방으로 ${newSocketId} 입장`);
+            client.to(roomId).emit('welcome', newSocketId);
         }
-
-        client.join(roomId);
-        client.myRoomId = roomId;
-
-        console.log(`${roomId} 방으로 ${newSocketId} 입장`);
-        client.to(roomId).emit('welcome', newSocketId);
     }
 
     @SubscribeMessage('offer')

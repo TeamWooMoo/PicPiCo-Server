@@ -33,9 +33,9 @@ export class RoomsService {
     }
 
     // 카메라: 새로운 방 만들기
-    async createRoom(roomId: string, hostId: string): Promise<void> {
+    async createRoom(roomId: string, hostName: string): Promise<void> {
         const newRoomValue: RoomValueDto = {
-            host: hostId,
+            host: hostName,
             members: new Array<string>(),
             pictures: new Map<string, PictureValue>(),
         };

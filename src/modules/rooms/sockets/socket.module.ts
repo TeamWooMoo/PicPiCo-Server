@@ -3,10 +3,15 @@ import { SignalingGateway } from './signaling.gateway';
 import { CameraGateway } from './camera.gateway';
 import { DrawingGateway } from './drawing.gateway';
 import { RoomsModule } from '../rooms.module';
+import { SelectionGateway } from './selection.gateway';
 
 @Module({
     imports: [RoomsModule],
-    providers: [SignalingGateway, CameraGateway, DrawingGateway],
-    exports: [SignalingGateway, CameraGateway, DrawingGateway],
+    providers: [
+        SignalingGateway,
+        CameraGateway,
+        DrawingGateway,
+        SelectionGateway,
+    ],
 })
 export class SocketsModule {}

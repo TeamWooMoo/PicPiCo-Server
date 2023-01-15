@@ -27,15 +27,19 @@ export class SelectionGateway {
         @MessageBody() data: any,
     ) {
         let [picIdx] = data;
+        console.log('picIdx = ', picIdx);
+        console.log('pick_pic: ', client.myRoomId);
+
         await this.roomService.selectPicture(client.myRoomId, picIdx);
         client.to(client.myRoomId).emit('pick_pic', picIdx);
     }
 
-    @SubscribeMessage('done_pic')
+    @SubscribeMessage('done_pick')
     handleDonePic(
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        console.log('done_pic: ', client.myRoomId);
         // 사진 선택 완료
     }
 }
