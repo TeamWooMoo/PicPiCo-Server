@@ -41,6 +41,7 @@ export class CameraGateway {
         @MessageBody() data: any,
     ) {
         console.log(data);
+        client.emit('test_pic', data);
         // let [imgFile] = data;
         // 촬영된 이미지파일을 전달받아서 s3에 저장한다
     }
