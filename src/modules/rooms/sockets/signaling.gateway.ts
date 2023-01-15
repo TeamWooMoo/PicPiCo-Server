@@ -53,15 +53,13 @@ export class SignalingGateway {
         console.log('join Room()');
 
         let [roomId, newSocketId] = data;
-        if (!(await this.roomService.isRoom(roomId))) {
-            await this.roomService.createRoom(roomId, newSocketId);
+        if (await this.roomService.isRoom(roomId)) {
+            client.join(roomId);
+            client.myRoomId = roomId;
+
+            console.log(`${roomId} 방으로 ${newSocketId} 입장`);
+            client.to(roomId).emit('welcome', newSocketId);
         }
-
-        client.join(roomId);
-        client.myRoomId = roomId;
-
-        console.log(`${roomId} 방으로 ${newSocketId} 입장`);
-        client.to(roomId).emit('welcome', newSocketId);
     }
 
     @SubscribeMessage('offer')
