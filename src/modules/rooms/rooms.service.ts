@@ -32,15 +32,14 @@ export class RoomsService {
             members: Array<string>(),
             pictures: new Map<string, PictureValue>(),
         };
-        newRoomValue.members.push(hostId);
         await this.redisService.setRoom(roomId, newRoomValue);
     }
 
     // 카메라: 방에 입장하기
-    async joinRoom(roomId: string, member: string): Promise<void> {
+    async joinRoom(roomId: string, memberNickname: string): Promise<void> {
         if (this.isRoom(roomId)) {
             const room = await this.redisService.getRoom(roomId);
-            room.members.push(member);
+            room.members.push(memberNickname);
             this.redisService.setRoom(roomId, room);
         }
     }

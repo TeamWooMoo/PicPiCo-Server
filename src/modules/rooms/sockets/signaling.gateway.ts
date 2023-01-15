@@ -28,6 +28,7 @@ export class SignalingGateway {
         client.on('disconnect', async (reason) => {
             console.log(`${client.id} 연결 종료: ${reason}`);
             if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
+                console.log('client.myRoomId !== Config.socket.DEFAULT_ROOM');
                 client.to(client.myRoomId).emit('gone', client.id);
                 await this.roomService.leaveRoom(
                     client.myRoomId,
