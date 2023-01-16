@@ -32,13 +32,6 @@ export class CameraGateway {
             client.nickName = newNickName;
             client.myRoomId = roomId;
 
-            if (
-                client.nickName ===
-                (await this.roomService.getRoomHostName(roomId))
-            ) {
-                await this.roomService.setRoomHost(roomId, client.id);
-            }
-
             await this.roomService.joinRoom(roomId, newNickName);
             const nickNameArr = await this.roomService.getAllMembers(roomId);
 
@@ -56,7 +49,7 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [index, picture] = data;
+        const [index, picture] = data;
         await this.roomService.takePicture(client.myRoomId, index, picture);
 
         console.log('[ take_pic ]: client.myRoomId = ', client.myRoomId);
@@ -67,7 +60,7 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [roomId, socketId] = data;
+        const [roomId, socketId] = data;
         console.log(roomId);
         const pictures = await this.roomService.getAllPictures(roomId);
 

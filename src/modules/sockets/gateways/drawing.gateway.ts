@@ -26,7 +26,7 @@ export class DrawingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [fromSocket, offX, offY] = data;
+        const [fromSocket, offX, offY] = data;
         client.to(client.myRoomId).emit('mouse_down', fromSocket, offX, offY);
     }
 
@@ -35,7 +35,7 @@ export class DrawingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [roomId, offX, offY, color, fromSocket] = data;
+        const [roomId, offX, offY, color, fromSocket] = data;
         client.to(roomId).emit('stroke_canvas', offX, offY, color, fromSocket);
     }
 
@@ -44,7 +44,7 @@ export class DrawingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [roomId, clientId] = data;
+        const [roomId, clientId] = data;
 
         if (client.id === (await this.roomService.getRoomHostId(roomId))) {
             // allow

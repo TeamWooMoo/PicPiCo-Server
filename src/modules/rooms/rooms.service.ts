@@ -64,8 +64,12 @@ export class RoomsService {
     }
 
     // 카메라: 새로운 방 만들기
-    async createRoom(roomId: string, hostName: string): Promise<void> {
-        const newRoomValue = new RoomValueDto(hostName);
+    async createRoom(
+        roomId: string,
+        hostName: string,
+        hostId: string,
+    ): Promise<void> {
+        const newRoomValue = new RoomValueDto(hostName, hostId);
         await this.redisService.setRoom(roomId, newRoomValue);
     }
 

@@ -4,8 +4,9 @@ export class RoomValueDto {
     members: Array<string>;
     pictures: Map<string, PictureValue>;
 
-    constructor(host_: string) {
+    constructor(host_: string, id_: string) {
         this.hostNickname = host_;
+        this.hostId = id_;
         this.members = new Array<string>();
         this.pictures = new Map<string, PictureValue>();
     }
