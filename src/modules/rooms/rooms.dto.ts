@@ -1,5 +1,5 @@
 export class RoomValueDto {
-    host: { nickName: string; socketId: string };
+    host: Host;
     members: Array<string>;
     pictures: Map<string, PictureValue>;
 
@@ -21,3 +21,8 @@ export class PictureValue {
         this.selected = false;
     }
 }
+
+export type Host = {
+    nickName: string;
+    socketId: string;
+};
