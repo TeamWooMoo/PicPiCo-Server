@@ -141,15 +141,15 @@ export class RoomsService {
         const pictures = room.pictures;
         let selectedPictures = new Map<string, PictureValue>();
         pictures.forEach((pic, id) => {
-            if(pic.selected) {
+            if (pic.selected) {
                 selectedPictures[id] = pic;
             }
         });
-        for (let i in ) {
-            if (pictures[i].selected) {
-                
-            }
-        }
+        // for (let i in ) {
+        //     if (pictures[i].selected) {
+
+        //     }
+        // }
 
         return selectedPictures;
     }
