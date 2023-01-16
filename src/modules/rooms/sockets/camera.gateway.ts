@@ -65,5 +65,6 @@ export class CameraGateway {
 
         client.emit('done_take', pictures);
         client.to(roomId).emit('done_take', pictures);
+        console.log('emit ');
     }
 }

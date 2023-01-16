@@ -86,6 +86,6 @@ export class SignalingGateway {
         @MessageBody() data: any,
     ) {
         let [ice, peerSocketId, currentSocketId] = data;
-        client.to(peerSocketId).emit(ice, currentSocketId);
+        client.to(peerSocketId).emit('ice', ice, currentSocketId);
     }
 }
