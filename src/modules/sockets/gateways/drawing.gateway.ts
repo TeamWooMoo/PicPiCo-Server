@@ -24,10 +24,6 @@ export class DrawingGateway {
         @MessageBody() data: any,
     ) {
         let [fromSocket, offX, offY] = data;
-
-        // 이제 소켓이 안끊기니까 client.myRoomId 가 살아있는지 확인해보자
-        console.log('client.myRoomId= ', client.myRoomId);
-
         client.to(client.myRoomId).emit('mouse_down', fromSocket, offX, offY);
     }
 
@@ -38,18 +34,5 @@ export class DrawingGateway {
     ) {
         let [roomId, offX, offY, color, fromSocket] = data;
         client.to(roomId).emit('stroke_canvas', offX, offY, color, fromSocket);
-    }
-
-    @SubscribeMessage('mouse_up')
-    async handleMouseUp(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
-        let [fromSocket] = data;
-
-        // 이제 소켓이 안끊기니까 client.myRoomId 가 살아있는지 확인해보자
-        console.log('client.myRoomId= ', client.myRoomId);
-
-        client.to(client.myRoomId).emit('mouse_down', fromSocket);
     }
 }
