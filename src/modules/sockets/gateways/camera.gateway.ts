@@ -5,9 +5,9 @@ import {
     MessageBody,
     WebSocketServer,
 } from '@nestjs/websockets';
-import { MyServer, MySocket } from './socket.dto';
+import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
-import { RoomsService } from '../rooms.service';
+import { RoomsService } from '../../rooms/rooms.service';
 
 @WebSocketGateway({
     cors: {
@@ -27,10 +27,11 @@ export class CameraGateway {
         @MessageBody() data: any,
     ) {
         const [roomId, newNickName] = data;
-        client.nickName = newNickName;
-        client.myRoomId = roomId;
 
         if (await this.roomService.isRoom(roomId)) {
+            client.nickName = newNickName;
+            client.myRoomId = roomId;
+
             await this.roomService.joinRoom(roomId, newNickName);
             const nickNameArr = await this.roomService.getAllMembers(roomId);
 
@@ -65,6 +66,5 @@ export class CameraGateway {
 
         client.emit('done_take', pictures);
         client.to(roomId).emit('done_take', pictures);
-        console.log('emit ');
     }
 }

@@ -4,7 +4,7 @@ import { AuthModule } from './auth/auth.module';
 // import { UploadModule } from './uploads/uploads.module';
 import { UsersModule } from './modules/users/users.module';
 import { RoomsModule } from './modules/rooms/rooms.module';
-import { SocketsModule } from './modules/rooms/sockets/socket.module';
+import { SocketsModule } from './modules/sockets/socket.module';
 
 @Module({
     imports: [UsersModule, AuthModule, RoomsModule, SocketsModule],
