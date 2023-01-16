@@ -26,12 +26,12 @@ export class SelectionGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [picIdx] = data;
+        let [roomId, picIdx] = data;
         console.log('picIdx = ', picIdx);
-        console.log('pick_pic: ', client.myRoomId);
+        console.log('roomId: ', roomId);
 
-        await this.roomService.selectPicture(client.myRoomId, picIdx);
-        client.to(client.myRoomId).emit('pick_pic', picIdx);
+        await this.roomService.selectPicture(roomId, picIdx);
+        client.to(roomId).emit('pick_pic', picIdx);
     }
 
     @SubscribeMessage('done_pick')
@@ -39,7 +39,12 @@ export class SelectionGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        console.log('done_pic: ', client.myRoomId);
+        let roomId = data;
+        console.log('data= ', data);
+        console.log('done_pic: ', roomId);
         // 사진 선택 완료
+
+        // client.emit('');
+        // client.to(roomId).emit('');
     }
 }

@@ -40,6 +40,9 @@ export class SignalingGateway {
                 const members = await this.roomService.getAllMembers(
                     client.myRoomId,
                 );
+                if (members.length === 0) {
+                    await this.roomService.destroyRoom(client.myRoomId);
+                }
                 client.to(client.myRoomId).emit('reset_member', members);
             }
         });

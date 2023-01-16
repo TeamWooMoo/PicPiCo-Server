@@ -7,7 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { MyServer, MySocket } from './socket.dto';
 import { Config } from '../../../config/configuration';
-import { RoomsService } from '../rooms.service';
+// import { RoomsService } from '../rooms.service';
 
 @WebSocketGateway({
     cors: {
@@ -24,9 +24,7 @@ export class DrawingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [offX, offY] = data;
-        console.log(`${offX}, ${offY}`);
-        console.log('stroke_canvas: client.myRoomId = ', client.myRoomId);
-        client.to(client.myRoomId).emit('stroke_canvas', offX, offY);
+        let [roomId, offX, offY] = data;
+        client.to(roomId).emit('stroke_canvas', offX, offY, client.id);
     }
 }
