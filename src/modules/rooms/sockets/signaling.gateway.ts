@@ -40,6 +40,9 @@ export class SignalingGateway {
                 const members = await this.roomService.getAllMembers(
                     client.myRoomId,
                 );
+                if (members.length === 0) {
+                    await this.roomService.destroyRoom(client.myRoomId);
+                }
                 client.to(client.myRoomId).emit('reset_member', members);
             }
         });
@@ -83,11 +86,6 @@ export class SignalingGateway {
         @MessageBody() data: any,
     ) {
         let [ice, peerSocketId, currentSocketId] = data;
-        client.to(peerSocketId).emit(ice, currentSocketId);
+        client.to(peerSocketId).emit('ice', ice, currentSocketId);
     }
-
-    // @SubscribeMessage('disconnecting')
-    // handleDisconnecting(@ConnectedSocket() client: MySocket) {
-    //     console.log('연결 종료 중... : ', client.id);
-    // }
 }
