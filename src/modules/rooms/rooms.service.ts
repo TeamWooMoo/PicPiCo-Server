@@ -140,17 +140,14 @@ export class RoomsService {
         const room = await this.redisService.getRoom(roomId);
         const pictures = room.pictures;
         let selectedPictures = new Map<string, PictureValue>();
-        pictures.forEach((pic, id) => {
+
+        console.log(typeof pictures);
+
+        for (const [picNo, pic] of Object.entries(pictures)) {
             if (pic.selected) {
-                selectedPictures[id] = pic;
+                selectedPictures[picNo] = pic;
             }
-        });
-        // for (let i in ) {
-        //     if (pictures[i].selected) {
-
-        //     }
-        // }
-
+        }
         return selectedPictures;
     }
 
