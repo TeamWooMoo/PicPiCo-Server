@@ -54,6 +54,7 @@ const JWT = {
 };
 
 export const Config = {
+    serverPort: 3000,
     cors: CORS,
     socket: Socket,
     mongoDb: MongoDB,

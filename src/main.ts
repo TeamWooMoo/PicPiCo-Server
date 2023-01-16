@@ -15,12 +15,11 @@ async function bootstrap() {
 
     // app.engine('html', require('ejs').renderFile);
     // app.setViewEngine('html');
-    process.setMaxListeners(20);
 
     const handleListen = () =>
         console.log(
             `Picpico-Server : Listening on http://${require('ip').address()}:3000`,
         );
-    await app.listen(3000, handleListen);
+    await app.listen(Config.serverPort, handleListen);
 }
 bootstrap();
