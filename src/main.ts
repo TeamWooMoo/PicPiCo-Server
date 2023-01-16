@@ -11,10 +11,10 @@ async function bootstrap() {
         credentials: Config.cors.CREDENTIALS,
     });
 
-    app.useStaticAssets(join(__dirname, '..', '/views'));
-    app.setBaseViewsDir(join(__dirname, '..', '/views'));
-    app.engine('html', require('ejs').renderFile);
-    app.setViewEngine('html');
+    // app.useStaticAssets(join(__dirname, '..', '/views'));
+    // app.setBaseViewsDir(join(__dirname, '..', '/views'));
+    // app.engine('html', require('ejs').renderFile);
+    // app.setViewEngine('html');
 
     const handleListen = () =>
         console.log(
