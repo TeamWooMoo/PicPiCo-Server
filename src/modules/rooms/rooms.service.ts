@@ -47,19 +47,20 @@ export class RoomsService {
     async getRoomHostName(roomId: string): Promise<string> {
         if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
-        return room.host.nickName;
+        return room.hostNickname;
     }
 
     async getRoomHostId(roomId: string): Promise<string> {
         if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
-        return room.host.socketId;
+        return room.hostId;
     }
 
     async setRoomHost(roomId: string, socketId: string): Promise<void> {
         if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
-        room.host.socketId = socketId;
+        room.hostId = socketId;
+        await this.redisService.setRoom(roomId, room);
     }
 
     // 카메라: 새로운 방 만들기
