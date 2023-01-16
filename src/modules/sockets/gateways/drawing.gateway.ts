@@ -44,15 +44,12 @@ export class DrawingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let clientId = data;
+        let [roomId, clientId] = data;
 
-        if (
-            client.id ===
-            (await this.roomService.getRoomHostId(client.myRoomId))
-        ) {
+        if (client.id === (await this.roomService.getRoomHostId(roomId))) {
             // allow
             client.emit('done_deco');
-            client.to(client.myRoomId).emit('done_deco');
+            client.to(roomId).emit('done_deco');
         } else {
             // deny
             client.emit('permission_denied');

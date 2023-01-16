@@ -67,7 +67,7 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let roomId = data;
+        let [roomId, socketId] = data;
         console.log(roomId);
         const pictures = await this.roomService.getAllPictures(roomId);
 
