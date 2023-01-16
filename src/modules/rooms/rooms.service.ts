@@ -44,6 +44,24 @@ export class RoomsService {
         await this.redisService.setRoom(roomId, room);
     }
 
+    async getRoomHostName(roomId: string): Promise<string> {
+        if (!(await this.isRoom(roomId))) return;
+        const room = await this.redisService.getRoom(roomId);
+        return room.host.nickName;
+    }
+
+    async getRoomHostId(roomId: string): Promise<string> {
+        if (!(await this.isRoom(roomId))) return;
+        const room = await this.redisService.getRoom(roomId);
+        return room.host.socketId;
+    }
+
+    async setRoomHost(roomId: string, socketId: string): Promise<void> {
+        if (!(await this.isRoom(roomId))) return;
+        const room = await this.redisService.getRoom(roomId);
+        room.host.socketId = socketId;
+    }
+
     // 카메라: 새로운 방 만들기
     async createRoom(roomId: string, hostName: string): Promise<void> {
         const newRoomValue = new RoomValueDto(hostName);
@@ -82,10 +100,9 @@ export class RoomsService {
         }
 
         if (room.pictures === null) {
-            console.log('[ERROR]  room.pictures === undefined');
+            console.log('[ERROR] takePicture(): room.pictures === undefined');
         } else {
             room.pictures[picNo] = pictureValue;
-            console.log(room.pictures);
         }
         await this.redisService.setRoom(roomId, room);
     }
@@ -112,8 +129,19 @@ export class RoomsService {
     }
 
     // 꾸미기: 선택된 사진들만 불러오기
-    getSelectedPictures(roomId: string): Map<string, PictureValue> {
-        return;
+    async getSelectedPictures(
+        roomId: string,
+    ): Promise<Map<string, PictureValue>> {
+        const room = await this.redisService.getRoom(roomId);
+        const pictures = room.pictures;
+        let selectedPictures = new Map<string, PictureValue>();
+        for (let i in pictures.keys()) {
+            if (pictures[i].selected) {
+                selectedPictures[i] = pictures[i];
+            }
+        }
+
+        return selectedPictures;
     }
 
     // 꾸미기: 사진의 viewer 추가하기

@@ -24,10 +24,12 @@ export class SignalingGateway {
     @SubscribeMessage('connection')
     handleConnection(@ConnectedSocket() client: MySocket) {
         client.myRoomId = Config.socket.DEFAULT_ROOM;
-        console.log('[ Connection ] client.id = ', client.id);
+        console.log('[ 연결 성공 ] client.id = ', client.id);
 
         client.on('disconnect', async (reason) => {
-            console.log(`${client.id} 연결 종료: ${reason}`);
+            console.log(
+                `[ 연결 종료 ] client.id = ${client.id}, reason = ${reason}`,
+            );
 
             if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
                 client.to(client.myRoomId).emit('gone', client.id);
