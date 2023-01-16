@@ -11,7 +11,13 @@ export class RoomsService {
         return (await this.redisService.getRoom(roomId)) !== null;
     }
 
+    // 방 삭제하기
     async destroyRoom(roomId: string) {
+        console.log(
+            '방에 남은 사람=' +
+                (await this.getAllMembers(roomId)).length +
+                ': 방을 삭제합니다.',
+        );
         await this.redisService.deleteRoom(roomId);
     }
 
@@ -66,9 +72,6 @@ export class RoomsService {
         if (!(await this.isRoom(roomId))) return;
 
         const pictureValue = new PictureValue(picture);
-
-        console.log('pictureValue= ', pictureValue);
-
         const room = await this.redisService.getRoom(roomId);
 
         // 첫번째로 찍은 사진에 모든 멤버를 다 넣어줌
@@ -78,12 +81,9 @@ export class RoomsService {
             }
         }
 
-        console.log(typeof room.pictures);
-
         if (room.pictures === null) {
             console.log('[ERROR]  room.pictures === undefined');
         } else {
-            console.log(room.pictures);
             room.pictures[picNo] = pictureValue;
             console.log(room.pictures);
         }

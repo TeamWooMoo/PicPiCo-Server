@@ -25,14 +25,6 @@ export class DrawingGateway {
         @MessageBody() data: any,
     ) {
         let [roomId, offX, offY] = data;
-        client.join(client.id);
-        console.log(client['adapter']);
-
         client.to(roomId).emit('stroke_canvas', offX, offY, client.id);
-        // client
-        //     .to(roomId)
-        //     .except(client.id)
-
-        // client.broadcast.emit('stroke_canvas', offX, offY);
     }
 }
