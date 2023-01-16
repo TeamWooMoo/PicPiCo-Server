@@ -5,9 +5,9 @@ import {
     MessageBody,
     WebSocketServer,
 } from '@nestjs/websockets';
-import { MyServer, MySocket } from './socket.dto';
+import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
-import { RoomsService } from '../rooms.service';
+import { RoomsService } from '../../rooms/rooms.service';
 
 @WebSocketGateway({
     cors: {

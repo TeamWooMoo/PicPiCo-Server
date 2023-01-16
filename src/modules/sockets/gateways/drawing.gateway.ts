@@ -5,9 +5,8 @@ import {
     MessageBody,
     WebSocketServer,
 } from '@nestjs/websockets';
-import { MyServer, MySocket } from './socket.dto';
+import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
-// import { RoomsService } from '../rooms.service';
 
 @WebSocketGateway({
     cors: {
@@ -24,8 +23,12 @@ export class DrawingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [roomId, offX, offY, color, fromSocket] = data;
-        client.to(roomId).emit('mouse_down', offX, offY, color, fromSocket);
+        let [fromSocket, offX, offY] = data;
+
+        // 이제 소켓이 안끊기니까 client.myRoomId 가 살아있는지 확인해보자
+        console.log('client.myRoomId= ', client.myRoomId);
+
+        client.to(client.myRoomId).emit('mouse_down', fromSocket, offX, offY);
     }
 
     @SubscribeMessage('stroke_canvas')
@@ -42,7 +45,11 @@ export class DrawingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        // let [roomId, offX, offY] = data;
-        // client.to(roomId).emit('stroke_canvas', offX, offY, client.id);
+        let [fromSocket] = data;
+
+        // 이제 소켓이 안끊기니까 client.myRoomId 가 살아있는지 확인해보자
+        console.log('client.myRoomId= ', client.myRoomId);
+
+        client.to(client.myRoomId).emit('mouse_down', fromSocket);
     }
 }
