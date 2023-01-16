@@ -32,13 +32,20 @@ export class CameraGateway {
             client.nickName = newNickName;
             client.myRoomId = roomId;
 
+            if (
+                client.nickName ===
+                (await this.roomService.getRoomHostName(roomId))
+            ) {
+                await this.roomService.setRoomHost(roomId, client.id);
+            }
+
             await this.roomService.joinRoom(roomId, newNickName);
             const nickNameArr = await this.roomService.getAllMembers(roomId);
 
-            console.log('add_member(): nickNameArr = ', nickNameArr);
-
             client.emit('reset_member', nickNameArr);
             client.to(client.myRoomId).emit('reset_member', nickNameArr);
+
+            console.log(`[ add_member ]: nickNameArr = ${nickNameArr}`);
         } else {
             client.disconnect(true);
         }
@@ -50,8 +57,9 @@ export class CameraGateway {
         @MessageBody() data: any,
     ) {
         let [index, picture] = data;
-        console.log('take_pic: client.myRoomId = ', client.myRoomId);
         await this.roomService.takePicture(client.myRoomId, index, picture);
+
+        console.log('[ take_pic ]: client.myRoomId = ', client.myRoomId);
     }
 
     @SubscribeMessage('done_take')
@@ -60,11 +68,13 @@ export class CameraGateway {
         @MessageBody() data: any,
     ) {
         let roomId = data;
-        console.log('done_take: client.myRoomId = ', roomId);
-
         const pictures = await this.roomService.getAllPictures(roomId);
 
         client.emit('done_take', pictures);
         client.to(roomId).emit('done_take', pictures);
+        // 클라이언트에서 어떻게 출력되는지 확인 필요
+        // pictures가 가지고 있는 이미지 src가 전달 후에도 이미지로 출력될 수 있는지 확인
+
+        console.log('[ done_take ]: client.myRoomId = ', roomId);
     }
 }

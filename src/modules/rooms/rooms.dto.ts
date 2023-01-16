@@ -1,10 +1,10 @@
 export class RoomValueDto {
-    host: string;
+    host: { nickName: string; socketId: string };
     members: Array<string>;
     pictures: Map<string, PictureValue>;
 
     constructor(host_: string) {
-        this.host = host_;
+        this.host.nickName = host_;
         this.members = new Array<string>();
         this.pictures = new Map<string, PictureValue>();
     }

@@ -7,6 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
+import { RoomsService } from 'src/modules/rooms/rooms.service';
 
 @WebSocketGateway({
     cors: {
@@ -15,6 +16,8 @@ import { Config } from '../../../config/configuration';
     },
 })
 export class DrawingGateway {
+    constructor(private readonly roomService: RoomsService) {}
+
     @WebSocketServer()
     server: MyServer;
 
@@ -34,5 +37,25 @@ export class DrawingGateway {
     ) {
         let [roomId, offX, offY, color, fromSocket] = data;
         client.to(roomId).emit('stroke_canvas', offX, offY, color, fromSocket);
+    }
+
+    @SubscribeMessage('done_deco')
+    async handleDoneDeco(
+        @ConnectedSocket() client: MySocket,
+        @MessageBody() data: any,
+    ) {
+        let clientId = data;
+
+        if (
+            client.id ===
+            (await this.roomService.getRoomHostId(client.myRoomId))
+        ) {
+            // allow
+            client.emit('done_deco');
+            client.to(client.myRoomId).emit('done_deco');
+        } else {
+            // deny
+            client.emit('permission_denied');
+        }
     }
 }

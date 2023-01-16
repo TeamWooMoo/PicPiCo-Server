@@ -27,24 +27,30 @@ export class SelectionGateway {
         @MessageBody() data: any,
     ) {
         let [roomId, picIdx] = data;
-        console.log('picIdx = ', picIdx);
-        console.log('roomId: ', roomId);
-
         await this.roomService.selectPicture(roomId, picIdx);
         client.to(roomId).emit('pick_pic', picIdx);
+
+        console.log(`[ pick_pic ]: picIdx = ${picIdx}`);
     }
 
     @SubscribeMessage('done_pick')
-    handleDonePic(
+    async handleDonePic(
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
         let roomId = data;
-        console.log('data= ', data);
-        console.log('done_pic: ', roomId);
-        // 사진 선택 완료
+        console.log('[ done_pic ]: roomId = ', roomId);
 
-        // client.emit('');
-        // client.to(roomId).emit('');
+        if (client.id === (await this.roomService.getRoomHostId(roomId))) {
+            await this.roomService.getSelectedPictures(roomId);
+            client.emit('done_pick');
+            client.to(roomId).emit('done_pick');
+
+            console.log(client.id + '는 방장 맞음');
+        } else {
+            client.emit('permission_denied');
+
+            console.log(client.id + '는 방장 아님....');
+        }
     }
 }

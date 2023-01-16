@@ -13,6 +13,7 @@ const CORS = {
         'http://143.248.191.4:3000',
         'http://143.248.219.121:3000',
         'https://picpico.site',
+        'http://localhost:3001',
     ],
     CREDENTIALS: true,
 };
@@ -25,6 +26,7 @@ const Socket = {
         'http://143.248.191.4:3000',
         'http://143.248.219.121:3000',
         'https://picpico.site',
+        'http://localhost:3001',
     ],
     SOCKET_SIGNALING_CREDENTIALS: true,
     DEFAULT_ROOM: 'DEFAULT_ROOM',
