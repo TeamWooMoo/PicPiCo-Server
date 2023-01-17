@@ -52,6 +52,9 @@ export class CameraGateway {
         const [index, picture] = data;
         await this.roomService.takePicture(client.myRoomId, index, picture);
 
+        client.emit('take_pic', index);
+        client.to(client.myRoomId).emit('take_pic', index);
+
         console.log('[ take_pic ]: client.myRoomId = ', client.myRoomId);
     }
 
