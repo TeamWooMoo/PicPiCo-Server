@@ -3,7 +3,7 @@ import { RoomsService } from './rooms.service';
 import { Response } from 'express';
 // import {Res} from "express"
 
-@Controller('rooms')
+@Controller('rooms/api')
 export class RoomsController {
     constructor(private readonly roomService: RoomsService) {}
 
