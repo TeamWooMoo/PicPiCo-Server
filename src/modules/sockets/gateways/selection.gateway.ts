@@ -27,9 +27,13 @@ export class SelectionGateway {
         @MessageBody() data: any,
     ) {
         const [roomId, picIdx] = data;
-        await this.roomService.selectPicture(roomId, picIdx);
-        client.to(roomId).emit('pick_pic', picIdx);
 
+        if ((await this.roomService.getRoomHostId(roomId)) === client.id) {
+            await this.roomService.selectPicture(roomId, picIdx);
+            client.to(roomId).emit('pick_pic', picIdx);
+        } else {
+            client.emit('permission_denied');
+        }
         console.log(`[ pick_pic ]: picIdx = ${picIdx}`);
     }
 
@@ -42,11 +46,26 @@ export class SelectionGateway {
         console.log('[ done_pic ]: roomId = ', roomId);
 
         if (client.id === (await this.roomService.getRoomHostId(roomId))) {
-            await this.roomService.getSelectedPictures(roomId);
-            client.emit('done_pick');
-            client.to(roomId).emit('done_pick');
-
             console.log(client.id + '는 방장 맞음');
+
+            const selectedPictures = await this.roomService.getSelectedPictures(
+                roomId,
+            );
+
+            const pickNum = selectedPictures.size;
+            // client.emit('done_pick', selectedPictures);
+            // client.to(roomId).emit('done_pick', selectedPictures);
+            if (pickNum === 4) {
+                console.log('다 좋아요');
+                client.emit('done_pick', selectedPictures);
+                client.to(roomId).emit('done_pick', selectedPictures);
+            } else {
+                console.log('4장이 아니에요');
+                const difference = pickNum - 4;
+                // 선택한 사진이 4장이 아닐때 발생하는 이벤트 필요함
+                client.emit('wrong_pick', difference);
+                client.to(roomId).emit('wrong_pick', difference);
+            }
         } else {
             client.emit('permission_denied');
 

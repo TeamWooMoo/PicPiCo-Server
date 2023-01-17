@@ -52,6 +52,9 @@ export class CameraGateway {
         const [index, picture] = data;
         await this.roomService.takePicture(client.myRoomId, index, picture);
 
+        client.emit('take_pic', index);
+        client.to(client.myRoomId).emit('take_pic', index);
+
         console.log('[ take_pic ]: client.myRoomId = ', client.myRoomId);
     }
 
@@ -64,10 +67,12 @@ export class CameraGateway {
         console.log(roomId);
         const pictures = await this.roomService.getAllPictures(roomId);
 
-        client.emit('done_take', pictures);
-        client.to(roomId).emit('done_take', pictures);
+        // 4장 미만으로 찍었을 경우 4장 이상으로 찍어야 한다는 사실 알려주는 이벤트 있어야함
+
         // 클라이언트에서 어떻게 출력되는지 확인 필요
         // pictures가 가지고 있는 이미지 src가 전달 후에도 이미지로 출력될 수 있는지 확인
+        client.emit('done_take', pictures);
+        client.to(roomId).emit('done_take', pictures);
 
         console.log('[ done_take ]: client.myRoomId = ', roomId);
     }
