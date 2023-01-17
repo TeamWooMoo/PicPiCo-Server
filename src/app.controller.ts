@@ -4,8 +4,8 @@ import { Response } from 'express';
 @Controller()
 export class AppController {
     @Get()
-    @Render('index')
+    // @Render('index')
     root(@Res() res: Response) {
-        // res.status(404).redirect('https://picpico.site');
+        res.status(404).redirect('https://picpico.site');
     }
 }
