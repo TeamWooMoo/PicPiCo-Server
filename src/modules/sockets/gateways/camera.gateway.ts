@@ -67,10 +67,10 @@ export class CameraGateway {
         console.log(roomId);
         const pictures = await this.roomService.getAllPictures(roomId);
 
-        client.emit('done_take', pictures);
-        client.to(roomId).emit('done_take', pictures);
         // 클라이언트에서 어떻게 출력되는지 확인 필요
         // pictures가 가지고 있는 이미지 src가 전달 후에도 이미지로 출력될 수 있는지 확인
+        client.emit('done_take', pictures);
+        client.to(roomId).emit('done_take', pictures);
 
         console.log('[ done_take ]: client.myRoomId = ', roomId);
     }
