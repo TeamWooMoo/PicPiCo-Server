@@ -39,6 +39,28 @@ export class DrawingGateway {
         client.to(roomId).emit('stroke_canvas', offX, offY, color, fromSocket);
     }
 
+    @SubscribeMessage('sticker_on')
+    async handleStickerOn(
+        @ConnectedSocket() client: MySocket,
+        @MessageBody() data: any,
+    ) {
+        const [roomId, stickerId] = data;
+
+        client.emit('sticker_on');
+        client.to(roomId).emit('sticker_on');
+
+        // client.to(roomId).emit('sticker_on', offX, offY, fromSocket);
+    }
+
+    @SubscribeMessage('sticker_move')
+    async handleStickerMove(
+        @ConnectedSocket() client: MySocket,
+        @MessageBody() data: any,
+    ) {
+        const [roomId, offX, offY, fromSocket] = data;
+        client.to(roomId).emit('sticker_move', offX, offY, fromSocket);
+    }
+
     @SubscribeMessage('done_deco')
     async handleDoneDeco(
         @ConnectedSocket() client: MySocket,
@@ -46,6 +68,7 @@ export class DrawingGateway {
     ) {
         const [roomId, clientId] = data;
 
+        // 호스트인지 여부 확인
         if (client.id === (await this.roomService.getRoomHostId(roomId))) {
             // allow
             client.emit('done_deco');
