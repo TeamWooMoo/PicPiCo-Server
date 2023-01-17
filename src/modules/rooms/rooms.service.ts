@@ -47,24 +47,29 @@ export class RoomsService {
     async getRoomHostName(roomId: string): Promise<string> {
         if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
-        return room.host.nickName;
+        return room.hostNickname;
     }
 
     async getRoomHostId(roomId: string): Promise<string> {
         if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
-        return room.host.socketId;
+        return room.hostId;
     }
 
     async setRoomHost(roomId: string, socketId: string): Promise<void> {
         if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
-        room.host.socketId = socketId;
+        room.hostId = socketId;
+        await this.redisService.setRoom(roomId, room);
     }
 
     // 카메라: 새로운 방 만들기
-    async createRoom(roomId: string, hostName: string): Promise<void> {
-        const newRoomValue = new RoomValueDto(hostName);
+    async createRoom(
+        roomId: string,
+        hostName: string,
+        hostId: string,
+    ): Promise<void> {
+        const newRoomValue = new RoomValueDto(hostName, hostId);
         await this.redisService.setRoom(roomId, newRoomValue);
     }
 
@@ -135,12 +140,14 @@ export class RoomsService {
         const room = await this.redisService.getRoom(roomId);
         const pictures = room.pictures;
         let selectedPictures = new Map<string, PictureValue>();
-        for (let i in pictures.keys()) {
-            if (pictures[i].selected) {
-                selectedPictures[i] = pictures[i];
+
+        console.log(typeof pictures);
+
+        for (const [picNo, pic] of Object.entries(pictures)) {
+            if (pic.selected) {
+                selectedPictures[picNo] = pic;
             }
         }
-
         return selectedPictures;
     }
 

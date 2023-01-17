@@ -26,7 +26,7 @@ export class SelectionGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [roomId, picIdx] = data;
+        const [roomId, picIdx] = data;
         await this.roomService.selectPicture(roomId, picIdx);
         client.to(roomId).emit('pick_pic', picIdx);
 
@@ -38,7 +38,7 @@ export class SelectionGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let roomId = data;
+        const [roomId, socketId] = data;
         console.log('[ done_pic ]: roomId = ', roomId);
 
         if (client.id === (await this.roomService.getRoomHostId(roomId))) {

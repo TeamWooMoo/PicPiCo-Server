@@ -57,7 +57,7 @@ export class SignalingGateway {
     ) {
         console.log('join Room()');
 
-        let [roomId, newSocketId] = data;
+        const [roomId, newSocketId] = data;
         if (await this.roomService.isRoom(roomId)) {
             client.join(roomId);
             client.myRoomId = roomId;
@@ -69,7 +69,7 @@ export class SignalingGateway {
 
     @SubscribeMessage('offer')
     handleOffer(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
-        let [offer, newSocketId, oldSocketId] = data;
+        const [offer, newSocketId, oldSocketId] = data;
         client.to(newSocketId).emit('offer', offer, oldSocketId);
     }
 
@@ -78,7 +78,7 @@ export class SignalingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [answer, oldSocketId, newSocketId] = data;
+        const [answer, oldSocketId, newSocketId] = data;
         client.to(oldSocketId).emit('answer', answer, newSocketId);
     }
 
@@ -87,7 +87,7 @@ export class SignalingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [ice, peerSocketId, currentSocketId] = data;
+        const [ice, peerSocketId, currentSocketId] = data;
         client.to(peerSocketId).emit('ice', ice, currentSocketId);
     }
 }
