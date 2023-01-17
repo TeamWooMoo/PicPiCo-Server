@@ -66,23 +66,24 @@ export class CameraGateway {
         const [roomId, socketId] = data;
         console.log(roomId);
 
+        const pictures = await this.roomService.getAllPictures(roomId);
+        client.emit('done_take', pictures);
+        client.to(roomId).emit('done_take', pictures);
+
         // 호스트만 사진 촬영 다음단계로 넘어갈 수 있음
-        if (client.id === (await this.roomService.getRoomHostId(roomId))) {
-            const pictures = await this.roomService.getAllPictures(roomId);
+        // if (client.id === (await this.roomService.getRoomHostId(roomId))) {
+        //     const pictures = await this.roomService.getAllPictures(roomId);
 
-            if (pictures.size === 4) {
-                // 4장 미만으로 찍었을 경우 4장 이상으로 찍어야 한다는 사실 알려주는 이벤트 있어야함
-
-                // 클라이언트에서 어떻게 출력되는지 확인 필요
-                // pictures가 가지고 있는 이미지 src가 전달 후에도 이미지로 출력될 수 있는지 확인
-                client.emit('done_take', pictures);
-                client.to(roomId).emit('done_take', pictures);
-            } else {
-                // 4장 미만이라 다음 단계로 못 넘어간다는 이벤트
-            }
-        } else {
-            // 당신은 호스트가 아니라서 버튼을 누를 수 없다는 이벤트
-        }
+        //     if (pictures.size === 4) {
+        //         // 4장 미만으로 찍었을 경우 4장 이상으로 찍어야 한다는 사실 알려주는 이벤트 있어야함
+        //         // 클라이언트에서 어떻게 출력되는지 확인 필요
+        //         // pictures가 가지고 있는 이미지 src가 전달 후에도 이미지로 출력될 수 있는지 확인
+        //     } else {
+        //         // 4장 미만이라 다음 단계로 못 넘어간다는 이벤트
+        //     }
+        // } else {
+        //     // 당신은 호스트가 아니라서 버튼을 누를 수 없다는 이벤트
+        // }
 
         console.log('[ done_take ]: client.myRoomId = ', roomId);
     }
