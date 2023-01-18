@@ -66,6 +66,7 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        console.log('send_pic on');
         const [setIdx, picture] = data;
 
         await this.roomService.takePrevPicture(
@@ -87,6 +88,7 @@ export class CameraGateway {
                 client.myRoomId,
                 setIdx,
             );
+            console.log('prevPictures>>> ', prevPictures);
             client.to(hostId).emit('send_pic', setIdx, prevPictures);
         }
 
