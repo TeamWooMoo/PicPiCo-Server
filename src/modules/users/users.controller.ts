@@ -29,7 +29,6 @@ export class UsersController {
     // @Redirect('http://localhost:3001/lobby')
     async login(@Query() qs, @Res() res: Response): Promise<any> {
         
-        console.log("qs위에")
         console.log(qs);
         const id = qs.id;
         const nickname = qs.nickname;
@@ -40,6 +39,6 @@ export class UsersController {
         // res.redirect(`http://localhost:3001/lobby`);
         // res.json({'nickname': nickname}).redirect(`http://localhost:3001/lobby`);
         // return {'nickname': nickname};
-        res.redirect(`http://localhost:3001/lobby/${nickname}`);
+        res.redirect(`https://picpico.site/lobby/${nickname}`);
     }
 }
