@@ -114,9 +114,8 @@ export class RoomsService {
     ) {
         if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
-        const prevPictureList: Array<PrevPicture> = room.prevPictures[setId];
 
-        if (prevPictureList) {
+        if (room.prevPictures[setId]) {
             room.prevPictures[setId].push(
                 new PrevPicture(setId, picture, socketId),
             );
@@ -184,7 +183,7 @@ export class RoomsService {
         const room = await this.redisService.getRoom(roomId);
         if (room.pictures[picNo]) {
             let selectFlag = room.pictures[picNo].selected;
-            room.pictures.get(picNo).selected = !selectFlag;
+            room.pictures[picNo].selected = !selectFlag;
             await this.redisService.setRoom(roomId, room);
         } else {
             console.log(`picNo ${picNo}는 없어요..`);
