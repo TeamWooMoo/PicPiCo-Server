@@ -91,6 +91,8 @@ export class CameraGateway {
                 setIdx,
             );
             console.log('prevPictures>>> ', prevPictures);
+            console.log('hostId: ', hostId);
+
             client.to(hostId).emit('send_pic', setIdx, prevPictures);
         }
 
