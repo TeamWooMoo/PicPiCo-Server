@@ -48,21 +48,18 @@ export class RoomsService {
         if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
         return room.host.nickName;
-        // return room['host']['nickName'];
     }
 
     async getRoomHostId(roomId: string): Promise<string> {
         if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
         return room.host.socketId;
-        // return room['host']['socketId'];
     }
 
     async setRoomHost(roomId: string, socketId: string): Promise<void> {
         if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
         room.host.socketId = socketId;
-        // room['host']['socketId'] = socketId;
         await this.redisService.setRoom(roomId, room);
     }
 
@@ -114,13 +111,13 @@ export class RoomsService {
     ) {
         if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
-        const prevPictureList: Array<PrevPicture> = room.prevPictures[setId];
 
-        console.log(prevPictureList);
-        if (prevPictureList) {
-            prevPictureList.push(new PrevPicture(setId, picture, socketId));
+        if (room.prevPictures[setId]) {
+            room.prevPictures[setId].push(
+                new PrevPicture(setId, picture, socketId),
+            );
         } else {
-            console.log('잘못된 setID:', setId);
+            console.log('takePrevPicture() :: 잘못된 setID:', setId);
         }
         await this.redisService.setRoom(roomId, room);
     }
@@ -128,14 +125,13 @@ export class RoomsService {
     async getPrevPicSize(roomId: string, setId: string): Promise<number> {
         if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
-
-        return room.prevPictures[setId];
+        return room.prevPictures[setId].length;
     }
 
     async removePrevPicture(roomId: string) {
         if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
-        // 삭제 작업
+        // 삭제 작업 아직 구현 안됨
         await this.redisService.setRoom(roomId, room);
     }
 
@@ -184,7 +180,7 @@ export class RoomsService {
         const room = await this.redisService.getRoom(roomId);
         if (room.pictures[picNo]) {
             let selectFlag = room.pictures[picNo].selected;
-            room.pictures.get(picNo).selected = !selectFlag;
+            room.pictures[picNo].selected = !selectFlag;
             await this.redisService.setRoom(roomId, room);
         } else {
             console.log(`picNo ${picNo}는 없어요..`);
@@ -198,8 +194,6 @@ export class RoomsService {
         const room = await this.redisService.getRoom(roomId);
         const pictures = room.pictures;
         let selectedPictures = new Map<string, PictureValue>();
-
-        console.log(typeof pictures);
 
         for (const [picNo, pic] of Object.entries(pictures)) {
             if (pic.selected) {

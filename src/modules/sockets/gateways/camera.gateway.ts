@@ -51,15 +51,13 @@ export class CameraGateway {
         @MessageBody() data: any,
     ) {
         const setIdx = data;
+        console.log('[ click_shutter] on');
+        console.log('[ click_shutter] setIdx', setIdx);
 
         await this.roomService.initPrevPicture(client.myRoomId, setIdx);
 
-        console.log('click_shutter : setIdx=', setIdx);
-
         client.emit('click_shutter', setIdx);
         client.to(client.myRoomId).emit('click_shutter', setIdx);
-
-        console.log('[ click_shutter ]: client.myRoomId = ', client.myRoomId);
     }
 
     // 셔터 누른 사람 포함 전부
@@ -68,7 +66,7 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        console.log('send_pic on');
+        console.log('[ send_pic ] on');
         const [setIdx, picture] = data;
 
         await this.roomService.takePrevPicture(
@@ -90,19 +88,15 @@ export class CameraGateway {
                 client.myRoomId,
                 setIdx,
             );
-            console.log('prevPictures>>> ', prevPictures);
-            client.to(hostId).emit('send_pic', setIdx, prevPictures);
+
+            console.log('[ send_pic ] hostId', hostId);
+
+            if (hostId === client.id) {
+                client.emit('send_pic', setIdx, prevPictures);
+            } else {
+                client.to(hostId).emit('send_pic', setIdx, prevPictures);
+            }
         }
-
-        // await this.roomService.takePicture(client.myRoomId, setIdx, picture);
-
-        // client.emit('take_pic', setIdx);
-        // client.to(client.myRoomId).emit('take_pic', setIdx);
-
-        // 만약 모든 클라이언트가 사진 다 보내면
-        // 셔터 누른애 한테
-
-        console.log('[ take_pic ]: client.myRoomId = ', client.myRoomId);
     }
 
     @SubscribeMessage('result_pic')
@@ -110,16 +104,11 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        console.log('[ result_pic ] on');
+
         const [setIdx, picture] = data;
 
         await this.roomService.takePicture(client.myRoomId, setIdx, picture);
-
-        // client.emit('take_pic', setIdx);
-        // client.to(client.myRoomId).emit('take_pic', setIdx);
-
-        // 만약 모든 클라이언트가 사진 다 보내면
-        // 셔터 누른애 한테
-        // client.to('셔터 누른애').emit('send_pic', '사진 n장');
     }
 
     @SubscribeMessage('done_take')
@@ -127,10 +116,12 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        console.log('[ done_take ] on');
+
         const [roomId, socketId] = data;
-        console.log(roomId);
 
         const pictures = await this.roomService.getAllPictures(roomId);
+
         client.emit('done_take', pictures);
         client.to(roomId).emit('done_take', pictures);
 
@@ -148,7 +139,5 @@ export class CameraGateway {
         // } else {
         //     // 당신은 호스트가 아니라서 버튼을 누를 수 없다는 이벤트
         // }
-
-        console.log('[ done_take ]: client.myRoomId = ', roomId);
     }
 }

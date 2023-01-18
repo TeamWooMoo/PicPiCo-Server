@@ -30,6 +30,7 @@ export class SelectionGateway {
 
         if ((await this.roomService.getRoomHostId(roomId)) === client.id) {
             await this.roomService.selectPicture(roomId, picIdx);
+            client.emit('pick_pic', picIdx);
             client.to(roomId).emit('pick_pic', picIdx);
         } else {
             client.emit('permission_denied');
@@ -42,8 +43,9 @@ export class SelectionGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        console.log('[ done_pic ] on');
+
         const [roomId, socketId] = data;
-        console.log('[ done_pic ]: roomId = ', roomId);
 
         if (client.id === (await this.roomService.getRoomHostId(roomId))) {
             console.log(client.id + '는 방장 맞음');
@@ -55,6 +57,7 @@ export class SelectionGateway {
             const pickNum = selectedPictures.size;
             client.emit('done_pick', selectedPictures);
             client.to(roomId).emit('done_pick', selectedPictures);
+
             // if (pickNum === 4) {
             //     console.log('다 좋아요');
             //     client.emit('done_pick', selectedPictures);
