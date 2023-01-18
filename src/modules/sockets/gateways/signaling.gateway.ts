@@ -31,11 +31,12 @@ export class SignalingGateway
     }
 
     async handleDisconnect(@ConnectedSocket() client: MySocket) {
-        console.log('[ 연결 종료 ] client.id = ', client.id);
+        console.log('[ 연결 종료 ] on');
         if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
             client.to(client.myRoomId).emit('gone', client.id);
 
-            console.log(`${client.id} gone.`);
+            console.log(`[ 연결 종료 ] ${client.myRoomId} 에서`);
+            console.log(`[ 연결 종료 ] ${client.id} 이 나감.`);
 
             await this.roomService.leaveRoom(client.myRoomId, client.nickName);
             const members = await this.roomService.getAllMembers(
@@ -53,22 +54,30 @@ export class SignalingGateway
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        console.log('join Room()');
+        console.log('[ join_room ] on');
 
         const [roomId, newSocketId] = data;
         if (await this.roomService.isRoom(roomId)) {
             client.join(roomId);
             client.myRoomId = roomId;
 
-            console.log(`${roomId} 방으로 ${newSocketId} 입장`);
+            console.log(`[ join_room ] 방 ${roomId} 으로`);
+            console.log(`[ join_room ] ${newSocketId} 입장`);
+
             client.to(roomId).emit('welcome', newSocketId);
+
+            console.log(`[ join_room ] emit welcome`);
         }
     }
 
     @SubscribeMessage('offer')
     handleOffer(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
+        console.log(`[ offer ] on`);
+
         const [offer, newSocketId, oldSocketId] = data;
         client.to(newSocketId).emit('offer', offer, oldSocketId);
+
+        console.log(`[ offer ] emit offer`);
     }
 
     @SubscribeMessage('answer')
@@ -76,8 +85,12 @@ export class SignalingGateway
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        console.log(`[ answer ] on`);
+
         const [answer, oldSocketId, newSocketId] = data;
         client.to(oldSocketId).emit('answer', answer, newSocketId);
+
+        console.log(`[ answer ] emit answer`);
     }
 
     @SubscribeMessage('ice')
@@ -85,7 +98,11 @@ export class SignalingGateway
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        console.log(`[ ice ] on`);
+
         const [ice, peerSocketId, currentSocketId] = data;
         client.to(peerSocketId).emit('ice', ice, currentSocketId);
+
+        console.log(`[ ice ] emit ice`);
     }
 }
