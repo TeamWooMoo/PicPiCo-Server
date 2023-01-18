@@ -4,6 +4,7 @@ import { CameraGateway } from './gateways/camera.gateway';
 import { DrawingGateway } from './gateways/drawing.gateway';
 import { RoomsModule } from '../rooms/rooms.module';
 import { SelectionGateway } from './gateways/selection.gateway';
+import { DecoGateway } from './gateways/deco.gateway';
 
 @Module({
     imports: [RoomsModule],
@@ -12,6 +13,7 @@ import { SelectionGateway } from './gateways/selection.gateway';
         CameraGateway,
         DrawingGateway,
         SelectionGateway,
+        DecoGateway,
     ],
 })
 export class SocketsModule {}

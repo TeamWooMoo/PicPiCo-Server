@@ -152,7 +152,7 @@ export class RoomsService {
         const room = await this.redisService.getRoom(roomId);
 
         // 첫번째로 찍은 사진에 모든 멤버를 다 넣어줌
-        if (room.pictures.size === 0) {
+        if (room.pictures.size === 1) {
             for (let i = 0; i < room.members.length; i++) {
                 pictureValue.viewers.push(room.members[i]);
             }
@@ -203,9 +203,54 @@ export class RoomsService {
         return selectedPictures;
     }
 
+    // 꾸미기: 첫번째 사진에 viewer다 넣기
+    async initPictureViewers(roomId: string) {
+        if (!(await this.isRoom(roomId))) return;
+        const room = await this.redisService.getRoom(roomId);
+
+        for (const [picNo, pic] of Object.entries(room.pictures)) {
+            if (pic.selected) {
+                for (let i = 0; i < room.members.length; i++) {
+                    room.pictures[picNo].viewers.push(room.members[i]);
+                }
+                break;
+            }
+        }
+        await this.redisService.setRoom(roomId, room);
+    }
+
     // 꾸미기: 사진의 viewer 추가하기
+    async addPictureViewer(
+        roomId: string,
+        socketId: string,
+        nickname: string,
+        imgIdx: string,
+    ) {
+        if (!(await this.isRoom(roomId))) return;
+
+        const room = await this.redisService.getRoom(roomId);
+        room.pictures[imgIdx].viewers.push(new User(nickname, socketId));
+    }
 
     // 꾸미기: 사진의 viewer 삭제하기
+    async deletePictureViewer(
+        roomId: string,
+        socketId: string,
+        imgIdx: string,
+    ) {
+        if (!(await this.isRoom(roomId))) return;
+
+        const room = await this.redisService.getRoom(roomId);
+
+        for (let i = 0; i < room.pictures[imgIdx].viewers.length; i++) {
+            if (room.pictures[imgIdx].viewers[i].socketId === socketId) {
+                room.pictures[imgIdx].viewers.splice(i, 1);
+                break;
+            }
+        }
+
+        await this.redisService.setRoom(roomId, room);
+    }
 
     // 꾸미기: 한 사진의 viewer 리스트 꺼내기
 }

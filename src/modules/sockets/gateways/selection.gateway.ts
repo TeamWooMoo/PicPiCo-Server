@@ -50,6 +50,7 @@ export class SelectionGateway {
         if (client.id === (await this.roomService.getRoomHostId(roomId))) {
             console.log(client.id + '는 방장 맞음');
 
+            await this.roomService.initPictureViewers(roomId);
             const selectedPictures = await this.roomService.getSelectedPictures(
                 roomId,
             );
