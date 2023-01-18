@@ -91,7 +91,8 @@ export class CameraGateway {
                 client.myRoomId,
                 setIdx,
             );
-            console.log('[ send_pic ] prevPictures', prevPictures);
+
+            // console.log('[ send_pic ] prevPictures', prevPictures);
             console.log('[ send_pic ] hostId', hostId);
 
             if (hostId === client.id) {
@@ -100,14 +101,6 @@ export class CameraGateway {
                 client.to(hostId).emit('send_pic', setIdx, prevPictures);
             }
         }
-
-        // await this.roomService.takePicture(client.myRoomId, setIdx, picture);
-
-        // client.emit('take_pic', setIdx);
-        // client.to(client.myRoomId).emit('take_pic', setIdx);
-
-        // 만약 모든 클라이언트가 사진 다 보내면
-        // 셔터 누른애 한테
     }
 
     @SubscribeMessage('result_pic')
@@ -115,18 +108,11 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        console.log('[ result_pic ] on');
+
         const [setIdx, picture] = data;
 
-        console.log('[ result_pic ] picture', picture);
-
         await this.roomService.takePicture(client.myRoomId, setIdx, picture);
-
-        // client.emit('take_pic', setIdx);
-        // client.to(client.myRoomId).emit('take_pic', setIdx);
-
-        // 만약 모든 클라이언트가 사진 다 보내면
-        // 셔터 누른애 한테
-        // client.to('셔터 누른애').emit('send_pic', '사진 n장');
     }
 
     @SubscribeMessage('done_take')
@@ -139,8 +125,6 @@ export class CameraGateway {
         const [roomId, socketId] = data;
 
         const pictures = await this.roomService.getAllPictures(roomId);
-
-        console.log('[ done_take ] pictures', pictures);
 
         client.emit('done_take', pictures);
         client.to(roomId).emit('done_take', pictures);
