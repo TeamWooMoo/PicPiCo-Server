@@ -31,6 +31,6 @@ export class UsersController {
         const nickname = qs.nickname;
         console.log(id);
         console.log(nickname);
-        res.redirect(`http://localhost:3000/lobby&nickname=${nickname}`);
+        res.redirect(`http://localhost:3001/lobby&nickname=${nickname}`);
     }
 }
