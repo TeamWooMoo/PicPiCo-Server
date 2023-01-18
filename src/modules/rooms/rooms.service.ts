@@ -128,8 +128,8 @@ export class RoomsService {
     async getPrevPicSize(roomId: string, setId: string): Promise<number> {
         if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
-        
-        return room.prevPictures[setId].;
+
+        return room.prevPictures[setId];
     }
 
     async removePrevPicture(roomId: string) {
