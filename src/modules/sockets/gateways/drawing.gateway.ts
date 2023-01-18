@@ -27,7 +27,7 @@ export class DrawingGateway {
         @MessageBody() data: any,
     ) {
         const [fromSocket, offX, offY, ImgIdx] = data;
-        console.log('[ mouse_down ]data =>>>>', data);
+        // console.log('[ mouse_down ]data =>>>>', data);
         client
             .to(client.myRoomId)
             .emit('mouse_down', fromSocket, offX, offY, ImgIdx);
@@ -39,7 +39,7 @@ export class DrawingGateway {
         @MessageBody() data: any,
     ) {
         const [roomId, offX, offY, color, fromSocket, ImgIdx] = data;
-        console.log('[ stroke_canvas ]data =>>>>', data);
+        // console.log('[ stroke_canvas ]data =>>>>', data);
         client
             .to(roomId)
             .emit('stroke_canvas', offX, offY, color, fromSocket, ImgIdx);
