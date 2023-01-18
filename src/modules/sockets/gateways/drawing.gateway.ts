@@ -35,8 +35,10 @@ export class DrawingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        const [roomId, offX, offY, color, fromSocket] = data;
-        client.to(roomId).emit('stroke_canvas', offX, offY, color, fromSocket);
+        const [roomId, offX, offY, color, fromSocket, ImgIdx] = data;
+        client
+            .to(roomId)
+            .emit('stroke_canvas', offX, offY, color, fromSocket, ImgIdx);
     }
 
     @SubscribeMessage('sticker_on')
