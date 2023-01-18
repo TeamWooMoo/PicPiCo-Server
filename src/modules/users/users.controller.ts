@@ -7,10 +7,12 @@ import {
     Req,
     Query,
     Res,
+    Redirect,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserDto } from './users.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
+import { AuthService } from 'src/auth/auth.service';
 @Controller('users')
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
@@ -24,13 +26,20 @@ export class UsersController {
     }
 
     @Get('login')
+    // @Redirect('http://localhost:3001/lobby')
     async login(@Query() qs, @Res() res: Response): Promise<any> {
+        
         console.log("qs위에")
         console.log(qs);
         const id = qs.id;
         const nickname = qs.nickname;
         console.log(id);
         console.log(nickname);
-        res.redirect(`http://localhost:3001/lobby&nickname=${nickname}`);
+
+        // console.log('req header=', req.headers);
+        // res.redirect(`http://localhost:3001/lobby`);
+        // res.json({'nickname': nickname}).redirect(`http://localhost:3001/lobby`);
+        // return {'nickname': nickname};
+        res.redirect(`http://localhost:3001/lobby/${nickname}`);
     }
 }
