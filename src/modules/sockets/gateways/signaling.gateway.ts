@@ -4,6 +4,8 @@ import {
     ConnectedSocket,
     MessageBody,
     WebSocketServer,
+    OnGatewayConnection,
+    OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
@@ -15,53 +17,25 @@ import { RoomsService } from '../../rooms/rooms.service';
         credentials: Config.socket.SOCKET_SIGNALING_CREDENTIALS,
     },
 })
-export class SignalingGateway {
+export class SignalingGateway
+    implements OnGatewayConnection, OnGatewayDisconnect
+{
     constructor(private readonly roomService: RoomsService) {}
 
     @WebSocketServer()
     server: MyServer;
 
-    @SubscribeMessage('connection')
-    handleConnection(@ConnectedSocket() client: MySocket) {
+    // @SubscribeMessage('connection')
+    async handleConnection(@ConnectedSocket() client: MySocket) {
         client.myRoomId = Config.socket.DEFAULT_ROOM;
         console.log('[ 연결 성공 ] client.id = ', client.id);
-
-        // client.on('disconnect', async (reason) => {
-        //     console.log(
-        //         `[ 연결 종료 ] client.id = ${client.id}, reason = ${reason}`,
-        //     );
-
-        //     if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
-        //         client.to(client.myRoomId).emit('gone', client.id);
-        //         console.log(`${client.id} gone.`);
-
-        //         await this.roomService.leaveRoom(
-        //             client.myRoomId,
-        //             client.nickName,
-        //         );
-        //         const members = await this.roomService.getAllMembers(
-        //             client.myRoomId,
-        //         );
-        //         if (members.length === 0) {
-        //             await this.roomService.destroyRoom(client.myRoomId);
-        //         }
-        //         client.to(client.myRoomId).emit('reset_member', members);
-        //     }
-        // });
     }
 
-    @SubscribeMessage('disconnect')
-    async handleDisconnect(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
-        const reason = data;
-        console.log(
-            `[ 연결 종료 ] client.id = ${client.id}, reason = ${reason}`,
-        );
-
+    // @SubscribeMessage('disconnect')
+    async handleDisconnect(@ConnectedSocket() client: MySocket) {
         if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
             client.to(client.myRoomId).emit('gone', client.id);
+
             console.log(`${client.id} gone.`);
 
             await this.roomService.leaveRoom(client.myRoomId, client.nickName);
