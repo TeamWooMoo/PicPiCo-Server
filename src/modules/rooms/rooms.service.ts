@@ -116,13 +116,12 @@ export class RoomsService {
         const room = await this.redisService.getRoom(roomId);
         const prevPictureList: Array<PrevPicture> = room.prevPictures[setId];
 
-        console.log('takePrevPicture>>>>', prevPictureList);
         if (prevPictureList) {
             room.prevPictures[setId].push(
                 new PrevPicture(setId, picture, socketId),
             );
         } else {
-            console.log('잘못된 setID:', setId);
+            console.log('takePrevPicture() :: 잘못된 setID:', setId);
         }
         await this.redisService.setRoom(roomId, room);
     }

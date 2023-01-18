@@ -135,6 +135,8 @@ export class CameraGateway {
 
         const pictures = await this.roomService.getAllPictures(roomId);
 
+        console.log('pictures >>>> ', pictures);
+
         client.emit('done_take', pictures);
         client.to(roomId).emit('done_take', pictures);
 
