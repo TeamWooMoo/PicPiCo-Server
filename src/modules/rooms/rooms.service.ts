@@ -115,6 +115,7 @@ export class RoomsService {
         const room = await this.redisService.getRoom(roomId);
         const prevPictureList: Array<PrevPicture> = room.prevPictures[setId];
 
+        console.log(prevPictureList);
         if (prevPictureList) {
             prevPictureList.push(new PrevPicture(setId, picture, socketId));
         } else {
