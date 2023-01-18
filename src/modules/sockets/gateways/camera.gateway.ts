@@ -50,17 +50,14 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        console.log('[ click_shutter] on');
         const setIdx = data;
+        console.log('[ click_shutter] on');
+        console.log('[ click_shutter] setIdx', setIdx);
 
         await this.roomService.initPrevPicture(client.myRoomId, setIdx);
 
-        console.log('[ click_shutter] setIdx', setIdx);
-
         client.emit('click_shutter', setIdx);
         client.to(client.myRoomId).emit('click_shutter', setIdx);
-
-        console.log('[ click_shutter ] client.myRoomId', client.myRoomId);
     }
 
     // 셔터 누른 사람 포함 전부
@@ -92,7 +89,6 @@ export class CameraGateway {
                 setIdx,
             );
 
-            // console.log('[ send_pic ] prevPictures', prevPictures);
             console.log('[ send_pic ] hostId', hostId);
 
             if (hostId === client.id) {

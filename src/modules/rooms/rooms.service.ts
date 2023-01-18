@@ -48,21 +48,18 @@ export class RoomsService {
         if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
         return room.host.nickName;
-        // return room['host']['nickName'];
     }
 
     async getRoomHostId(roomId: string): Promise<string> {
         if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
         return room.host.socketId;
-        // return room['host']['socketId'];
     }
 
     async setRoomHost(roomId: string, socketId: string): Promise<void> {
         if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
         room.host.socketId = socketId;
-        // room['host']['socketId'] = socketId;
         await this.redisService.setRoom(roomId, room);
     }
 
