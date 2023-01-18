@@ -35,8 +35,10 @@ export class DrawingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        const [roomId, offX, offY, color, fromSocket] = data;
-        client.to(roomId).emit('stroke_canvas', offX, offY, color, fromSocket);
+        const [roomId, offX, offY, color, fromSocket, ImgIdx] = data;
+        client
+            .to(roomId)
+            .emit('stroke_canvas', offX, offY, color, fromSocket, ImgIdx);
     }
 
     @SubscribeMessage('sticker_on')
@@ -66,6 +68,8 @@ export class DrawingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        console.log('[ done_deco ] on');
+
         const [roomId, clientId] = data;
 
         // 호스트인지 여부 확인
@@ -73,9 +77,12 @@ export class DrawingGateway {
             // allow
             client.emit('done_deco');
             client.to(roomId).emit('done_deco');
+
+            console.log('[ done_deco ] emit done_deco');
         } else {
             // deny
             client.emit('permission_denied');
+            console.log('[ done_deco ] emit permission_denied');
         }
     }
 }
