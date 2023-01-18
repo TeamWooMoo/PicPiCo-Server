@@ -198,8 +198,6 @@ export class RoomsService {
         const pictures = room.pictures;
         let selectedPictures = new Map<string, PictureValue>();
 
-        console.log(typeof pictures);
-
         for (const [picNo, pic] of Object.entries(pictures)) {
             if (pic.selected) {
                 selectedPictures[picNo] = pic;
