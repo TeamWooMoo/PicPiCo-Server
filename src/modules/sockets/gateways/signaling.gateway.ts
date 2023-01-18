@@ -33,6 +33,7 @@ export class SignalingGateway
 
     // @SubscribeMessage('disconnect')
     async handleDisconnect(@ConnectedSocket() client: MySocket) {
+        console.log('[ 연결 종료 ] client.id = ', client.id);
         if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
             client.to(client.myRoomId).emit('gone', client.id);
 
