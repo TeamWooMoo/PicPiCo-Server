@@ -36,6 +36,7 @@ export class DrawingGateway {
         @MessageBody() data: any,
     ) {
         const [roomId, offX, offY, color, fromSocket, ImgIdx] = data;
+        console.log('[ stroke_canvas ]data =>>>>', data);
         client
             .to(roomId)
             .emit('stroke_canvas', offX, offY, color, fromSocket, ImgIdx);
