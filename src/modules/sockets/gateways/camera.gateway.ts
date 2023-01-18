@@ -112,6 +112,8 @@ export class CameraGateway {
     ) {
         const [setIdx, picture] = data;
 
+        console.log('[ result_pic ] : picture=', picture);
+
         await this.roomService.takePicture(client.myRoomId, setIdx, picture);
 
         // client.emit('take_pic', setIdx);
@@ -131,7 +133,7 @@ export class CameraGateway {
         console.log(roomId);
 
         const pictures = await this.roomService.getAllPictures(roomId);
-        client.emit('done_take', pictures);
+        client.emit('[ done_take ] : picture=', pictures);
         client.to(roomId).emit('done_take', pictures);
 
         // 호스트만 사진 촬영 다음단계로 넘어갈 수 있음
