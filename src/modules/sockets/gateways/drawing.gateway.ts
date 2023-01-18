@@ -26,8 +26,11 @@ export class DrawingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        const [fromSocket, offX, offY] = data;
-        client.to(client.myRoomId).emit('mouse_down', fromSocket, offX, offY);
+        const [fromSocket, offX, offY, ImgIdx] = data;
+        console.log('[ mouse_down ]data =>>>>', data);
+        client
+            .to(client.myRoomId)
+            .emit('mouse_down', fromSocket, offX, offY, ImgIdx);
     }
 
     @SubscribeMessage('stroke_canvas')
