@@ -42,8 +42,8 @@ const KakaoLoginLogic = {
 };
 
 const Kakao = {
-    _restApiKey: '40bf5ef38bca8060ebfe393174bc7a72',
-    _redirectUrl: 'https://picpico-server.site/auth/kakaoLoginLogicRedirect',
+    _restApiKey: '34973c294ce96911a4a945e71c8c7314',
+    _redirectUrl: 'http://localhost:3000/auth/kakaoLoginLogicRedirect',
     kakaoLoginLogic: KakaoLoginLogic,
 };
 

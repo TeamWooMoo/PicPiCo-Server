@@ -1,7 +1,7 @@
+import { Config } from './../config/configuration';
 import { Controller, Get, Header, Query, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
-import { Config } from '../config/configuration';
 
 @Controller('auth')
 export class AuthController {
@@ -85,7 +85,6 @@ export class AuthController {
                     user_nickname +
                     '&id=' +
                     user_id,
-                // `/auth/giveuserinfo?nickname=${user_nickname}&id=${user_id}`,
             );
         });
     }

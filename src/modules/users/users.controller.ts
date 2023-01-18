@@ -25,11 +25,12 @@ export class UsersController {
 
     @Get('login')
     async login(@Query() qs, @Res() res: Response): Promise<any> {
+        console.log("qs위에")
+        console.log(qs);
         const id = qs.id;
         const nickname = qs.nickname;
         console.log(id);
         console.log(nickname);
-
-        res.redirect('https://picpico.site/lobby');
+        res.redirect(`http://localhost:3000/lobby&nickname=${nickname}`);
     }
 }
