@@ -1,31 +1,32 @@
+// ORIGIN: 'http://143.248.229.30:3000', // JNL
+// ORIGIN: 'http://192.168.0.49:3000', // KJH
+// ORIGIN: 'http://192.249.31.25:3000', // CDB
+// ORIGIN: 'http://143.248.191.4:3000', // LWH
+// ORIGIN: 'http://143.248.219.121:3000', // KSW
+// ORIGIN: 'https://picpico.site', // [진짜 서버] 배포용
+
 const CORS = {
-    // ORIGIN: 'http://192.168.0.84:3000', // JNL
-    // ORIGIN: 'http://192.168.0.49:3000', // KJH
-    // ORIGIN: 'http://192.249.31.25:3000', // CDB
-    // ORIGIN: 'http://143.248.191.4:3000', // LWH
-    // ORIGIN: 'http://143.248.219.121:3000', // KSW
     ORIGIN: [
-        'http://192.168.0.84:3000',
+        'http://143.248.229.30:3000',
         'http://192.168.0.49:3000',
-        'http://192.249.31.25:3000',
         'http://143.248.191.4:3000',
         'http://143.248.219.121:3000',
         'https://picpico.site',
+        'http://localhost:3001',
     ],
-    // ORIGIN: 'https://picpico.site', // [진짜 서버] 배포용
     CREDENTIALS: true,
 };
 
 const Socket = {
     SOCKET_ORIGIN: [
-        'http://192.168.0.84:3000',
+        'http://143.248.229.30:3000',
         'http://192.168.0.49:3000',
         'http://192.168.0.15:3000',
         'http://143.248.191.4:3000',
         'http://143.248.219.121:3000',
         'https://picpico.site',
+        'http://localhost:3001',
     ],
-    // SOCKET_ORIGIN: 'https://picpico.site', // [진짜 서버] 배포용
     SOCKET_SIGNALING_CREDENTIALS: true,
     DEFAULT_ROOM: 'DEFAULT_ROOM',
 };

@@ -24,10 +24,12 @@ export class SignalingGateway {
     @SubscribeMessage('connection')
     handleConnection(@ConnectedSocket() client: MySocket) {
         client.myRoomId = Config.socket.DEFAULT_ROOM;
-        console.log('[ Connection ] client.id = ', client.id);
+        console.log('[ 연결 성공 ] client.id = ', client.id);
 
         client.on('disconnect', async (reason) => {
-            console.log(`${client.id} 연결 종료: ${reason}`);
+            console.log(
+                `[ 연결 종료 ] client.id = ${client.id}, reason = ${reason}`,
+            );
 
             if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
                 client.to(client.myRoomId).emit('gone', client.id);
@@ -55,7 +57,7 @@ export class SignalingGateway {
     ) {
         console.log('join Room()');
 
-        let [roomId, newSocketId] = data;
+        const [roomId, newSocketId] = data;
         if (await this.roomService.isRoom(roomId)) {
             client.join(roomId);
             client.myRoomId = roomId;
@@ -67,7 +69,7 @@ export class SignalingGateway {
 
     @SubscribeMessage('offer')
     handleOffer(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
-        let [offer, newSocketId, oldSocketId] = data;
+        const [offer, newSocketId, oldSocketId] = data;
         client.to(newSocketId).emit('offer', offer, oldSocketId);
     }
 
@@ -76,7 +78,7 @@ export class SignalingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [answer, oldSocketId, newSocketId] = data;
+        const [answer, oldSocketId, newSocketId] = data;
         client.to(oldSocketId).emit('answer', answer, newSocketId);
     }
 
@@ -85,7 +87,7 @@ export class SignalingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [ice, peerSocketId, currentSocketId] = data;
+        const [ice, peerSocketId, currentSocketId] = data;
         client.to(peerSocketId).emit('ice', ice, currentSocketId);
     }
 }

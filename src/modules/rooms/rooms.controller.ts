@@ -3,7 +3,7 @@ import { RoomsService } from './rooms.service';
 import { Response } from 'express';
 // import {Res} from "express"
 
-@Controller('rooms')
+@Controller('rooms/api')
 export class RoomsController {
     constructor(private readonly roomService: RoomsService) {}
 
@@ -11,8 +11,9 @@ export class RoomsController {
     async createRoom(@Body() roomInfo: any) {
         let roomId = roomInfo['roomId'];
         let nickname = roomInfo['nickname'];
+        let socketId = roomInfo['socketId'];
         // Id가 roomId인 room을 메모리에 저장
-        await this.roomService.createRoom(roomId, nickname);
+        await this.roomService.createRoom(roomId, nickname, socketId);
         console.log('POST: roomId: ', roomId);
         return { roomId: roomId };
     }

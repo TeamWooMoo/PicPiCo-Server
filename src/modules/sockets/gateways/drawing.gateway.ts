@@ -7,6 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
+import { RoomsService } from 'src/modules/rooms/rooms.service';
 
 @WebSocketGateway({
     cors: {
@@ -15,6 +16,8 @@ import { Config } from '../../../config/configuration';
     },
 })
 export class DrawingGateway {
+    constructor(private readonly roomService: RoomsService) {}
+
     @WebSocketServer()
     server: MyServer;
 
@@ -23,11 +26,7 @@ export class DrawingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [fromSocket, offX, offY] = data;
-
-        // 이제 소켓이 안끊기니까 client.myRoomId 가 살아있는지 확인해보자
-        console.log('client.myRoomId= ', client.myRoomId);
-
+        const [fromSocket, offX, offY] = data;
         client.to(client.myRoomId).emit('mouse_down', fromSocket, offX, offY);
     }
 
@@ -36,20 +35,47 @@ export class DrawingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [roomId, offX, offY, color, fromSocket] = data;
+        const [roomId, offX, offY, color, fromSocket] = data;
         client.to(roomId).emit('stroke_canvas', offX, offY, color, fromSocket);
     }
 
-    @SubscribeMessage('mouse_up')
-    async handleMouseUp(
+    @SubscribeMessage('sticker_on')
+    async handleStickerOn(
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [fromSocket] = data;
+        const [roomId, stickerId] = data;
 
-        // 이제 소켓이 안끊기니까 client.myRoomId 가 살아있는지 확인해보자
-        console.log('client.myRoomId= ', client.myRoomId);
+        client.emit('sticker_on');
+        client.to(roomId).emit('sticker_on');
 
-        client.to(client.myRoomId).emit('mouse_down', fromSocket);
+        // client.to(roomId).emit('sticker_on', offX, offY, fromSocket);
+    }
+
+    @SubscribeMessage('sticker_move')
+    async handleStickerMove(
+        @ConnectedSocket() client: MySocket,
+        @MessageBody() data: any,
+    ) {
+        const [roomId, offX, offY, fromSocket] = data;
+        client.to(roomId).emit('sticker_move', offX, offY, fromSocket);
+    }
+
+    @SubscribeMessage('done_deco')
+    async handleDoneDeco(
+        @ConnectedSocket() client: MySocket,
+        @MessageBody() data: any,
+    ) {
+        const [roomId, clientId] = data;
+
+        // 호스트인지 여부 확인
+        if (client.id === (await this.roomService.getRoomHostId(roomId))) {
+            // allow
+            client.emit('done_deco');
+            client.to(roomId).emit('done_deco');
+        } else {
+            // deny
+            client.emit('permission_denied');
+        }
     }
 }
