@@ -118,7 +118,9 @@ export class RoomsService {
 
         console.log('takePrevPicture>>>>', prevPictureList);
         if (prevPictureList) {
-            prevPictureList.push(new PrevPicture(setId, picture, socketId));
+            room.prevPictures[setId].push(
+                new PrevPicture(setId, picture, socketId),
+            );
         } else {
             console.log('잘못된 setID:', setId);
         }
