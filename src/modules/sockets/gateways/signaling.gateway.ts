@@ -26,28 +26,53 @@ export class SignalingGateway {
         client.myRoomId = Config.socket.DEFAULT_ROOM;
         console.log('[ 연결 성공 ] client.id = ', client.id);
 
-        client.on('disconnect', async (reason) => {
-            console.log(
-                `[ 연결 종료 ] client.id = ${client.id}, reason = ${reason}`,
+        // client.on('disconnect', async (reason) => {
+        //     console.log(
+        //         `[ 연결 종료 ] client.id = ${client.id}, reason = ${reason}`,
+        //     );
+
+        //     if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
+        //         client.to(client.myRoomId).emit('gone', client.id);
+        //         console.log(`${client.id} gone.`);
+
+        //         await this.roomService.leaveRoom(
+        //             client.myRoomId,
+        //             client.nickName,
+        //         );
+        //         const members = await this.roomService.getAllMembers(
+        //             client.myRoomId,
+        //         );
+        //         if (members.length === 0) {
+        //             await this.roomService.destroyRoom(client.myRoomId);
+        //         }
+        //         client.to(client.myRoomId).emit('reset_member', members);
+        //     }
+        // });
+    }
+
+    @SubscribeMessage('disconnect')
+    async handleDisconnect(
+        @ConnectedSocket() client: MySocket,
+        @MessageBody() data: any,
+    ) {
+        const reason = data;
+        console.log(
+            `[ 연결 종료 ] client.id = ${client.id}, reason = ${reason}`,
+        );
+
+        if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
+            client.to(client.myRoomId).emit('gone', client.id);
+            console.log(`${client.id} gone.`);
+
+            await this.roomService.leaveRoom(client.myRoomId, client.nickName);
+            const members = await this.roomService.getAllMembers(
+                client.myRoomId,
             );
-
-            if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
-                client.to(client.myRoomId).emit('gone', client.id);
-                console.log(`${client.id} gone.`);
-
-                await this.roomService.leaveRoom(
-                    client.myRoomId,
-                    client.nickName,
-                );
-                const members = await this.roomService.getAllMembers(
-                    client.myRoomId,
-                );
-                if (members.length === 0) {
-                    await this.roomService.destroyRoom(client.myRoomId);
-                }
-                client.to(client.myRoomId).emit('reset_member', members);
+            if (members.length === 0) {
+                await this.roomService.destroyRoom(client.myRoomId);
             }
-        });
+            client.to(client.myRoomId).emit('reset_member', members);
+        }
     }
 
     @SubscribeMessage('join_room')
