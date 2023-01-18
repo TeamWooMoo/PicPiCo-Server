@@ -54,6 +54,8 @@ export class CameraGateway {
 
         await this.roomService.initPrevPicture(client.myRoomId, setIdx);
 
+        console.log('click_shutter : setIdx=', setIdx);
+
         client.emit('click_shutter', setIdx);
         client.to(client.myRoomId).emit('click_shutter', setIdx);
 
