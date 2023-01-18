@@ -50,7 +50,7 @@ export class SignalingGateway {
         // });
     }
 
-    @SubscribeMessage('disconnecting')
+    @SubscribeMessage('disconnect')
     async handleDisconnect(
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
