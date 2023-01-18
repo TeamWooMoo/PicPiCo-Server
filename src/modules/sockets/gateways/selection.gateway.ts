@@ -28,13 +28,19 @@ export class SelectionGateway {
     ) {
         const [roomId, picIdx] = data;
 
+        console.log(`[ pick_pic ] on`);
+        console.log(`[ pick_pic ] picIdx = ${picIdx}`);
+
         if ((await this.roomService.getRoomHostId(roomId)) === client.id) {
             await this.roomService.selectPicture(roomId, picIdx);
+            client.emit('pick_pic', picIdx);
             client.to(roomId).emit('pick_pic', picIdx);
+
+            console.log(`[ pick_pic ] emit pick_pic`);
         } else {
             client.emit('permission_denied');
+            console.log(`[ pick_pic ] emit permission_denied`);
         }
-        console.log(`[ pick_pic ]: picIdx = ${picIdx}`);
     }
 
     @SubscribeMessage('done_pick')
@@ -42,19 +48,22 @@ export class SelectionGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        console.log('[ done_pic ] on');
+
         const [roomId, socketId] = data;
-        console.log('[ done_pic ]: roomId = ', roomId);
 
         if (client.id === (await this.roomService.getRoomHostId(roomId))) {
-            console.log(client.id + '는 방장 맞음');
+            console.log('[ done_pic ] ' + client.id + '는 방장 맞음');
 
+            await this.roomService.initPictureViewers(roomId);
             const selectedPictures = await this.roomService.getSelectedPictures(
                 roomId,
             );
 
             const pickNum = selectedPictures.size;
-            // client.emit('done_pick', selectedPictures);
-            // client.to(roomId).emit('done_pick', selectedPictures);
+            client.emit('done_pick', selectedPictures);
+            client.to(roomId).emit('done_pick', selectedPictures);
+
             // if (pickNum === 4) {
             //     console.log('다 좋아요');
             //     client.emit('done_pick', selectedPictures);
@@ -69,7 +78,7 @@ export class SelectionGateway {
         } else {
             client.emit('permission_denied');
 
-            console.log(client.id + '는 방장 아님....');
+            console.log('[ done_pic ] ' + client.id + '는 방장 아님....');
         }
     }
 }
