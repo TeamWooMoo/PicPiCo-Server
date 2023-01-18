@@ -53,8 +53,8 @@ export class SelectionGateway {
             );
 
             const pickNum = selectedPictures.size;
-            // client.emit('done_pick', selectedPictures);
-            // client.to(roomId).emit('done_pick', selectedPictures);
+            client.emit('done_pick', selectedPictures);
+            client.to(roomId).emit('done_pick', selectedPictures);
             // if (pickNum === 4) {
             //     console.log('다 좋아요');
             //     client.emit('done_pick', selectedPictures);

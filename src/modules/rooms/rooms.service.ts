@@ -103,6 +103,7 @@ export class RoomsService {
         const room = await this.redisService.getRoom(roomId);
 
         room.prevPictures[setId] = new Array<PrevPicture>();
+        await this.redisService.setRoom(roomId, room);
     }
 
     async takePrevPicture(
@@ -115,22 +116,27 @@ export class RoomsService {
         const room = await this.redisService.getRoom(roomId);
         const prevPictureList: Array<PrevPicture> = room.prevPictures[setId];
 
+        console.log(prevPictureList);
         if (prevPictureList) {
             prevPictureList.push(new PrevPicture(setId, picture, socketId));
         } else {
             console.log('잘못된 setID:', setId);
         }
+        await this.redisService.setRoom(roomId, room);
     }
 
     async getPrevPicSize(roomId: string, setId: string): Promise<number> {
         if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
-        return room.prevPictures.size;
+        
+        return room.prevPictures[setId].;
     }
 
     async removePrevPicture(roomId: string) {
         if (!(await this.isRoom(roomId))) return;
         const room = await this.redisService.getRoom(roomId);
+        // 삭제 작업
+        await this.redisService.setRoom(roomId, room);
     }
 
     async getPrevPicture(
