@@ -112,7 +112,7 @@ export class CameraGateway {
     ) {
         const [setIdx, picture] = data;
 
-        console.log('[ result_pic ] : picture=', picture);
+        console.log('[ result_pic ], picture=', picture);
 
         await this.roomService.takePicture(client.myRoomId, setIdx, picture);
 
@@ -129,11 +129,13 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        console.log('[ done_take ]');
+
         const [roomId, socketId] = data;
-        console.log(roomId);
 
         const pictures = await this.roomService.getAllPictures(roomId);
-        client.emit('[ done_take ] : picture=', pictures);
+
+        client.emit('done_take', pictures);
         client.to(roomId).emit('done_take', pictures);
 
         // 호스트만 사진 촬영 다음단계로 넘어갈 수 있음
@@ -150,7 +152,5 @@ export class CameraGateway {
         // } else {
         //     // 당신은 호스트가 아니라서 버튼을 누를 수 없다는 이벤트
         // }
-
-        console.log('[ done_take ]: client.myRoomId = ', roomId);
     }
 }
