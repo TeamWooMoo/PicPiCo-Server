@@ -79,8 +79,9 @@ export class DrawingGateway {
         // 호스트인지 여부 확인
         if (client.id === (await this.roomService.getRoomHostId(roomId))) {
             // allow
+
             client.emit('done_deco');
-            client.to(roomId).emit('done_deco');
+            // client.to(roomId).emit('done_deco');
 
             console.log('[ done_deco ] emit done_deco');
         } else {
@@ -88,5 +89,17 @@ export class DrawingGateway {
             client.emit('permission_denied');
             console.log('[ done_deco ] emit permission_denied');
         }
+    }
+
+    @SubscribeMessage('submit_deco')
+    async handleSubmitDeco(
+        @ConnectedSocket() client: MySocket,
+        @MessageBody() data: any,
+    ) {
+        console.log('[ submit_deco ] on');
+        console.log('[ submit_deco ] data = ', data);
+
+        client.to(client.id).emit('submit_deco', data);
+        client.emit('submit_deco', data);
     }
 }
