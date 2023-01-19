@@ -31,13 +31,13 @@ export class DecoGateway {
         await this.roomService.deletePictureViewer(
             client.myRoomId,
             socketId,
-            toImgIdx,
+            fromImgIdx,
         );
         await this.roomService.addPictureViewer(
             client.myRoomId,
             socketId,
             client.nickName,
-            fromImgIdx,
+            toImgIdx,
         );
         const pictures = await this.roomService.getSelectedPictures(
             client.myRoomId,
