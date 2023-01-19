@@ -97,7 +97,7 @@ export class DrawingGateway {
         @MessageBody() data: any,
     ) {
         console.log('[ submit_deco ] on');
-        console.log('[ submit_deco ] data = ', data);
+        // console.log('[ submit_deco ] data = ', data);
 
         client.emit('submit_deco', data);
         client.to(client.myRoomId).emit('submit_deco', data);
