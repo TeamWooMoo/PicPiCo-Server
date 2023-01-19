@@ -100,6 +100,6 @@ export class DrawingGateway {
         console.log('[ submit_deco ] data = ', data);
 
         client.emit('submit_deco', data);
-        client.to(client.id).emit('submit_deco', data);
+        client.to(client.myRoomId).emit('submit_deco', data);
     }
 }
