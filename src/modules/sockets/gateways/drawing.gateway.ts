@@ -63,8 +63,11 @@ export class DrawingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        const [roomId, offX, offY, fromSocket] = data;
-        client.to(roomId).emit('sticker_move', offX, offY, fromSocket);
+        // const [roomId, offX, offY, fromSocket] = data;
+        const [left, top, imgIdx, src] = data;
+        console.log('[ sticker_move ]', [left, top, imgIdx, src]);
+
+        client.to(client.myRoomId).emit('sticker_move', left, top, imgIdx, src);
     }
 
     @SubscribeMessage('done_deco')

@@ -46,4 +46,16 @@ export class DecoGateway {
         client.emit('pick_deco', pictures);
         client.to(client.myRoomId).emit('pick_deco', pictures);
     }
+
+    @SubscribeMessage('pick_sticker')
+    async handlePickSticker(
+        @ConnectedSocket() client: MySocket,
+        @MessageBody() data: any,
+    ) {
+        let [url, targetImgIdx] = data;
+        console.log('pick_sticker : ', data);
+
+        client.emit('pick_sticker', url, targetImgIdx);
+        client.to(client.myRoomId).emit('pick_sticker', url, targetImgIdx);
+    }
 }
