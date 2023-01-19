@@ -244,6 +244,7 @@ export class RoomsService {
 
         const room = await this.redisService.getRoom(roomId);
 
+        if (!room.pictures[imgIdx]) return;
         for (let i = 0; i < room.pictures[imgIdx].viewers.length; i++) {
             if (room.pictures[imgIdx].viewers[i].socketId === socketId) {
                 room.pictures[imgIdx].viewers.splice(i, 1);
