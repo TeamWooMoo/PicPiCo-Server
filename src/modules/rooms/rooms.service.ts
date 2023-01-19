@@ -230,6 +230,8 @@ export class RoomsService {
 
         const room = await this.redisService.getRoom(roomId);
         room.pictures[imgIdx].viewers.push(new User(nickname, socketId));
+
+        await this.redisService.setRoom(roomId, room);
     }
 
     // 꾸미기: 사진의 viewer 삭제하기
