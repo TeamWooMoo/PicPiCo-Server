@@ -31,6 +31,11 @@ const Socket = {
     DEFAULT_ROOM: 'DEFAULT_ROOM',
 };
 
+const Redis = {
+    host: 'localhost',
+    port: 6379,
+};
+
 const MongoDB = {
     MONGO_URL: 'mongodb://localhost/nest',
     DATABASE_CONNECTION: 'DATABASE_CONNECTION',
@@ -58,5 +63,6 @@ export const Config = {
     mongoDb: MongoDB,
     Kakao: Kakao,
     JWT: JWT,
+    redis: Redis,
 };
 export default Config;

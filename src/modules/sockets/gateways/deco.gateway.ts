@@ -26,6 +26,8 @@ export class DecoGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        console.log('[ pick_deco ] on');
+
         const [socketId, toImgIdx, fromImgIdx] = data;
 
         await this.roomService.deletePictureViewer(
@@ -47,15 +49,43 @@ export class DecoGateway {
         client.to(client.myRoomId).emit('pick_deco', pictures);
     }
 
-    @SubscribeMessage('pick_sticker')
-    async handlePickSticker(
+    @SubscribeMessage('done_deco')
+    async handleDoneDeco(
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        let [url, targetImgIdx] = data;
-        console.log('pick_sticker : ', data);
+        console.log('[ done_deco ] on');
 
-        client.emit('pick_sticker', url, targetImgIdx);
-        client.to(client.myRoomId).emit('pick_sticker', url, targetImgIdx);
+        const [roomId, clientId] = data;
+
+        // 호스트인지 여부 확인
+        if (client.id === (await this.roomService.getRoomHostId(roomId))) {
+            // allow
+            client.emit('done_deco');
+            console.log('[ done_deco ] emit done_deco');
+        } else {
+            // deny
+            client.emit('permission_denied');
+            console.log('[ done_deco ] emit permission_denied');
+        }
+    }
+
+    @SubscribeMessage('submit_deco')
+    async handleSubmitDeco(
+        @ConnectedSocket() client: MySocket,
+        @MessageBody() data: any,
+    ) {
+        console.log('[ submit_deco ] on');
+
+        if (
+            client.id ===
+            (await this.roomService.getRoomHostId(client.myRoomId))
+        ) {
+            client.emit('submit_deco', data);
+            client.to(client.myRoomId).emit('submit_deco', data);
+        } else {
+            client.emit('permission_denied');
+            console.log('[ submit_deco ] emit permission_denied');
+        }
     }
 }
