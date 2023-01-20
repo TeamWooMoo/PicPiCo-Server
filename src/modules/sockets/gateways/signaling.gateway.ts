@@ -105,4 +105,9 @@ export class SignalingGateway
 
         console.log(`[ ice ] emit ice`);
     }
+
+    @SubscribeMessage('test_emit')
+    test(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
+        console.log('[[[[[ test_emit ]]]]]');
+    }
 }
