@@ -26,8 +26,11 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        if (!(await this.roomService.isRoom(client.myRoomId))) {
+            client.disconnect(true);
+        }
+
         const [roomId, newNickName] = data;
-        // if (!(await this.roomService.isRoom(roomId))) client.disconnect(true);
 
         client.nickName = newNickName;
         client.myRoomId = roomId;
@@ -47,6 +50,10 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        if (!(await this.roomService.isRoom(client.myRoomId))) {
+            client.disconnect(true);
+        }
+
         const setIdx = data;
         console.log('[ click_shutter] on');
         console.log('[ click_shutter] setIdx', setIdx);
@@ -63,6 +70,10 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        if (!(await this.roomService.isRoom(client.myRoomId))) {
+            client.disconnect(true);
+        }
+
         console.log('[ send_pic ] on');
         const [setIdx, picture] = data;
 
@@ -101,6 +112,10 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        if (!(await this.roomService.isRoom(client.myRoomId))) {
+            client.disconnect(true);
+        }
+
         console.log('[ result_pic ] on');
 
         const [setIdx, picture] = data;
@@ -113,6 +128,10 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        if (!(await this.roomService.isRoom(client.myRoomId))) {
+            client.disconnect(true);
+        }
+
         console.log('[ done_take ] on');
 
         const [roomId, socketId] = data;

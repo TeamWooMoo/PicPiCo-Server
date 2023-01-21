@@ -26,6 +26,10 @@ export class DecoGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        if (!(await this.roomService.isRoom(client.myRoomId))) {
+            client.disconnect(true);
+        }
+
         console.log('[ pick_deco ] on');
 
         const [socketId, toImgIdx, fromImgIdx] = data;
@@ -54,6 +58,10 @@ export class DecoGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        if (!(await this.roomService.isRoom(client.myRoomId))) {
+            client.disconnect(true);
+        }
+
         console.log('[ done_deco ] on');
 
         const [roomId, clientId] = data;
@@ -75,6 +83,10 @@ export class DecoGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        if (!(await this.roomService.isRoom(client.myRoomId))) {
+            client.disconnect(true);
+        }
+
         console.log('[ submit_deco ] on');
 
         if (

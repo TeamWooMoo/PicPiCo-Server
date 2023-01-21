@@ -6,6 +6,7 @@ import {
     WebSocketServer,
     OnGatewayConnection,
     OnGatewayDisconnect,
+    OnGatewayInit,
 } from '@nestjs/websockets';
 import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
@@ -18,12 +19,16 @@ import { RoomsService } from '../../rooms/rooms.service';
     },
 })
 export class SignalingGateway
-    implements OnGatewayConnection, OnGatewayDisconnect
+    implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
 {
     constructor(private readonly roomService: RoomsService) {}
 
     @WebSocketServer()
     server: MyServer;
+
+    afterInit(server: MyServer) {
+        server.setMaxListeners(0);
+    }
 
     async handleConnection(@ConnectedSocket() client: MySocket) {
         client.myRoomId = Config.socket.DEFAULT_ROOM;

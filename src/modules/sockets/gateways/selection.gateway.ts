@@ -26,6 +26,10 @@ export class SelectionGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        if (!(await this.roomService.isRoom(client.myRoomId))) {
+            client.disconnect(true);
+        }
+
         const [roomId, picIdx] = data;
 
         console.log(`[ pick_pic ] on`);
@@ -49,6 +53,10 @@ export class SelectionGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        if (!(await this.roomService.isRoom(client.myRoomId))) {
+            client.disconnect(true);
+        }
+
         console.log('[ done_pic ] on');
 
         const [roomId, socketId] = data;
