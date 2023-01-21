@@ -192,6 +192,10 @@ export class CameraGateway {
             images.push({ input: `${path}${fileName}.${type}` });
         }
 
+        setTimeout(() => {
+            console.log('엘렐레');
+        }, 100);
+
         try {
             if (images.length > 1) {
                 await sharp(images[0]['input'])
@@ -201,17 +205,18 @@ export class CameraGateway {
                 await sharp(images[0]['input']).toFile(path + resultFile);
             }
         } catch (e) {
-            console.log('띠용 삐용 ');
+            console.log('띠용 삐용');
             console.log(e);
         }
 
         let resultBase64: string;
 
-        await imageToBase64(path + resultFile)
+        imageToBase64(path + resultFile)
             .then((bs: string) => {
                 resultBase64 = bs;
             })
             .catch((e) => {
+                console.log('웨용 뛔용');
                 console.log(e);
             });
 
