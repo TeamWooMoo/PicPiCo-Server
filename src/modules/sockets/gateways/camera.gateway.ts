@@ -4,6 +4,7 @@ import {
     ConnectedSocket,
     MessageBody,
     WebSocketServer,
+    OnGatewayInit,
 } from '@nestjs/websockets';
 import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
@@ -27,7 +28,10 @@ export class CameraGateway {
         @MessageBody() data: any,
     ) {
         const [roomId, newNickName] = data;
-        if (!(await this.roomService.isRoom(roomId))) client.disconnect(true);
+
+        if (!(await this.roomService.isRoom(roomId))) {
+            client.disconnect(true);
+        }
 
         client.nickName = newNickName;
         client.myRoomId = roomId;
@@ -37,8 +41,6 @@ export class CameraGateway {
 
         client.emit('reset_member', nickNameArr);
         client.to(client.myRoomId).emit('reset_member', nickNameArr);
-
-        console.log(`[ add_member ]: nickNameArr = ${nickNameArr}`);
     }
 
     // 셔터 누른 사람
@@ -47,6 +49,10 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        if (!(await this.roomService.isRoom(client.myRoomId))) {
+            client.disconnect(true);
+        }
+
         const setIdx = data;
         console.log('[ click_shutter] on');
         console.log('[ click_shutter] setIdx', setIdx);
@@ -63,6 +69,10 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        if (!(await this.roomService.isRoom(client.myRoomId))) {
+            client.disconnect(true);
+        }
+
         console.log('[ send_pic ] on');
         const [setIdx, picture] = data;
 
@@ -101,6 +111,10 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        if (!(await this.roomService.isRoom(client.myRoomId))) {
+            client.disconnect(true);
+        }
+
         console.log('[ result_pic ] on');
 
         const [setIdx, picture] = data;
@@ -116,6 +130,10 @@ export class CameraGateway {
         console.log('[ done_take ] on');
 
         const [roomId, socketId] = data;
+
+        if (!(await this.roomService.isRoom(roomId))) {
+            client.disconnect(true);
+        }
 
         // 호스트만 사진 촬영 다음단계로 넘어갈 수 있음
         if (client.id === (await this.roomService.getRoomHostId(roomId))) {

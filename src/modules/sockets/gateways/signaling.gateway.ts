@@ -6,6 +6,7 @@ import {
     WebSocketServer,
     OnGatewayConnection,
     OnGatewayDisconnect,
+    OnGatewayInit,
 } from '@nestjs/websockets';
 import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
@@ -17,35 +18,38 @@ import { RoomsService } from '../../rooms/rooms.service';
         credentials: Config.socket.SOCKET_SIGNALING_CREDENTIALS,
     },
 })
-export class SignalingGateway {
+export class SignalingGateway
+    implements OnGatewayConnection, OnGatewayDisconnect
+{
     constructor(private readonly roomService: RoomsService) {}
 
     @WebSocketServer()
     server: MyServer;
 
-    // async handleConnection(@ConnectedSocket() client: MySocket) {
-    //     client.myRoomId = Config.socket.DEFAULT_ROOM;
-    //     console.log('[ 연결 성공 ] client.id = ', client.id);
-    // }
+    async handleConnection(@ConnectedSocket() client: MySocket) {
+        client.myRoomId = Config.socket.DEFAULT_ROOM;
+        console.log('[ 연결 성공 ] client.id = ', client.id);
+        client.setMaxListeners(100);
+    }
 
-    // async handleDisconnect(@ConnectedSocket() client: MySocket) {
-    //     console.log('[ 연결 종료 ] client.id = ', client.id);
-    //     if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
-    //         client.to(client.myRoomId).emit('gone', client.id);
+    async handleDisconnect(@ConnectedSocket() client: MySocket) {
+        console.log('[ 연결 종료 ] client.id = ', client.id);
+        if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
+            client.to(client.myRoomId).emit('gone', client.id);
 
-    //         console.log(`[ 연결 종료 ] ${client.myRoomId} 에서`);
-    //         console.log(`[ 연결 종료 ] ${client.id} 이 나감.`);
+            console.log(`[ 연결 종료 ] ${client.myRoomId} 에서`);
+            console.log(`[ 연결 종료 ] ${client.id} 이 나감.`);
 
-    //         await this.roomService.leaveRoom(client.myRoomId, client.nickName);
-    //         const members = await this.roomService.getAllMembers(
-    //             client.myRoomId,
-    //         );
-    //         if (members.length === 0) {
-    //             await this.roomService.destroyRoom(client.myRoomId);
-    //         }
-    //         client.to(client.myRoomId).emit('reset_member', members);
-    //     }
-    // }
+            await this.roomService.leaveRoom(client.myRoomId, client.nickName);
+            const members = await this.roomService.getAllMembers(
+                client.myRoomId,
+            );
+            if (members.length === 0) {
+                await this.roomService.destroyRoom(client.myRoomId);
+            }
+            client.to(client.myRoomId).emit('reset_member', members);
+        }
+    }
 
     @SubscribeMessage('join_room')
     async handleJoinRoom(

@@ -26,6 +26,10 @@ export class DecoGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        if (!(await this.roomService.isRoom(client.myRoomId))) {
+            client.disconnect(true);
+        }
+
         console.log('[ pick_deco ] on');
 
         const [socketId, toImgIdx, fromImgIdx] = data;
@@ -58,6 +62,10 @@ export class DecoGateway {
 
         const [roomId, clientId] = data;
 
+        if (!(await this.roomService.isRoom(roomId))) {
+            client.disconnect(true);
+        }
+
         // 호스트인지 여부 확인
         if (client.id === (await this.roomService.getRoomHostId(roomId))) {
             // allow
@@ -75,6 +83,10 @@ export class DecoGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
+        if (!(await this.roomService.isRoom(client.myRoomId))) {
+            client.disconnect(true);
+        }
+
         console.log('[ submit_deco ] on');
 
         if (
