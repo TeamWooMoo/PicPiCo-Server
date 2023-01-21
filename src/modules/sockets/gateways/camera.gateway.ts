@@ -27,7 +27,7 @@ export class CameraGateway {
         @MessageBody() data: any,
     ) {
         const [roomId, newNickName] = data;
-        if (!(await this.roomService.isRoom(roomId))) client.disconnect(true);
+        // if (!(await this.roomService.isRoom(roomId))) client.disconnect(true);
 
         client.nickName = newNickName;
         client.myRoomId = roomId;
