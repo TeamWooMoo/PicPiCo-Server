@@ -7,7 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
-import { RoomsService } from 'src/modules/rooms/rooms.service';
+// import { RoomsService } from 'src/modules/rooms/rooms.service';
 
 @WebSocketGateway({
     cors: {
@@ -16,7 +16,7 @@ import { RoomsService } from 'src/modules/rooms/rooms.service';
     },
 })
 export class DrawingGateway {
-    constructor(private readonly roomService: RoomsService) {}
+    // constructor(private readonly roomService: RoomsService) {}
 
     @WebSocketServer()
     server: MyServer;

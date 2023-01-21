@@ -1,0 +1,1 @@
+function Room(roomId: string) {}
