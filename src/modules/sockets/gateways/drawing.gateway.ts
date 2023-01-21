@@ -17,7 +17,6 @@ import { Config } from '../../../config/configuration';
 })
 export class DrawingGateway {
     // constructor(private readonly roomService: RoomsService) {}
-
     @WebSocketServer()
     server: MyServer;
 
@@ -31,15 +30,22 @@ export class DrawingGateway {
             .to(client.myRoomId)
             .emit('mouse_down', fromSocket, offX, offY, ImgIdx);
     }
-
     @SubscribeMessage('stroke_canvas')
     async handleStrokeCanvas(
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        const [roomId, offX, offY, color, fromSocket, ImgIdx] = data;
+        const [roomId, offX, offY, color, fromSocket, ImgIdx, lineWidth] = data;
         client
             .to(roomId)
-            .emit('stroke_canvas', offX, offY, color, fromSocket, ImgIdx);
+            .emit(
+                'stroke_canvas',
+                offX,
+                offY,
+                color,
+                fromSocket,
+                ImgIdx,
+                lineWidth,
+            );
     }
 }

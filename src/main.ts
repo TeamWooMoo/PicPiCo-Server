@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { Config } from './config/configuration';
-import { join } from 'path';
 
 async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -18,12 +17,13 @@ async function bootstrap() {
 
     process.on('warning', (e) => console.warn(e.stack));
 
-    const handleListen = () =>
+    const handleListen = () => {
         console.log(
             `Picpico-Server : Listening on http://${require('ip').address()}:${
                 Config.serverPort
             }`,
         );
+    };
     await app.listen(Config.serverPort, handleListen);
 }
 bootstrap();
