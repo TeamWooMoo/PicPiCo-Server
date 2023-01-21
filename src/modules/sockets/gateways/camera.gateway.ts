@@ -214,6 +214,8 @@ export class CameraGateway {
                 console.log(e);
             });
 
+        console.log('resultBase64 >>>>> ', resultBase64);
+
         return resultBase64;
     }
 
