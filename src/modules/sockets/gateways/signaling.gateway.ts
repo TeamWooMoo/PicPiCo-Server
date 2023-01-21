@@ -17,9 +17,7 @@ import { RoomsService } from '../../rooms/rooms.service';
         credentials: Config.socket.SOCKET_SIGNALING_CREDENTIALS,
     },
 })
-export class SignalingGateway
-    implements OnGatewayConnection, OnGatewayDisconnect
-{
+export class SignalingGateway implements OnGatewayConnection {
     constructor(private readonly roomService: RoomsService) {}
 
     @WebSocketServer()
