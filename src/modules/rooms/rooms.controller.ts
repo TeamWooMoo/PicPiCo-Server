@@ -14,6 +14,8 @@ export class RoomsController {
         let socketId = roomInfo['socketId'];
         // Id가 roomId인 room을 메모리에 저장
         await this.roomService.createRoom(roomId, nickname, socketId);
+        console.log(await this.roomService.isRoom(roomId));
+
         console.log('POST: roomId: ', roomId);
         return { roomId: roomId };
     }

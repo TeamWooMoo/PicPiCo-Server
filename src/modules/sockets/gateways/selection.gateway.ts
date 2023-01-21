@@ -4,6 +4,7 @@ import {
     ConnectedSocket,
     MessageBody,
     WebSocketServer,
+    OnGatewayInit,
 } from '@nestjs/websockets';
 import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
@@ -15,11 +16,15 @@ import { RoomsService } from '../../rooms/rooms.service';
         credentials: Config.socket.SOCKET_SIGNALING_CREDENTIALS,
     },
 })
-export class SelectionGateway {
+export class SelectionGateway implements OnGatewayInit {
     constructor(private readonly roomService: RoomsService) {}
 
     @WebSocketServer()
     server: MyServer;
+
+    afterInit(server: MyServer) {
+        server.setMaxListeners(100);
+    }
 
     @SubscribeMessage('pick_pic')
     async handlePickPic(

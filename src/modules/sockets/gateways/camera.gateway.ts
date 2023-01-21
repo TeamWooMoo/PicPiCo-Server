@@ -16,26 +16,22 @@ import { RoomsService } from '../../rooms/rooms.service';
         credentials: Config.socket.SOCKET_SIGNALING_CREDENTIALS,
     },
 })
-export class CameraGateway implements OnGatewayInit {
+export class CameraGateway {
     constructor(private readonly roomService: RoomsService) {}
 
     @WebSocketServer()
     server: MyServer;
-
-    afterInit(server: any) {
-        server.setMaxListeners(0);
-    }
 
     @SubscribeMessage('add_member')
     async handleAddMember(
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        if (!(await this.roomService.isRoom(client.myRoomId))) {
+        const [roomId, newNickName] = data;
+
+        if (!(await this.roomService.isRoom(roomId))) {
             client.disconnect(true);
         }
-
-        const [roomId, newNickName] = data;
 
         client.nickName = newNickName;
         client.myRoomId = roomId;
@@ -45,8 +41,6 @@ export class CameraGateway implements OnGatewayInit {
 
         client.emit('reset_member', nickNameArr);
         client.to(client.myRoomId).emit('reset_member', nickNameArr);
-
-        console.log(`[ add_member ]: nickNameArr = ${nickNameArr}`);
     }
 
     // 셔터 누른 사람
@@ -133,13 +127,13 @@ export class CameraGateway implements OnGatewayInit {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        if (!(await this.roomService.isRoom(client.myRoomId))) {
-            client.disconnect(true);
-        }
-
         console.log('[ done_take ] on');
 
         const [roomId, socketId] = data;
+
+        if (!(await this.roomService.isRoom(roomId))) {
+            client.disconnect(true);
+        }
 
         // 호스트만 사진 촬영 다음단계로 넘어갈 수 있음
         if (client.id === (await this.roomService.getRoomHostId(roomId))) {
