@@ -215,12 +215,12 @@ export class CameraGateway {
                     console.log('웨용 뛔용');
                     console.log(e);
                 });
-
             resultBase64 = 'data:image/png;base64,' + resultBase64;
-            console.log('resultBase64 >>> ', resultBase64);
 
-            return resultBase64;
+            console.log('resultBase64 >>> ', resultBase64);
         }, 1000);
+
+        return resultBase64;
     }
 
     // async resetStatic() {
