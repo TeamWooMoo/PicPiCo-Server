@@ -16,6 +16,8 @@ async function bootstrap() {
     // app.engine('html', require('ejs').renderFile);
     // app.setViewEngine('html');
 
+    process.on('warning', (e) => console.warn(e.stack));
+
     const handleListen = () =>
         console.log(
             `Picpico-Server : Listening on http://${require('ip').address()}:${
