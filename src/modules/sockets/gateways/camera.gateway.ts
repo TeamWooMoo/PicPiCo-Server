@@ -217,11 +217,10 @@ export class CameraGateway {
                 });
 
             resultBase64 = 'data:image/png;base64,' + resultBase64;
+            console.log('resultBase64 >>> ', resultBase64);
+
+            return resultBase64;
         }, 1000);
-
-        console.log('resultBase64 >>> ', resultBase64);
-
-        return resultBase64;
     }
 
     // async resetStatic() {
