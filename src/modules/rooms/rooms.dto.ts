@@ -23,11 +23,18 @@ export class Picture {
 export class PrevPicture extends Picture {
     setId: string;
     socketId: string;
+    order: number;
 
-    constructor(setId: string, picture: string, socketId: string) {
+    constructor(
+        setId: string,
+        picture: string,
+        socketId: string,
+        order: number,
+    ) {
         super(picture);
         this.setId = setId;
         this.socketId = socketId;
+        this.order = order;
     }
 }
 

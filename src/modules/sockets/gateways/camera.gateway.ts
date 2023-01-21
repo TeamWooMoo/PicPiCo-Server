@@ -75,12 +75,18 @@ export class CameraGateway {
         // }
 
         console.log('[ send_pic ] on');
-        const [setIdx, picture] = data;
+        const [setIdx, picture, orderIdx] = data;
 
         const roomId = client.myRoomId;
 
         // await this.roomService.takePrevPicture(roomId, setIdx, picture, client.id,);
-        this.roomService.takePrevPicture(roomId, setIdx, picture, client.id);
+        this.roomService.takePrevPicture(
+            roomId,
+            setIdx,
+            picture,
+            client.id,
+            orderIdx,
+        );
 
         if (
             (await this.roomService.getAllMembers(client.myRoomId)).length ===
@@ -94,6 +100,10 @@ export class CameraGateway {
                 client.myRoomId,
                 setIdx,
             );
+
+            prevPictures.sort((a, b) => {
+                return a.order - b.order;
+            });
 
             console.log('[ send_pic ] hostId', hostId);
 

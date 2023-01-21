@@ -98,12 +98,15 @@ export class RoomsService {
         setId: string,
         picture: string,
         socketId: string,
+        orderIdx: string,
     ) {
         const room = await this.redisService.getRoom(roomId);
 
+        const order = parseInt(orderIdx);
+
         if (room.prevPictures[setId]) {
             room.prevPictures[setId].push(
-                new PrevPicture(setId, picture, socketId),
+                new PrevPicture(setId, picture, socketId, order),
             );
         } else {
             console.log('takePrevPicture() :: 잘못된 setID:', setId);
