@@ -122,7 +122,7 @@ export class CameraGateway {
                     type: 'png',
                 };
                 await base64ToImage(curPic.picture, path, option);
-                images.push({ input: `${path}${fileName}` });
+                images.push({ input: `${path}${fileName}${type}` });
             }
 
             // console.log(images.slice(1));
