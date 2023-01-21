@@ -201,6 +201,7 @@ export class CameraGateway {
                 await sharp(images[0]['input']).toFile(path + resultFile);
             }
         } catch (e) {
+            console.log('띠용 삐용 ');
             console.log(e);
         }
 
