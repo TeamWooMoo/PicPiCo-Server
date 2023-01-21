@@ -4,6 +4,7 @@ import {
     ConnectedSocket,
     MessageBody,
     WebSocketServer,
+    OnGatewayInit,
 } from '@nestjs/websockets';
 import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
@@ -15,11 +16,15 @@ import { RoomsService } from '../../rooms/rooms.service';
         credentials: Config.socket.SOCKET_SIGNALING_CREDENTIALS,
     },
 })
-export class CameraGateway {
+export class CameraGateway implements OnGatewayInit {
     constructor(private readonly roomService: RoomsService) {}
 
     @WebSocketServer()
     server: MyServer;
+
+    afterInit(server: any) {
+        server.setMaxListeners(0);
+    }
 
     @SubscribeMessage('add_member')
     async handleAddMember(
