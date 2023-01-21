@@ -31,11 +31,11 @@ export class SelectionGateway implements OnGatewayInit {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        if (!(await this.roomService.isRoom(client.myRoomId))) {
+        const [roomId, picIdx] = data;
+
+        if (!(await this.roomService.isRoom(roomId))) {
             client.disconnect(true);
         }
-
-        const [roomId, picIdx] = data;
 
         console.log(`[ pick_pic ] on`);
 
@@ -58,13 +58,13 @@ export class SelectionGateway implements OnGatewayInit {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        if (!(await this.roomService.isRoom(client.myRoomId))) {
-            client.disconnect(true);
-        }
-
         console.log('[ done_pic ] on');
 
         const [roomId, socketId] = data;
+
+        if (!(await this.roomService.isRoom(roomId))) {
+            client.disconnect(true);
+        }
 
         if (client.id === (await this.roomService.getRoomHostId(roomId))) {
             console.log('[ done_pic ] ' + client.id + ' === 방장');
