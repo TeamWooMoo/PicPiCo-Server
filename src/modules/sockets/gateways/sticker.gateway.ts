@@ -42,8 +42,6 @@ export class StickerGateway {
 
         client.emit('sticker_on');
         client.to(roomId).emit('sticker_on');
-
-        // client.to(roomId).emit('sticker_on', offX, offY, fromSocket);
     }
 
     @SubscribeMessage('sticker_move')
@@ -51,9 +49,7 @@ export class StickerGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        // const [roomId, offX, offY, fromSocket] = data;
         const [left, top, imgIdx, src] = data;
-        console.log('[ sticker_move ]', [left, top, imgIdx, src]);
 
         client.to(client.myRoomId).emit('sticker_move', left, top, imgIdx, src);
     }

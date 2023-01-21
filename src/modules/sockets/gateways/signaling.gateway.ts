@@ -17,20 +17,19 @@ import { RoomsService } from '../../rooms/rooms.service';
         credentials: Config.socket.SOCKET_SIGNALING_CREDENTIALS,
     },
 })
-// implements OnGatewayConnection, OnGatewayDisconnect
-export class SignalingGateway {
+export class SignalingGateway
+    implements OnGatewayConnection, OnGatewayDisconnect
+{
     constructor(private readonly roomService: RoomsService) {}
 
     @WebSocketServer()
     server: MyServer;
 
-    @SubscribeMessage('connection')
     async handleConnection(@ConnectedSocket() client: MySocket) {
         client.myRoomId = Config.socket.DEFAULT_ROOM;
         console.log('[ 연결 성공 ] client.id = ', client.id);
     }
 
-    @SubscribeMessage('disconnect')
     async handleDisconnect(@ConnectedSocket() client: MySocket) {
         console.log('[ 연결 종료 ] client.id = ', client.id);
         if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {

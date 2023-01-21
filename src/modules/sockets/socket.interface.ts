@@ -1,8 +1,8 @@
 import { Server, Socket } from 'socket.io';
 
-export interface MySocket extends Socket {
+export class MySocket extends Socket {
     myRoomId: string;
     nickName: string;
 }
 
-export interface MyServer extends Server {}
+export class MyServer extends Server {}
