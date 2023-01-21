@@ -161,7 +161,8 @@ export class CameraGateway {
                 // client.emit('send_pic', setIdx, prevPictures);
                 client.emit('send_pic', setIdx, resultBase64);
             } else {
-                client.to(hostId).emit('send_pic', setIdx, prevPictures);
+                // client.to(hostId).emit('send_pic', setIdx, prevPictures);
+                client.to(hostId).emit('send_pic', setIdx, resultBase64);
             }
         }
     }
@@ -215,4 +216,6 @@ export class CameraGateway {
             console.log('[ done_take ] permission_denied');
         }
     }
+
+    async;
 }
