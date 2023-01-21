@@ -17,5 +17,6 @@ import { StickerGateway } from './gateways/sticker.gateway';
         SelectionGateway,
         DecoGateway,
     ],
+    exports: [RoomsModule],
 })
 export class SocketsModule {}

@@ -7,7 +7,7 @@ import { RoomsModule } from './modules/rooms/rooms.module';
 import { SocketsModule } from './modules/sockets/socket.module';
 
 @Module({
-    imports: [UsersModule, AuthModule, RoomsModule, SocketsModule],
+    imports: [UsersModule, AuthModule, SocketsModule],
     controllers: [AppController],
 })
 export class AppModule {}
