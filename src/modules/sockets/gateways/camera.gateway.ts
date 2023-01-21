@@ -217,8 +217,8 @@ export class CameraGateway {
         return resultBase64;
     }
 
-    async resetStatic() {
-        const fs = require('fs');
-        fs.
-    }
+    // async resetStatic() {
+    //     const fs = require('fs');
+    //     fs.
+    // }
 }
