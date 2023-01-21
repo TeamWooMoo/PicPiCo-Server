@@ -103,16 +103,63 @@ export class CameraGateway {
                 setIdx,
             );
 
-            console.log('sharp>>', this.sharp);
-
             prevPictures.sort((a, b) => {
                 return a.order - b.order;
             });
 
-            console.log('[ send_pic ] hostId', hostId);
+            // console.log('sharp>>', this.sharp);
+            const base64ToImage = require('base64-to-image');
+            const imageToBase64 = require('image-to-base64');
+            const path = './static/';
+            let images = [];
+            const type = '.png';
+
+            for (let i = 0; i < prevPictures.length; i++) {
+                let curPic = prevPictures[i];
+                let fileName = `file_${curPic.socketId}_${Date.now()}`;
+                let option = {
+                    fileName: fileName,
+                    type: 'png',
+                };
+                await base64ToImage(curPic.picture, path, option);
+                images.push({ input: `${path}${fileName}` });
+            }
+
+            // console.log(images.slice(1));
+
+            if (images.length > 1) {
+                try {
+                    await this.sharp(images[0]['input'] + '.png')
+                        .composite(images.slice(1))
+                        .toFile(path + 'result.png');
+                } catch (e) {
+                    console.log(e);
+                }
+            } else {
+                try {
+                    await this.sharp(images[0]['input'] + '.png').toFile(
+                        path + 'result.png',
+                    );
+                } catch (e) {
+                    console.log(e);
+                }
+            }
+
+            let resultBase64: string;
+
+            imageToBase64(path + 'result.png')
+                .then((bs: string) => {
+                    resultBase64 = bs;
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
+
+            // console.log('[ send_pic ] hostId', hostId);
 
             if (hostId === client.id) {
-                client.emit('send_pic', setIdx, prevPictures);
+                // client.emit('send_pic', setIdx, prevPictures);
+                client.emit('send_pic', setIdx, resultBase64);
             } else {
                 client.to(hostId).emit('send_pic', setIdx, prevPictures);
             }
