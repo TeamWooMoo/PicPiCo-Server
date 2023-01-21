@@ -17,8 +17,6 @@ import { RoomsService } from '../../rooms/rooms.service';
     },
 })
 export class CameraGateway {
-    sharp = require('sharp');
-
     constructor(private readonly roomService: RoomsService) {}
 
     @WebSocketServer()
@@ -94,10 +92,6 @@ export class CameraGateway {
             (await this.roomService.getAllMembers(client.myRoomId)).length ===
             (await this.roomService.getPrevPicSize(client.myRoomId, setIdx))
         ) {
-            const hostId = await this.roomService.getRoomHostId(
-                client.myRoomId,
-            );
-
             const prevPictures = await this.roomService.getPrevPicture(
                 client.myRoomId,
                 setIdx,
@@ -107,83 +101,39 @@ export class CameraGateway {
                 return a.order - b.order;
             });
 
-            // console.log('sharp>>', this.sharp);
-            const base64ToImage = require('base64-to-image');
-            const imageToBase64 = require('image-to-base64');
-            const path = './static/';
-            let images = [];
-            const type = '.png';
+            const resultBase64 = await this.composite(prevPictures);
 
-            for (let i = 0; i < prevPictures.length; i++) {
-                let curPic = prevPictures[i];
-                let fileName = `file_${curPic.socketId}_${Date.now()}`;
-                let option = {
-                    fileName: fileName,
-                    type: 'png',
-                };
-                await base64ToImage(curPic.picture, path, option);
-                images.push({ input: `${path}${fileName}${type}` });
-                console.log(fileName);
-            }
+            await this.roomService.takePicture(
+                client.myRoomId,
+                setIdx,
+                resultBase64,
+            );
 
-            console.log(images);
-            console.log(images[0]['input']);
-
-            if (images.length > 1) {
-                try {
-                    await this.sharp(images[0]['input'])
-                        .composite(images)
-                        .toFile(path + 'result.png');
-                } catch (e) {
-                    console.log(e);
-                }
-            } else {
-                try {
-                    await this.sharp(images[0]['input']).toFile(
-                        path + 'result.png',
-                    );
-                } catch (e) {
-                    console.log(e);
-                }
-            }
-
-            let resultBase64: string;
-
-            imageToBase64(path + 'result.png')
-                .then((bs: string) => {
-                    resultBase64 = bs;
-                })
-                .catch((e) => {
-                    console.log(e);
-                });
-
-            // console.log('[ send_pic ] hostId', hostId);
-
-            if (hostId === client.id) {
-                // client.emit('send_pic', setIdx, prevPictures);
-                client.emit('send_pic', setIdx, resultBase64);
-            } else {
-                // client.to(hostId).emit('send_pic', setIdx, prevPictures);
-                client.to(hostId).emit('send_pic', setIdx, resultBase64);
-            }
+            // if (hostId === client.id) {
+            //     // client.emit('send_pic', setIdx, prevPictures);
+            //     client.emit('send_pic', setIdx, resultBase64);
+            // } else {
+            //     // client.to(hostId).emit('send_pic', setIdx, prevPictures);
+            //     client.to(hostId).emit('send_pic', setIdx, resultBase64);
+            // }
         }
     }
 
-    @SubscribeMessage('result_pic')
-    async handleResultPic(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
-        if (!(await this.roomService.isRoom(client.myRoomId))) {
-            client.disconnect(true);
-        }
+    // @SubscribeMessage('result_pic')
+    // async handleResultPic(
+    //     @ConnectedSocket() client: MySocket,
+    //     @MessageBody() data: any,
+    // ) {
+    //     if (!(await this.roomService.isRoom(client.myRoomId))) {
+    //         client.disconnect(true);
+    //     }
 
-        console.log('[ result_pic ] on');
+    //     console.log('[ result_pic ] on');
 
-        const [setIdx, picture] = data;
+    //     const [setIdx, picture] = data;
 
-        await this.roomService.takePicture(client.myRoomId, setIdx, picture);
-    }
+    //     await this.roomService.takePicture(client.myRoomId, setIdx, picture);
+    // }
 
     @SubscribeMessage('done_take')
     async handleDoneTake(
@@ -219,5 +169,51 @@ export class CameraGateway {
         }
     }
 
-    async;
+    async composite(prevPictures) {
+        const sharp = require('sharp');
+        const base64ToImage = require('base64-to-image');
+        const imageToBase64 = require('image-to-base64');
+
+        const path = './static/';
+        const type = 'png';
+        const resultFile = 'result.png';
+        let images = [];
+
+        for (let i = 0; i < prevPictures.length; i++) {
+            let curPic = prevPictures[i];
+            let fileName = `file_${curPic.socketId}_${Date.now()}`;
+            let option = {
+                fileName: fileName,
+                type: 'png',
+            };
+
+            // base64를 이미지로 저장
+            await base64ToImage(curPic.picture, path, option);
+            images.push({ input: `${path}${fileName}.${type}` });
+        }
+
+        try {
+            if (images.length > 1) {
+                await sharp(images[0]['input'])
+                    .composite(images)
+                    .toFile(path + resultFile);
+            } else {
+                await sharp(images[0]['input']).toFile(path + resultFile);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+
+        let resultBase64: string;
+
+        await imageToBase64(path + resultFile)
+            .then((bs: string) => {
+                resultBase64 = bs;
+            })
+            .catch((e) => {
+                console.log(e);
+            });
+
+        return resultBase64;
+    }
 }
