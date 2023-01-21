@@ -49,15 +49,16 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        if (!(await this.roomService.isRoom(client.myRoomId))) {
-            client.disconnect(true);
-        }
+        // if (!(await this.roomService.isRoom(client.myRoomId))) {
+        //     client.disconnect(true);
+        // }
 
         const setIdx = data;
         console.log('[ click_shutter] on');
         console.log('[ click_shutter] setIdx', setIdx);
 
-        await this.roomService.initPrevPicture(client.myRoomId, setIdx);
+        // await this.roomService.initPrevPicture(client.myRoomId, setIdx);
+        this.roomService.initPrevPicture(client.myRoomId, setIdx);
 
         client.emit('click_shutter', setIdx);
         client.to(client.myRoomId).emit('click_shutter', setIdx);
@@ -69,19 +70,17 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        if (!(await this.roomService.isRoom(client.myRoomId))) {
-            client.disconnect(true);
-        }
+        // if (!(await this.roomService.isRoom(client.myRoomId))) {
+        //     client.disconnect(true);
+        // }
 
         console.log('[ send_pic ] on');
         const [setIdx, picture] = data;
 
-        await this.roomService.takePrevPicture(
-            client.myRoomId,
-            setIdx,
-            picture,
-            client.id,
-        );
+        const roomId = client.myRoomId;
+
+        // await this.roomService.takePrevPicture(roomId, setIdx, picture, client.id,);
+        this.roomService.takePrevPicture(roomId, setIdx, picture, client.id);
 
         if (
             (await this.roomService.getAllMembers(client.myRoomId)).length ===
@@ -141,6 +140,7 @@ export class CameraGateway {
 
             client.emit('done_take', pictures);
             client.to(roomId).emit('done_take', pictures);
+
             // if (pictures.size === 4) {
             //     // 4장 미만으로 찍었을 경우 4장 이상으로 찍어야 한다는 사실 알려주는 이벤트 있어야함
             //     // 클라이언트에서 어떻게 출력되는지 확인 필요
@@ -150,6 +150,8 @@ export class CameraGateway {
             // }
         } else {
             client.emit('permission_denied');
+
+            console.log('[ done_take ] permission_denied');
         }
     }
 }

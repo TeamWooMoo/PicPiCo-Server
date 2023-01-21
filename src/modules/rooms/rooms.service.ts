@@ -24,6 +24,7 @@ export class RoomsService {
     // 방에서 나가기
     async leaveRoom(roomId: string, nickName: string) {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         let removed = false;
 
         for (let i = 0; i < room.members.length; i++) {
