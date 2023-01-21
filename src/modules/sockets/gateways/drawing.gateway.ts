@@ -30,6 +30,7 @@ export class DrawingGateway {
             .to(client.myRoomId)
             .emit('mouse_down', fromSocket, offX, offY, ImgIdx);
     }
+
     @SubscribeMessage('stroke_canvas')
     async handleStrokeCanvas(
         @ConnectedSocket() client: MySocket,
@@ -47,5 +48,16 @@ export class DrawingGateway {
                 ImgIdx,
                 lineWidth,
             );
+    }
+
+    @SubscribeMessage('mouse_up')
+    async handleMouseUp(
+        @ConnectedSocket() client: MySocket,
+        @MessageBody() data: any,
+    ) {
+        const [fromSocket, offX, offY, ImgIdx] = data;
+        client
+            .to(client.myRoomId)
+            .emit('stroke_canvas', fromSocket, offX, offY, ImgIdx);
     }
 }
