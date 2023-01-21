@@ -45,16 +45,19 @@ export class RoomsService {
 
     async getRoomHostName(roomId: string): Promise<string> {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         return room.host.nickName;
     }
 
     async getRoomHostId(roomId: string): Promise<string> {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         return room.host.socketId;
     }
 
     async setRoomHost(roomId: string, socketId: string): Promise<void> {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         room.host.socketId = socketId;
         await this.redisService.setRoom(roomId, room);
     }
@@ -76,6 +79,7 @@ export class RoomsService {
         memberSocketId: string,
     ): Promise<void> {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         room.members.push(new User(memberNickname, memberSocketId));
         await this.redisService.setRoom(roomId, room);
     }
@@ -83,12 +87,14 @@ export class RoomsService {
     // 카메라: 방의 멤버들 리스트 꺼내기
     async getAllMembers(roomId: string): Promise<User[]> {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         return room.members;
     }
 
     // 사진 찍기 준비
     async initPrevPicture(roomId: string, setId: string) {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         room.prevPictures[setId] = new Array<PrevPicture>();
         await this.redisService.setRoom(roomId, room);
     }
@@ -101,6 +107,7 @@ export class RoomsService {
         orderIdx: string,
     ) {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
 
         const order = parseInt(orderIdx);
 
@@ -116,11 +123,13 @@ export class RoomsService {
 
     async getPrevPicSize(roomId: string, setId: string): Promise<number> {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         return room.prevPictures[setId].length;
     }
 
     async removePrevPicture(roomId: string) {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         // 삭제 작업 아직 구현 안됨
         await this.redisService.setRoom(roomId, room);
     }
@@ -130,13 +139,16 @@ export class RoomsService {
         setId: string,
     ): Promise<Array<PrevPicture>> {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         return room.prevPictures[setId];
     }
 
     // 카메라: 방에 찍은 사진 보관하기
     async takePicture(roomId: string, picNo: string, picture: string) {
-        const pictureValue = new PictureValue(picture);
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
+
+        const pictureValue = new PictureValue(picture);
 
         // 첫번째로 찍은 사진에 모든 멤버를 다 넣어줌
         if (room.pictures.size === 1) {
@@ -156,12 +168,14 @@ export class RoomsService {
     // 카메라: 찍은 사진 목록 모두 꺼내오기
     async getAllPictures(roomId: string) {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         return room.pictures;
     }
 
     // 사진선택: 찍은 사진의 선택 여부 변경하기
     async selectPicture(roomId: string, picNo: string) {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         if (room.pictures[picNo]) {
             let selectFlag = room.pictures[picNo].selected;
             room.pictures[picNo].selected = !selectFlag;
@@ -176,6 +190,7 @@ export class RoomsService {
         roomId: string,
     ): Promise<Map<string, PictureValue>> {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         const pictures = room.pictures;
         let selectedPictures = new Map<string, PictureValue>();
 
@@ -190,6 +205,7 @@ export class RoomsService {
     // 꾸미기: 첫번째 사진에 viewer다 넣기
     async initPictureViewers(roomId: string) {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
 
         for (const [picNo, pic] of Object.entries(room.pictures)) {
             if (pic.selected) {
@@ -210,6 +226,7 @@ export class RoomsService {
         imgIdx: string,
     ) {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         room.pictures[imgIdx].viewers.push(new User(nickname, socketId));
 
         await this.redisService.setRoom(roomId, room);
@@ -222,6 +239,7 @@ export class RoomsService {
         imgIdx: string,
     ) {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
 
         if (!room.pictures[imgIdx]) return;
         for (let i = 0; i < room.pictures[imgIdx].viewers.length; i++) {
