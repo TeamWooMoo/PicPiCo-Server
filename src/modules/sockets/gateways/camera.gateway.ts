@@ -174,7 +174,7 @@ export class CameraGateway {
         const base64ToImage = require('base64-to-image');
         const imageToBase64 = require('image-to-base64');
 
-        const path = './src/static/';
+        const path = './static/';
         const type = 'png';
         const resultFile = 'result.png';
         let images = [];
@@ -215,5 +215,10 @@ export class CameraGateway {
             });
 
         return resultBase64;
+    }
+
+    async resetStatic() {
+        const fs = require('fs');
+        fs.
     }
 }
