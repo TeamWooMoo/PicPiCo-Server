@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RoomValueDto, PictureValue, User, PrevPicture } from './rooms.dto';
+import { RoomValueDto, RawPicture, DecoPicture, User } from './rooms.dto';
 import { RedisService } from '../../cache/redis.service';
 
 @Injectable()
@@ -95,7 +95,7 @@ export class RoomsService {
     async initPrevPicture(roomId: string, setId: string) {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
-        room.prevPictures[setId] = new Array<PrevPicture>();
+        room.prevPictures[setId] = new Array<RawPicture>();
         await this.redisService.setRoom(roomId, room);
     }
 
@@ -113,7 +113,7 @@ export class RoomsService {
 
         if (room.prevPictures[setId]) {
             room.prevPictures[setId].push(
-                new PrevPicture(setId, picture, socketId, order),
+                new RawPicture(setId, picture, socketId, order),
             );
         } else {
             console.log('takePrevPicture() :: 잘못된 setID:', setId);
@@ -137,7 +137,7 @@ export class RoomsService {
     async getPrevPicture(
         roomId: string,
         setId: string,
-    ): Promise<Array<PrevPicture>> {
+    ): Promise<Array<RawPicture>> {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
         return room.prevPictures[setId];
@@ -148,7 +148,7 @@ export class RoomsService {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
 
-        const pictureValue = new PictureValue(picture);
+        const pictureValue = new DecoPicture(picture);
 
         // 첫번째로 찍은 사진에 모든 멤버를 다 넣어줌
         if (room.pictures.size === 1) {
@@ -188,11 +188,11 @@ export class RoomsService {
     // 꾸미기: 선택된 사진들만 불러오기
     async getSelectedPictures(
         roomId: string,
-    ): Promise<Map<string, PictureValue>> {
+    ): Promise<Map<string, DecoPicture>> {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
         const pictures = room.pictures;
-        let selectedPictures = new Map<string, PictureValue>();
+        let selectedPictures = new Map<string, DecoPicture>();
 
         for (const [picNo, pic] of Object.entries(pictures)) {
             if (pic.selected) {

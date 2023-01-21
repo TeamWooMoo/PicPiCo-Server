@@ -17,6 +17,8 @@ import { RoomsService } from '../../rooms/rooms.service';
     },
 })
 export class CameraGateway {
+    sharp = require('sharp');
+
     constructor(private readonly roomService: RoomsService) {}
 
     @WebSocketServer()
@@ -100,6 +102,8 @@ export class CameraGateway {
                 client.myRoomId,
                 setIdx,
             );
+
+            console.log('sharp>>', this.sharp);
 
             prevPictures.sort((a, b) => {
                 return a.order - b.order;

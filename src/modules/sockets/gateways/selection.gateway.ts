@@ -9,6 +9,7 @@ import {
 import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
 import { RoomsService } from '../../rooms/rooms.service';
+// import { sharp } from 'sharp';
 
 @WebSocketGateway({
     cors: {
