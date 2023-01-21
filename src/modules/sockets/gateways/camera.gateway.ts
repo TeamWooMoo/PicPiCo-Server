@@ -123,21 +123,23 @@ export class CameraGateway {
                 };
                 await base64ToImage(curPic.picture, path, option);
                 images.push({ input: `${path}${fileName}${type}` });
+                console.log(fileName);
             }
 
-            // console.log(images.slice(1));
+            console.log(images);
+            console.log(images[0]['input']);
 
             if (images.length > 1) {
                 try {
-                    await this.sharp(images[0]['input'] + '.png')
-                        .composite(images.slice(1))
+                    await this.sharp(images[0]['input'])
+                        .composite(images)
                         .toFile(path + 'result.png');
                 } catch (e) {
                     console.log(e);
                 }
             } else {
                 try {
-                    await this.sharp(images[0]['input'] + '.png').toFile(
+                    await this.sharp(images[0]['input']).toFile(
                         path + 'result.png',
                     );
                 } catch (e) {
