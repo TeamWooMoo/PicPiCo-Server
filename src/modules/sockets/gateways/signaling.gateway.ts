@@ -30,24 +30,24 @@ export class SignalingGateway
         console.log('[ 연결 성공 ] client.id = ', client.id);
     }
 
-    async handleDisconnect(@ConnectedSocket() client: MySocket) {
-        console.log('[ 연결 종료 ] client.id = ', client.id);
-        if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
-            client.to(client.myRoomId).emit('gone', client.id);
+    // async handleDisconnect(@ConnectedSocket() client: MySocket) {
+    //     console.log('[ 연결 종료 ] client.id = ', client.id);
+    //     if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
+    //         client.to(client.myRoomId).emit('gone', client.id);
 
-            console.log(`[ 연결 종료 ] ${client.myRoomId} 에서`);
-            console.log(`[ 연결 종료 ] ${client.id} 이 나감.`);
+    //         console.log(`[ 연결 종료 ] ${client.myRoomId} 에서`);
+    //         console.log(`[ 연결 종료 ] ${client.id} 이 나감.`);
 
-            await this.roomService.leaveRoom(client.myRoomId, client.nickName);
-            const members = await this.roomService.getAllMembers(
-                client.myRoomId,
-            );
-            if (members.length === 0) {
-                await this.roomService.destroyRoom(client.myRoomId);
-            }
-            client.to(client.myRoomId).emit('reset_member', members);
-        }
-    }
+    //         await this.roomService.leaveRoom(client.myRoomId, client.nickName);
+    //         const members = await this.roomService.getAllMembers(
+    //             client.myRoomId,
+    //         );
+    //         if (members.length === 0) {
+    //             await this.roomService.destroyRoom(client.myRoomId);
+    //         }
+    //         client.to(client.myRoomId).emit('reset_member', members);
+    //     }
+    // }
 
     @SubscribeMessage('join_room')
     async handleJoinRoom(
