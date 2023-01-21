@@ -59,17 +59,20 @@ export class SignalingGateway
         console.log('[ join_room ] on');
 
         const [roomId, newSocketId] = data;
-        if (await this.roomService.isRoom(roomId)) {
-            client.join(roomId);
-            client.myRoomId = roomId;
 
-            console.log(`[ join_room ] 방 ${roomId} 으로`);
-            console.log(`[ join_room ] ${newSocketId} 입장`);
-
-            client.to(roomId).emit('welcome', newSocketId);
-
-            console.log(`[ join_room ] emit welcome`);
+        if (!(await this.roomService.isRoom(roomId))) {
+            client.disconnect(true);
         }
+
+        client.join(roomId);
+        client.myRoomId = roomId;
+
+        console.log(`[ join_room ] 방 ${roomId} 으로`);
+        console.log(`[ join_room ] ${newSocketId} 입장`);
+
+        client.to(roomId).emit('welcome', newSocketId);
+
+        console.log(`[ join_room ] emit welcome`);
     }
 
     @SubscribeMessage('offer')
