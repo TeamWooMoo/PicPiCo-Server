@@ -1,11 +1,4 @@
-import {
-    SubscribeMessage,
-    WebSocketGateway,
-    ConnectedSocket,
-    MessageBody,
-    WebSocketServer,
-    OnGatewayInit,
-} from '@nestjs/websockets';
+import { SubscribeMessage, WebSocketGateway, ConnectedSocket, MessageBody, WebSocketServer, OnGatewayInit } from '@nestjs/websockets';
 import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
 import { RoomsService } from '../../rooms/rooms.service';
@@ -23,10 +16,7 @@ export class CameraGateway {
     server: MyServer;
 
     @SubscribeMessage('add_member')
-    async handleAddMember(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
+    async handleAddMember(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         const [roomId, newNickName] = data;
 
         if (!(await this.roomService.isRoom(roomId))) {
@@ -45,10 +35,7 @@ export class CameraGateway {
 
     // 셔터 누른 사람
     @SubscribeMessage('click_shutter')
-    async handleTakePic(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
+    async handleTakePic(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         // if (!(await this.roomService.isRoom(client.myRoomId))) {
         //     client.disconnect(true);
         // }
@@ -66,10 +53,7 @@ export class CameraGateway {
 
     // 셔터 누른 사람 포함 전부
     @SubscribeMessage('send_pic')
-    async handleBeingTaken(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
+    async handleBeingTaken(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         if (!(await this.roomService.isRoom(client.myRoomId))) {
             client.disconnect(true);
         }
@@ -84,44 +68,18 @@ export class CameraGateway {
         // 사진을 합성하고 자료구조에 저장한다
 
         const fileName = await this.base64ToImage(picture, client.id);
+        await this.roomService.takeRawPicture(room, setId, fileName, client.id, orderId);
 
-        await this.roomService.takeRawPicture(
-            room,
-            setId,
-            fileName,
-            client.id,
-            orderId,
-        );
+        // if ((await this.roomService.getAllMembers(client.myRoomId)).length === (await this.roomService.getRawPictureSize(client.myRoomId, setId))) {
+        //     const rawPictures = await this.roomService.getRawPicture(client.myRoomId, setId);
 
-        if (
-            (await this.roomService.getAllMembers(client.myRoomId)).length ===
-            (await this.roomService.getRawPictureSize(client.myRoomId, setId))
-        ) {
-            const rawPictures = await this.roomService.getRawPicture(
-                client.myRoomId,
-                setId,
-            );
+        //     rawPictures.sort((a, b) => {
+        //         return a.order - b.order;
+        //     });
 
-            rawPictures.sort((a, b) => {
-                return a.order - b.order;
-            });
-
-            const resultBase64 = await this.composite(rawPictures);
-
-            await this.roomService.takePicture(
-                client.myRoomId,
-                setId,
-                resultBase64,
-            );
-
-            // if (hostId === client.id) {
-            //     // client.emit('send_pic', setIdx, prevPictures);
-            //     client.emit('send_pic', setIdx, resultBase64);
-            // } else {
-            //     // client.to(hostId).emit('send_pic', setIdx, prevPictures);
-            //     client.to(hostId).emit('send_pic', setIdx, resultBase64);
-            // }
-        }
+        //     const resultBase64 = await this.composite(rawPictures);
+        //     await this.roomService.takePicture(client.myRoomId, setId, resultBase64);
+        // }
     }
 
     // @SubscribeMessage('result_pic')
@@ -141,10 +99,7 @@ export class CameraGateway {
     // }
 
     @SubscribeMessage('done_take')
-    async handleDoneTake(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
+    async handleDoneTake(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         console.log('[ done_take ] on');
 
         const [roomId, socketId] = data;
@@ -155,6 +110,16 @@ export class CameraGateway {
 
         // 호스트만 사진 촬영 다음단계로 넘어갈 수 있음
         if (client.id === (await this.roomService.getRoomHostId(roomId))) {
+            const rawPictures = await this.roomService.getAllRawPictures(roomId);
+            for (const [setId, rawPictureArray] of Object.entries(rawPictures)) {
+                rawPictureArray.sort((a, b) => {
+                    return a.order - b.order;
+                });
+
+                const resultBase64 = await this.composite(rawPictureArray);
+                await this.roomService.takePicture(client.myRoomId, setId, resultBase64);
+            }
+
             const pictures = await this.roomService.getAllPictures(roomId);
 
             client.emit('done_take', pictures);

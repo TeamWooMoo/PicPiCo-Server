@@ -18,9 +18,7 @@ import { RoomsService } from '../../rooms/rooms.service';
         credentials: Config.socket.SOCKET_SIGNALING_CREDENTIALS,
     },
 })
-export class SignalingGateway
-    implements OnGatewayConnection, OnGatewayDisconnect
-{
+export class SignalingGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor(private readonly roomService: RoomsService) {}
 
     @WebSocketServer()
@@ -41,9 +39,7 @@ export class SignalingGateway
             console.log(`[ 연결 종료 ] ${client.id} 이 나감.`);
 
             await this.roomService.leaveRoom(client.myRoomId, client.nickName);
-            const members = await this.roomService.getAllMembers(
-                client.myRoomId,
-            );
+            const members = await this.roomService.getAllMembers(client.myRoomId);
             if (members.length === 0) {
                 await this.roomService.destroyRoom(client.myRoomId);
             }
@@ -52,10 +48,7 @@ export class SignalingGateway
     }
 
     @SubscribeMessage('join_room')
-    async handleJoinRoom(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
+    async handleJoinRoom(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         console.log('[ join_room ] on');
 
         const [roomId, newSocketId] = data;
@@ -64,15 +57,19 @@ export class SignalingGateway
             client.disconnect(true);
         }
 
-        client.join(roomId);
-        client.myRoomId = roomId;
+        if ((await this.roomService.getAllMembers(roomId)).length < 5) {
+            client.join(roomId);
+            client.myRoomId = roomId;
 
-        console.log(`[ join_room ] 방 ${roomId} 으로`);
-        console.log(`[ join_room ] ${newSocketId} 입장`);
+            console.log(`[ join_room ] 방 ${roomId} 으로`);
+            console.log(`[ join_room ] ${newSocketId} 입장`);
 
-        client.to(roomId).emit('welcome', newSocketId);
+            client.to(roomId).emit('welcome', newSocketId);
 
-        console.log(`[ join_room ] emit welcome`);
+            console.log(`[ join_room ] emit welcome`);
+        } else {
+            client.emit('');
+        }
     }
 
     @SubscribeMessage('offer')
@@ -86,10 +83,7 @@ export class SignalingGateway
     }
 
     @SubscribeMessage('answer')
-    handleAnswer(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
+    handleAnswer(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         console.log(`[ answer ] on`);
 
         const [answer, oldSocketId, newSocketId] = data;
@@ -99,10 +93,7 @@ export class SignalingGateway
     }
 
     @SubscribeMessage('ice')
-    handleWelcome(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
+    handleWelcome(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         console.log(`[ ice ] on`);
 
         const [ice, peerSocketId, currentSocketId] = data;
