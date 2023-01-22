@@ -138,6 +138,18 @@ export class RoomsService {
         await this.redisService.setRoom(roomId, room);
     }
 
+    async takeAllPictures(roomId: string, pictureObj: Map<string, string>) {
+        const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
+
+        for (const [picNo, picture] of Object.entries(pictureObj)) {
+            const pictureValue = new DecoPicture(picture);
+            room.pictures[picNo] = pictureValue;
+        }
+
+        await this.redisService.setRoom(roomId, room);
+    }
+
     async getAllRawPictures(roomId: string): Promise<Map<string, Array<RawPicture>>> {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
