@@ -20,19 +20,20 @@ export class Picture {
     }
 }
 
-export class RawPicture extends Picture {
+export class RawPicture {
     setId: string;
     socketId: string;
     order: number;
+    fileName: string;
 
     constructor(
         setId: string,
-        picture: string,
+        fileName: string,
         socketId: string,
         order: number,
     ) {
-        super(picture);
         this.setId = setId;
+        this.fileName = fileName;
         this.socketId = socketId;
         this.order = order;
     }

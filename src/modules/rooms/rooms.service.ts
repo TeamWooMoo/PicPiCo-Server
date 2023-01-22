@@ -99,10 +99,10 @@ export class RoomsService {
         await this.redisService.setRoom(roomId, room);
     }
 
-    async takePrevPicture(
+    async takeRawPicture(
         roomId: string,
         setId: string,
-        picture: string,
+        fileName: string,
         socketId: string,
         orderIdx: string,
     ) {
@@ -113,7 +113,7 @@ export class RoomsService {
 
         if (room.prevPictures[setId]) {
             room.prevPictures[setId].push(
-                new RawPicture(setId, picture, socketId, order),
+                new RawPicture(setId, fileName, socketId, order),
             );
         } else {
             console.log('takePrevPicture() :: 잘못된 setID:', setId);
@@ -121,7 +121,7 @@ export class RoomsService {
         await this.redisService.setRoom(roomId, room);
     }
 
-    async getPrevPicSize(roomId: string, setId: string): Promise<number> {
+    async getRawPictureSize(roomId: string, setId: string): Promise<number> {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
         return room.prevPictures[setId].length;
@@ -134,7 +134,7 @@ export class RoomsService {
         await this.redisService.setRoom(roomId, room);
     }
 
-    async getPrevPicture(
+    async getRawPicture(
         roomId: string,
         setId: string,
     ): Promise<Array<RawPicture>> {

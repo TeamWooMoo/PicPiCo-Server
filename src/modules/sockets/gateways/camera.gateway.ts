@@ -70,42 +70,47 @@ export class CameraGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        // if (!(await this.roomService.isRoom(client.myRoomId))) {
-        //     client.disconnect(true);
-        // }
+        if (!(await this.roomService.isRoom(client.myRoomId))) {
+            client.disconnect(true);
+        }
 
         console.log('[ send_pic ] on');
-        const [setIdx, picture, orderIdx] = data;
 
-        const roomId = client.myRoomId;
+        const [setId, picture, orderId] = data;
+        const room = client.myRoomId;
 
-        // await this.roomService.takePrevPicture(roomId, setIdx, picture, client.id,);
-        this.roomService.takePrevPicture(
-            roomId,
-            setIdx,
-            picture,
+        // 전달받은 base64이미지를 파일로 저장 후 경로를 자료구조에 저장한다
+        // 만약 전달받은 이미지들의 합이 전체 멤버의 수와 같다면,
+        // 사진을 합성하고 자료구조에 저장한다
+
+        const fileName = await this.base64ToImage(picture, client.id);
+
+        await this.roomService.takeRawPicture(
+            room,
+            setId,
+            fileName,
             client.id,
-            orderIdx,
+            orderId,
         );
 
         if (
             (await this.roomService.getAllMembers(client.myRoomId)).length ===
-            (await this.roomService.getPrevPicSize(client.myRoomId, setIdx))
+            (await this.roomService.getRawPictureSize(client.myRoomId, setId))
         ) {
-            const prevPictures = await this.roomService.getPrevPicture(
+            const rawPictures = await this.roomService.getRawPicture(
                 client.myRoomId,
-                setIdx,
+                setId,
             );
 
-            prevPictures.sort((a, b) => {
+            rawPictures.sort((a, b) => {
                 return a.order - b.order;
             });
 
-            const resultBase64 = await this.composite(prevPictures);
+            const resultBase64 = await this.composite(rawPictures);
 
             await this.roomService.takePicture(
                 client.myRoomId,
-                setIdx,
+                setId,
                 resultBase64,
             );
 
@@ -169,9 +174,8 @@ export class CameraGateway {
         }
     }
 
-    async composite(prevPictures) {
+    async composite(rawPictures) {
         const sharp = require('sharp');
-        const base64ToImage = require('base64-to-image');
         const imageToBase64 = require('image-to-base64');
 
         const path = './static/';
@@ -179,48 +183,51 @@ export class CameraGateway {
         const resultFile = 'result.png';
         let images = [];
 
-        for (let i = 0; i < prevPictures.length; i++) {
-            let curPic = prevPictures[i];
-            let fileName = `file_${curPic.socketId}_${Date.now()}`;
-            let option = {
-                fileName: fileName,
-                type: 'png',
-            };
-
-            // base64를 이미지로 저장
-            await base64ToImage(curPic.picture, path, option);
+        for (let i = 0; i < rawPictures.length; i++) {
+            let curPic = rawPictures[i];
+            let fileName = curPic.fileName;
             images.push({ input: `${path}${fileName}.${type}` });
         }
 
         let resultBase64: string;
-        setTimeout(async () => {
-            try {
-                if (images.length > 1) {
-                    await sharp(images[0]['input'])
-                        .composite(images)
-                        .toFile(path + resultFile);
-                } else {
-                    await sharp(images[0]['input']).toFile(path + resultFile);
-                }
-            } catch (e) {
-                console.log('띠용 삐용');
-                console.log(e);
+
+        try {
+            if (images.length > 1) {
+                await sharp(images[0]['input'])
+                    .composite(images)
+                    .toFile(path + resultFile);
+            } else {
+                await sharp(images[0]['input']).toFile(path + resultFile);
             }
+        } catch (e) {
+            console.log('띠용 삐용');
+            console.log(e);
+        }
 
-            imageToBase64(path + resultFile)
-                .then((bs: string) => {
-                    resultBase64 = bs;
-                })
-                .catch((e) => {
-                    console.log('웨용 뛔용');
-                    console.log(e);
-                });
-            resultBase64 = 'data:image/png;base64,' + resultBase64;
+        await imageToBase64(path + resultFile)
+            .then((bs: string) => {
+                resultBase64 = 'data:image/png;base64,' + bs;
+            })
+            .catch((e) => {
+                console.log('웨용 뛔용');
+                console.log(e);
+            });
 
-            console.log('resultBase64 >>> ', resultBase64);
-        }, 1000);
+        console.log('resultBase64 >>> ', resultBase64.length > 50);
 
         return resultBase64;
+    }
+
+    async base64ToImage(base64: string, socketId: string): Promise<string> {
+        const base64ToImage = require('base64-to-image');
+        const path = './static/';
+        let fileName = `file_${socketId}_${Date.now()}`;
+        let option = {
+            fileName: fileName,
+            type: 'png',
+        };
+        await base64ToImage(base64, path, option);
+        return fileName;
     }
 
     // async resetStatic() {
