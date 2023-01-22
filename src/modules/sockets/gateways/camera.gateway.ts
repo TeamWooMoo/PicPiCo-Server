@@ -148,6 +148,9 @@ export class CameraGateway {
 
         if (!resultBase64) {
             console.log('resultBase64 >>> ', resultBase64.length > 50);
+            for (let i = 0; i < images.length; i++) {
+                await this.removeFile(images[i]['input']);
+            }
         }
 
         return resultBase64;
@@ -166,7 +169,7 @@ export class CameraGateway {
     }
 
     // 파일 삭제
-    async resetStatic(fileName: string) {
+    async removeFile(fileName: string) {
         const fs = require('fs');
         fs.unlink(fileName, (err) => {
             if (err) {
