@@ -124,11 +124,11 @@ export class RoomsService {
         const pictureValue = new DecoPicture(picture);
 
         // 첫번째로 찍은 사진에 모든 멤버를 다 넣어줌
-        if (room.pictures.size === 1) {
-            for (let i = 0; i < room.members.length; i++) {
-                pictureValue.viewers.push(room.members[i]);
-            }
-        }
+        // if (room.pictures.size === 1) {
+        //     for (let i = 0; i < room.members.length; i++) {
+        //         pictureValue.viewers.push(room.members[i]);
+        //     }
+        // }
 
         if (room.pictures === null) {
             console.log('[ERROR] takePicture(): room.pictures === undefined');

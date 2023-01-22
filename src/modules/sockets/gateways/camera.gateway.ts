@@ -72,15 +72,13 @@ export class CameraGateway {
             client.disconnect(true);
         }
 
-        console.log('[ done_take ] client.id = ', client.id);
-
         // 호스트만 사진 촬영 다음단계로 넘어갈 수 있음
         if (client.id === (await this.roomService.getRoomHostId(roomId))) {
             const rawPictures = await this.roomService.getAllRawPictures(roomId);
             const resultImages = {};
 
             for (const [setId, rawPictureArray] of Object.entries(rawPictures)) {
-                rawPictureArray.sort((a, b) => {
+                rawPictureArray.sort((a: { order: number }, b: { order: number }) => {
                     return a.order - b.order;
                 });
 
@@ -90,6 +88,10 @@ export class CameraGateway {
 
             client.emit('done_take', resultImages);
             client.to(roomId).emit('done_take', resultImages);
+
+            for (const [picNo, picture] of Object.entries(rawPictures)) {
+                await this.roomService.takePicture(roomId, picNo, picture);
+            }
 
             // if (pictures.size === 4) {
             //     // 4장 미만으로 찍었을 경우 4장 이상으로 찍어야 한다는 사실 알려주는 이벤트 있어야함
