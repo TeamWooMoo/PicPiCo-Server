@@ -71,12 +71,11 @@ export class DecoGateway {
         console.log('[ submit_deco ] on');
 
         if (client.id === (await this.roomService.getRoomHostId(client.myRoomId))) {
-            console.log('[ submit_deco ] data = ', data);
-
             client.emit('submit_deco', data);
             client.to(client.myRoomId).emit('submit_deco', data);
         } else {
             client.emit('permission_denied');
+
             console.log('[ submit_deco ] emit permission_denied');
         }
     }
