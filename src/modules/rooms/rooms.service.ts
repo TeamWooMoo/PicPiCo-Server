@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RoomValueDto, PictureValue, User, PrevPicture } from './rooms.dto';
+import { RoomValueDto, RawPicture, DecoPicture, User } from './rooms.dto';
 import { RedisService } from '../../cache/redis.service';
 
 @Injectable()
@@ -13,11 +13,7 @@ export class RoomsService {
 
     // 방 삭제하기
     async destroyRoom(roomId: string) {
-        console.log(
-            '방에 남은 사람=' +
-                (await this.getAllMembers(roomId)).length +
-                ': 방을 삭제합니다.',
-        );
+        console.log('방에 남은 사람=' + (await this.getAllMembers(roomId)).length + ': 방을 삭제합니다.');
         await this.redisService.deleteRoom(roomId);
     }
 
@@ -35,47 +31,39 @@ export class RoomsService {
             }
         }
 
-        console.log(
-            removed
-                ? '삭제 완료'
-                : `삭제 대상인 ${nickName}이 존재하지 않습니다.`,
-        );
+        console.log(removed ? '삭제 완료' : `삭제 대상인 ${nickName}이 존재하지 않습니다.`);
         await this.redisService.setRoom(roomId, room);
     }
 
     async getRoomHostName(roomId: string): Promise<string> {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         return room.host.nickName;
     }
 
     async getRoomHostId(roomId: string): Promise<string> {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         return room.host.socketId;
     }
 
     async setRoomHost(roomId: string, socketId: string): Promise<void> {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         room.host.socketId = socketId;
         await this.redisService.setRoom(roomId, room);
     }
 
     // 카메라: 새로운 방 만들기
-    async createRoom(
-        roomId: string,
-        hostName: string,
-        hostId: string,
-    ): Promise<void> {
+    async createRoom(roomId: string, hostName: string, hostId: string): Promise<void> {
         const newRoomValue = new RoomValueDto(hostName, hostId);
         await this.redisService.setRoom(roomId, newRoomValue);
     }
 
     // 카메라: 방에 입장하기
-    async joinRoom(
-        roomId: string,
-        memberNickname: string,
-        memberSocketId: string,
-    ): Promise<void> {
+    async joinRoom(roomId: string, memberNickname: string, memberSocketId: string): Promise<void> {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         room.members.push(new User(memberNickname, memberSocketId));
         await this.redisService.setRoom(roomId, room);
     }
@@ -83,57 +71,57 @@ export class RoomsService {
     // 카메라: 방의 멤버들 리스트 꺼내기
     async getAllMembers(roomId: string): Promise<User[]> {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         return room.members;
     }
 
     // 사진 찍기 준비
     async initPrevPicture(roomId: string, setId: string) {
         const room = await this.redisService.getRoom(roomId);
-        room.prevPictures[setId] = new Array<PrevPicture>();
+        if (!room) return;
+        room.prevPictures[setId] = new Array<RawPicture>();
         await this.redisService.setRoom(roomId, room);
     }
 
-    async takePrevPicture(
-        roomId: string,
-        setId: string,
-        picture: string,
-        socketId: string,
-    ) {
+    async takeRawPicture(roomId: string, setId: string, fileName: string, socketId: string, orderIdx: string) {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
+
+        const order = parseInt(orderIdx);
 
         if (room.prevPictures[setId]) {
-            room.prevPictures[setId].push(
-                new PrevPicture(setId, picture, socketId),
-            );
+            room.prevPictures[setId].push(new RawPicture(setId, fileName, socketId, order));
         } else {
             console.log('takePrevPicture() :: 잘못된 setID:', setId);
         }
         await this.redisService.setRoom(roomId, room);
     }
 
-    async getPrevPicSize(roomId: string, setId: string): Promise<number> {
+    async getRawPictureSize(roomId: string, setId: string): Promise<number> {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         return room.prevPictures[setId].length;
     }
 
     async removePrevPicture(roomId: string) {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         // 삭제 작업 아직 구현 안됨
         await this.redisService.setRoom(roomId, room);
     }
 
-    async getPrevPicture(
-        roomId: string,
-        setId: string,
-    ): Promise<Array<PrevPicture>> {
+    async getRawPicture(roomId: string, setId: string): Promise<Array<RawPicture>> {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         return room.prevPictures[setId];
     }
 
     // 카메라: 방에 찍은 사진 보관하기
     async takePicture(roomId: string, picNo: string, picture: string) {
-        const pictureValue = new PictureValue(picture);
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
+
+        const pictureValue = new DecoPicture(picture);
 
         // 첫번째로 찍은 사진에 모든 멤버를 다 넣어줌
         if (room.pictures.size === 1) {
@@ -150,15 +138,23 @@ export class RoomsService {
         await this.redisService.setRoom(roomId, room);
     }
 
+    async getAllRawPictures(roomId: string): Promise<Map<string, Array<RawPicture>>> {
+        const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
+        return room.prevPictures;
+    }
+
     // 카메라: 찍은 사진 목록 모두 꺼내오기
     async getAllPictures(roomId: string) {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         return room.pictures;
     }
 
     // 사진선택: 찍은 사진의 선택 여부 변경하기
     async selectPicture(roomId: string, picNo: string) {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         if (room.pictures[picNo]) {
             let selectFlag = room.pictures[picNo].selected;
             room.pictures[picNo].selected = !selectFlag;
@@ -169,12 +165,11 @@ export class RoomsService {
     }
 
     // 꾸미기: 선택된 사진들만 불러오기
-    async getSelectedPictures(
-        roomId: string,
-    ): Promise<Map<string, PictureValue>> {
+    async getSelectedPictures(roomId: string): Promise<Map<string, DecoPicture>> {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         const pictures = room.pictures;
-        let selectedPictures = new Map<string, PictureValue>();
+        let selectedPictures = new Map<string, DecoPicture>();
 
         for (const [picNo, pic] of Object.entries(pictures)) {
             if (pic.selected) {
@@ -187,6 +182,7 @@ export class RoomsService {
     // 꾸미기: 첫번째 사진에 viewer다 넣기
     async initPictureViewers(roomId: string) {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
 
         for (const [picNo, pic] of Object.entries(room.pictures)) {
             if (pic.selected) {
@@ -200,25 +196,18 @@ export class RoomsService {
     }
 
     // 꾸미기: 사진의 viewer 추가하기
-    async addPictureViewer(
-        roomId: string,
-        socketId: string,
-        nickname: string,
-        imgIdx: string,
-    ) {
+    async addPictureViewer(roomId: string, socketId: string, nickname: string, imgIdx: string) {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
         room.pictures[imgIdx].viewers.push(new User(nickname, socketId));
 
         await this.redisService.setRoom(roomId, room);
     }
 
     // 꾸미기: 사진의 viewer 삭제하기
-    async deletePictureViewer(
-        roomId: string,
-        socketId: string,
-        imgIdx: string,
-    ) {
+    async deletePictureViewer(roomId: string, socketId: string, imgIdx: string) {
         const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
 
         if (!room.pictures[imgIdx]) return;
         for (let i = 0; i < room.pictures[imgIdx].viewers.length; i++) {
