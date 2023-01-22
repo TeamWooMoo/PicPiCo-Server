@@ -140,6 +140,9 @@ export class CameraGateway {
         await imageToBase64(path + resultFile)
             .then((bs: string) => {
                 resultBase64 = 'data:image/png;base64,' + bs;
+                for (let i = 0; i < images.length; i++) {
+                    this.removeFile(images[i]['input']);
+                }
             })
             .catch((e) => {
                 console.log('웨용 뛔용');
@@ -148,9 +151,6 @@ export class CameraGateway {
 
         if (!resultBase64) {
             console.log('resultBase64 >>> ', resultBase64.length > 50);
-            for (let i = 0; i < images.length; i++) {
-                await this.removeFile(images[i]['input']);
-            }
         }
 
         return resultBase64;
