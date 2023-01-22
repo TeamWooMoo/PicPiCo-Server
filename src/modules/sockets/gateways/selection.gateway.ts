@@ -1,11 +1,4 @@
-import {
-    SubscribeMessage,
-    WebSocketGateway,
-    ConnectedSocket,
-    MessageBody,
-    WebSocketServer,
-    OnGatewayInit,
-} from '@nestjs/websockets';
+import { SubscribeMessage, WebSocketGateway, ConnectedSocket, MessageBody, WebSocketServer, OnGatewayInit } from '@nestjs/websockets';
 import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
 import { RoomsService } from '../../rooms/rooms.service';
@@ -28,10 +21,7 @@ export class SelectionGateway implements OnGatewayInit {
     }
 
     @SubscribeMessage('pick_pic')
-    async handlePickPic(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
+    async handlePickPic(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         const [roomId, picIdx] = data;
 
         if (!(await this.roomService.isRoom(roomId))) {
@@ -55,10 +45,7 @@ export class SelectionGateway implements OnGatewayInit {
     }
 
     @SubscribeMessage('done_pick')
-    async handleDonePic(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
+    async handleDonePic(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         console.log('[ done_pic ] on');
 
         const [roomId, socketId] = data;
@@ -71,9 +58,7 @@ export class SelectionGateway implements OnGatewayInit {
             console.log('[ done_pic ] ' + client.id + ' === 방장');
 
             await this.roomService.initPictureViewers(roomId);
-            const selectedPictures = await this.roomService.getSelectedPictures(
-                roomId,
-            );
+            const selectedPictures = await this.roomService.getSelectedPictures(roomId);
 
             const pickNum = selectedPictures.size;
             client.emit('done_pick', selectedPictures);

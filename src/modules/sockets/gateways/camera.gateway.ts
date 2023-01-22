@@ -36,15 +36,10 @@ export class CameraGateway {
     // 셔터 누른 사람
     @SubscribeMessage('click_shutter')
     async handleTakePic(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
-        // if (!(await this.roomService.isRoom(client.myRoomId))) {
-        //     client.disconnect(true);
-        // }
-
         const setIdx = data;
         console.log('[ click_shutter] on');
         console.log('[ click_shutter] setIdx', setIdx);
 
-        // await this.roomService.initPrevPicture(client.myRoomId, setIdx);
         this.roomService.initPrevPicture(client.myRoomId, setIdx);
 
         client.emit('click_shutter', setIdx);
@@ -63,40 +58,9 @@ export class CameraGateway {
         const [setId, picture, orderId] = data;
         const room = client.myRoomId;
 
-        // 전달받은 base64이미지를 파일로 저장 후 경로를 자료구조에 저장한다
-        // 만약 전달받은 이미지들의 합이 전체 멤버의 수와 같다면,
-        // 사진을 합성하고 자료구조에 저장한다
-
         const fileName = await this.base64ToImage(picture, client.id);
         await this.roomService.takeRawPicture(room, setId, fileName, client.id, orderId);
-
-        // if ((await this.roomService.getAllMembers(client.myRoomId)).length === (await this.roomService.getRawPictureSize(client.myRoomId, setId))) {
-        //     const rawPictures = await this.roomService.getRawPicture(client.myRoomId, setId);
-
-        //     rawPictures.sort((a, b) => {
-        //         return a.order - b.order;
-        //     });
-
-        //     const resultBase64 = await this.composite(rawPictures);
-        //     await this.roomService.takePicture(client.myRoomId, setId, resultBase64);
-        // }
     }
-
-    // @SubscribeMessage('result_pic')
-    // async handleResultPic(
-    //     @ConnectedSocket() client: MySocket,
-    //     @MessageBody() data: any,
-    // ) {
-    //     if (!(await this.roomService.isRoom(client.myRoomId))) {
-    //         client.disconnect(true);
-    //     }
-
-    //     console.log('[ result_pic ] on');
-
-    //     const [setIdx, picture] = data;
-
-    //     await this.roomService.takePicture(client.myRoomId, setIdx, picture);
-    // }
 
     @SubscribeMessage('done_take')
     async handleDoneTake(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
@@ -111,19 +75,23 @@ export class CameraGateway {
         // 호스트만 사진 촬영 다음단계로 넘어갈 수 있음
         if (client.id === (await this.roomService.getRoomHostId(roomId))) {
             const rawPictures = await this.roomService.getAllRawPictures(roomId);
+            const resultImages = new Map<string, string>();
+
             for (const [setId, rawPictureArray] of Object.entries(rawPictures)) {
                 rawPictureArray.sort((a, b) => {
                     return a.order - b.order;
                 });
 
                 const resultBase64 = await this.composite(rawPictureArray);
-                await this.roomService.takePicture(client.myRoomId, setId, resultBase64);
+                resultImages[setId] = resultBase64;
             }
 
-            const pictures = await this.roomService.getAllPictures(roomId);
+            client.emit('done_take', resultImages);
+            client.to(roomId).emit('done_take', resultImages);
 
-            client.emit('done_take', pictures);
-            client.to(roomId).emit('done_take', pictures);
+            console.log('[ done_take ] emit done_take');
+
+            await this.roomService.takeAllPictures(roomId, resultImages);
 
             // if (pictures.size === 4) {
             //     // 4장 미만으로 찍었을 경우 4장 이상으로 찍어야 한다는 사실 알려주는 이벤트 있어야함
@@ -178,7 +146,9 @@ export class CameraGateway {
                 console.log(e);
             });
 
-        console.log('resultBase64 >>> ', resultBase64.length > 50);
+        if (!resultBase64) {
+            console.log('resultBase64 >>> ', resultBase64.length > 50);
+        }
 
         return resultBase64;
     }
@@ -195,8 +165,15 @@ export class CameraGateway {
         return fileName;
     }
 
-    // async resetStatic() {
-    //     const fs = require('fs');
-    //     fs.
-    // }
+    // 파일 삭제
+    async resetStatic(fileName: string) {
+        const fs = require('fs');
+        fs.unlink(fileName, (err) => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(fileName + '을 삭제했어요');
+            }
+        });
+    }
 }

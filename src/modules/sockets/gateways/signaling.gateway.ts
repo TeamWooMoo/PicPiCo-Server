@@ -68,7 +68,7 @@ export class SignalingGateway implements OnGatewayConnection, OnGatewayDisconnec
 
             console.log(`[ join_room ] emit welcome`);
         } else {
-            client.emit('');
+            return { msg: '못들어가지롱' };
         }
     }
 
