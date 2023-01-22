@@ -2,6 +2,7 @@ import { SubscribeMessage, WebSocketGateway, ConnectedSocket, MessageBody, WebSo
 import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
 import { RoomsService } from '../../rooms/rooms.service';
+import { v1 as uuid } from 'uuid';
 
 @WebSocketGateway({
     cors: {
@@ -113,7 +114,7 @@ export class CameraGateway {
 
         const path = './static/';
         const type = 'png';
-        const resultFile = 'result.png';
+        const resultFile = uuid() + 'result.png';
         let images = [];
 
         for (let i = 0; i < rawPictures.length; i++) {
@@ -143,6 +144,7 @@ export class CameraGateway {
                 for (let i = 0; i < images.length; i++) {
                     this.removeFile(images[i]['input']);
                 }
+                this.removeFile(path + resultFile);
             })
             .catch((e) => {
                 console.log('웨용 뛔용');
