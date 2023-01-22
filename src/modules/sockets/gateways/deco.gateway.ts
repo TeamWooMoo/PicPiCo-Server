@@ -43,8 +43,13 @@ export class DecoGateway {
             client.disconnect(true);
         }
 
+        const hostId = await this.roomService.getRoomHostId(roomId);
+
+        console.log('[ done_deco ] client.id == ', client.id);
+        console.log('[ done_deco ] host id == ', hostId);
+
         // 호스트인지 여부 확인
-        if (client.id === (await this.roomService.getRoomHostId(roomId))) {
+        if (client.id === hostId) {
             // allow
             client.emit('done_deco');
 

@@ -86,8 +86,6 @@ export class CameraGateway {
                 resultImages[setId] = resultBase64;
             }
 
-            console.log('[ done_take ] resultImages >>> ', resultImages);
-
             client.emit('done_take', resultImages);
             client.to(roomId).emit('done_take', resultImages);
 
@@ -168,8 +166,14 @@ export class CameraGateway {
     }
 
     // 파일 삭제
-    async resetStatic() {
+    async resetStatic(fileName: string) {
         const fs = require('fs');
-        // fs.
+        fs.unlink(fileName, (err) => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(fileName + '을 삭제했어요');
+            }
+        });
     }
 }
