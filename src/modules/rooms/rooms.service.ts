@@ -17,7 +17,7 @@ export class RoomsService {
     async destroyRoom(roomId: string) {
         console.log('방에 남은 사람=' + (await this.getAllMembers(roomId)).length + ': 방을 삭제합니다.');
 
-        await this.fs.rmdirSync(Config.images.baseDirectory + roomId + '/', { recursive: true }, (err) => {
+        await this.fs.rm(Config.images.baseDirectory + roomId + '/', { recursive: true }, (err) => {
             if (err) {
                 console.log(err);
             } else {
