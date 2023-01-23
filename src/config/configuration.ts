@@ -56,6 +56,12 @@ const JWT = {
     SECRET: 'secretsandokkymcaxiosecretsandokkymacs',
 };
 
+const Images = {
+    baseDirectory: './static/',
+    defaultType: 'png',
+    base64Header: 'data:image/png;base64,',
+};
+
 export const Config = {
     serverPort: 3000,
     cors: CORS,
@@ -64,5 +70,6 @@ export const Config = {
     Kakao: Kakao,
     JWT: JWT,
     redis: Redis,
+    images: Images,
 };
 export default Config;

@@ -17,11 +17,11 @@ export class StickerGateway {
 
     @SubscribeMessage('pick_sticker')
     async handlePickSticker(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
-        let [url, targetImgIdx] = data;
+        let [url, targetImgIdx, stickerId] = data;
         console.log('pick_sticker : ', data);
 
-        client.emit('pick_sticker', url, targetImgIdx);
-        client.to(client.myRoomId).emit('pick_sticker', url, targetImgIdx);
+        client.emit('pick_sticker', url, targetImgIdx, stickerId);
+        client.to(client.myRoomId).emit('pick_sticker', url, targetImgIdx, stickerId);
     }
 
     @SubscribeMessage('sticker_on')
@@ -34,9 +34,8 @@ export class StickerGateway {
 
     @SubscribeMessage('sticker_move')
     async handleStickerMove(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
-        const [left, top, imgIdx, src] = data;
-        console.log(data);
+        const [left, top, stickerId] = data;
 
-        client.to(client.myRoomId).emit('sticker_move', left, top, imgIdx, src);
+        client.to(client.myRoomId).emit('sticker_move', left, top, stickerId);
     }
 }
