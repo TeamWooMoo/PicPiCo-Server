@@ -235,6 +235,14 @@ export class RoomsService {
         await this.redisService.setRoom(roomId, room);
     }
 
+    async changePictureViewer(roomId: string, socketId: string, fromImgIdx: string, toImgIdx: string) {
+        const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
+
+        const user = await this.deletePictureViewer(roomId, socketId, fromImgIdx);
+        await room.pictures[toImgIdx].viewers.push(user);
+    }
+
     // 꾸미기: 사진의 viewer 추가하기
     async addPictureViewer(roomId: string, socketId: string, nickname: string, imgIdx: string) {
         const room = await this.redisService.getRoom(roomId);
@@ -250,14 +258,18 @@ export class RoomsService {
         if (!room) return;
 
         if (!room.pictures[imgIdx]) return;
+
+        let returnValue;
         for (let i = 0; i < room.pictures[imgIdx].viewers.length; i++) {
             if (room.pictures[imgIdx].viewers[i].socketId === socketId) {
+                returnValue = room.pictures[imgIdx].viewers[i];
                 room.pictures[imgIdx].viewers.splice(i, 1);
                 break;
             }
         }
 
         await this.redisService.setRoom(roomId, room);
+        return returnValue;
     }
 
     // 꾸미기: 한 사진의 viewer 리스트 꺼내기
