@@ -34,13 +34,17 @@ export class RoomsService {
         let removed = false;
 
         for (let i = 0; i < room.members.length; i++) {
-            if (room.members[i]) {
+            try {
                 if (room.members[i]['nickName'] === nickName) {
                     room.members.splice(i, 1);
                     removed = true;
                     break;
                 }
+            } catch (e) {
+                console.log(e);
             }
+            // if (room.members[i]) {
+            // }
         }
 
         console.log(removed ? '삭제 완료' : `삭제 대상인 ${nickName}이 존재하지 않습니다.`);
