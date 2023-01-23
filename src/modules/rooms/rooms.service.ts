@@ -259,7 +259,10 @@ export class RoomsService {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
 
-        if (!room.pictures[imgIdx]) return;
+        if (!room.pictures[imgIdx]) {
+            console.log('deletePictureViewer() ', imgIdx);
+            return;
+        }
 
         let returnValue: User;
         for (let i = 0; i < room.pictures[imgIdx].viewers.length; i++) {
