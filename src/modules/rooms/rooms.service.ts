@@ -34,10 +34,12 @@ export class RoomsService {
         let removed = false;
 
         for (let i = 0; i < room.members.length; i++) {
-            if (room.members[i]['nickName'] === nickName) {
-                room.members.splice(i, 1);
-                removed = true;
-                break;
+            if (room.members[i]) {
+                if (room.members[i]['nickName'] === nickName) {
+                    room.members.splice(i, 1);
+                    removed = true;
+                    break;
+                }
             }
         }
 
