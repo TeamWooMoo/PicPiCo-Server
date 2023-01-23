@@ -239,8 +239,20 @@ export class RoomsService {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
 
-        const user = await this.deletePictureViewer(roomId, socketId, fromImgIdx);
+        let user: User;
+
+        for (let i = 0; i < room.pictures[fromImgIdx].viewers.length; i++) {
+            if (room.pictures[fromImgIdx].viewers[i].socketId === socketId) {
+                user = room.pictures[fromImgIdx].viewers[i];
+                console.log('deletePictureViewer() ', user);
+                room.pictures[fromImgIdx].viewers.splice(i, 1);
+                break;
+            }
+        }
+
+        // const user = await this.deletePictureViewer(roomId, socketId, fromImgIdx);
         console.log('changePictureViewer = ', user);
+
         await room.pictures[toImgIdx].viewers.push(user);
         await this.redisService.setRoom(roomId, room);
     }
