@@ -31,7 +31,7 @@ export class DecoGateway {
 
         const pictures = await this.roomService.getSelectedPictures(client.myRoomId);
 
-        console.log('[ pick_deco ] pictures = ', pictures);
+        // console.log('[ pick_deco ] pictures = ', pictures);
 
         for (const [picNo, decoPicture] of Object.entries(pictures)) {
             console.log('[ pick_deco ] decoPicture = ', decoPicture.viewers);
