@@ -65,8 +65,6 @@ export class SignalingGateway implements OnGatewayConnection, OnGatewayDisconnec
             console.log(`[ join_room ] ${newSocketId} 입장`);
 
             client.to(roomId).emit('welcome', newSocketId);
-
-            console.log(`[ join_room ] emit welcome`);
         } else {
             return { msg: '못들어가지롱' };
         }
@@ -74,31 +72,19 @@ export class SignalingGateway implements OnGatewayConnection, OnGatewayDisconnec
 
     @SubscribeMessage('offer')
     handleOffer(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
-        console.log(`[ offer ] on`);
-
         const [offer, newSocketId, oldSocketId] = data;
         client.to(newSocketId).emit('offer', offer, oldSocketId);
-
-        console.log(`[ offer ] emit offer`);
     }
 
     @SubscribeMessage('answer')
     handleAnswer(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
-        console.log(`[ answer ] on`);
-
         const [answer, oldSocketId, newSocketId] = data;
         client.to(oldSocketId).emit('answer', answer, newSocketId);
-
-        console.log(`[ answer ] emit answer`);
     }
 
     @SubscribeMessage('ice')
     handleWelcome(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
-        console.log(`[ ice ] on`);
-
         const [ice, peerSocketId, currentSocketId] = data;
         client.to(peerSocketId).emit('ice', ice, currentSocketId);
-
-        console.log(`[ ice ] emit ice`);
     }
 }

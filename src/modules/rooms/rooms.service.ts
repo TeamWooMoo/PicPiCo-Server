@@ -10,7 +10,7 @@ export class RoomsService {
 
     // 방이 있는지 확인하기
     async isRoom(roomId: string) {
-        return (await this.redisService.getRoom(roomId)) !== null;
+        return await this.redisService.getRoom(roomId);
     }
 
     // 방 삭제하기
@@ -43,8 +43,6 @@ export class RoomsService {
             } catch (e) {
                 console.log(e);
             }
-            // if (room.members[i]) {
-            // }
         }
 
         console.log(removed ? '삭제 완료' : `삭제 대상인 ${nickName}이 존재하지 않습니다.`);
