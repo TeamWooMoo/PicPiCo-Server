@@ -260,10 +260,11 @@ export class RoomsService {
 
         if (!room.pictures[imgIdx]) return;
 
-        let returnValue;
+        let returnValue: User;
         for (let i = 0; i < room.pictures[imgIdx].viewers.length; i++) {
             if (room.pictures[imgIdx].viewers[i].socketId === socketId) {
                 returnValue = room.pictures[imgIdx].viewers[i];
+                console.log('deletePictureViewer() ', returnValue);
                 room.pictures[imgIdx].viewers.splice(i, 1);
                 break;
             }
