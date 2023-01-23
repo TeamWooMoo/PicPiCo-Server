@@ -59,7 +59,7 @@ export class CameraGateway {
         const [setId, picture, orderId] = data;
         const room = client.myRoomId;
 
-        const fileName = await this.base64ToImage(picture, client.id);
+        const fileName = await this.base64ToImage(picture, client.id, client.myRoomId);
         await this.roomService.takeRawPicture(room, setId, fileName, client.id, orderId);
     }
 
@@ -83,7 +83,7 @@ export class CameraGateway {
                     return a.order - b.order;
                 });
 
-                const resultBase64 = await this.composite(rawPictureArray);
+                const resultBase64 = await this.composite(rawPictureArray, client.myRoomId);
                 resultImages[setId] = resultBase64;
             }
 
@@ -108,12 +108,12 @@ export class CameraGateway {
         }
     }
 
-    async composite(rawPictures) {
+    async composite(rawPictures, roomId: string) {
         const sharp = require('sharp');
         const imageToBase64 = require('image-to-base64');
 
-        const path = './static/';
-        const type = 'png';
+        const path = Config.images.baseDirectory + roomId + '/';
+        const type = Config.images.defaultType;
         const resultFile = uuid() + 'result.png';
         let images = [];
 
@@ -139,12 +139,12 @@ export class CameraGateway {
         }
 
         await imageToBase64(path + resultFile)
-            .then((bs: string) => {
-                resultBase64 = 'data:image/png;base64,' + bs;
-                for (let i = 0; i < images.length; i++) {
-                    this.removeFile(images[i]['input']);
-                }
-                this.removeFile(path + resultFile);
+            .then(async (bs: string) => {
+                resultBase64 = Config.images.base64Header + bs;
+                // for (let i = 0; i < images.length; i++) {
+                //     await this.removeFile(images[i]['input']);
+                // }
+                // await this.removeFile(path + resultFile);
             })
             .catch((e) => {
                 console.log('웨용 뛔용');
@@ -158,13 +158,13 @@ export class CameraGateway {
         return resultBase64;
     }
 
-    async base64ToImage(base64: string, socketId: string): Promise<string> {
+    async base64ToImage(base64: string, socketId: string, roomId: string): Promise<string> {
         const base64ToImage = require('base64-to-image');
-        const path = './static/';
+        const path = Config.images.baseDirectory + roomId + '/';
         let fileName = `file_${socketId}_${Date.now()}`;
         let option = {
             fileName: fileName,
-            type: 'png',
+            type: Config.images.defaultType,
         };
         await base64ToImage(base64, path, option);
         return fileName;

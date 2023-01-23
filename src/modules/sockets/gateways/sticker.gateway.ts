@@ -1,10 +1,4 @@
-import {
-    SubscribeMessage,
-    WebSocketGateway,
-    ConnectedSocket,
-    MessageBody,
-    WebSocketServer,
-} from '@nestjs/websockets';
+import { SubscribeMessage, WebSocketGateway, ConnectedSocket, MessageBody, WebSocketServer } from '@nestjs/websockets';
 import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
 // import { RoomsService } from 'src/modules/rooms/rooms.service';
@@ -22,22 +16,16 @@ export class StickerGateway {
     server: MyServer;
 
     @SubscribeMessage('pick_sticker')
-    async handlePickSticker(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
-        let [url, targetImgIdx] = data;
+    async handlePickSticker(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
+        let [url, targetImgIdx, stickerId] = data;
         console.log('pick_sticker : ', data);
 
-        client.emit('pick_sticker', url, targetImgIdx);
-        client.to(client.myRoomId).emit('pick_sticker', url, targetImgIdx);
+        client.emit('pick_sticker', url, targetImgIdx, stickerId);
+        client.to(client.myRoomId).emit('pick_sticker', url, targetImgIdx, stickerId);
     }
 
     @SubscribeMessage('sticker_on')
-    async handleStickerOn(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
+    async handleStickerOn(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         const [roomId, stickerId] = data;
 
         client.emit('sticker_on');
@@ -45,12 +33,9 @@ export class StickerGateway {
     }
 
     @SubscribeMessage('sticker_move')
-    async handleStickerMove(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
-        const [left, top, imgIdx, src] = data;
+    async handleStickerMove(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
+        const [left, top, stickerId] = data;
 
-        client.to(client.myRoomId).emit('sticker_move', left, top, imgIdx, src);
+        client.to(client.myRoomId).emit('sticker_move', left, top, stickerId);
     }
 }

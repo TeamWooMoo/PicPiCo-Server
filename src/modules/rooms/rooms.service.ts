@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { RoomValueDto, RawPicture, DecoPicture, User } from './rooms.dto';
 import { RedisService } from '../../cache/redis.service';
+import { Config } from '../../config/configuration';
 
 @Injectable()
 export class RoomsService {
+    fs = require('fs');
     constructor(private readonly redisService: RedisService) {}
 
     // 방이 있는지 확인하기
@@ -14,6 +16,14 @@ export class RoomsService {
     // 방 삭제하기
     async destroyRoom(roomId: string) {
         console.log('방에 남은 사람=' + (await this.getAllMembers(roomId)).length + ': 방을 삭제합니다.');
+
+        await this.fs.rmdirSync(Config.images.baseDirectory + roomId + '/', { recursive: true }, (err) => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(`${Config.images.baseDirectory + roomId} 디렉토리 삭제 완료`);
+            }
+        });
         await this.redisService.deleteRoom(roomId);
     }
 
@@ -56,6 +66,7 @@ export class RoomsService {
 
     // 카메라: 새로운 방 만들기
     async createRoom(roomId: string, hostName: string, hostId: string): Promise<void> {
+        await this.fs.mkdirSync(Config.images.baseDirectory + roomId);
         await this.redisService.setRoom(roomId, new RoomValueDto(hostName, hostId));
     }
 
