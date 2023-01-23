@@ -64,6 +64,18 @@ export class RoomsService {
         await this.redisService.setRoom(roomId, room);
     }
 
+    async reorderRoomMemberList(roomId: string, oldIdx: number, newIdx: number) {
+        const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
+
+        const target = room.members[oldIdx];
+        room.members.splice(oldIdx, 1);
+        room.members.splice(newIdx, 0, target);
+
+        await this.redisService.setRoom(roomId, room);
+        return room.members;
+    }
+
     // 카메라: 새로운 방 만들기
     async createRoom(roomId: string, hostName: string, hostId: string): Promise<void> {
         await this.fs.mkdirSync(Config.images.baseDirectory + roomId);
