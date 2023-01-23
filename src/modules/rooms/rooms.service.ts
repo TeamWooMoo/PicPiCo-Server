@@ -43,8 +43,6 @@ export class RoomsService {
             } catch (e) {
                 console.log(e);
             }
-            // if (room.members[i]) {
-            // }
         }
 
         console.log(removed ? '삭제 완료' : `삭제 대상인 ${nickName}이 존재하지 않습니다.`);

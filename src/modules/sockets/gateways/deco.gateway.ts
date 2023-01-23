@@ -63,6 +63,7 @@ export class DecoGateway {
         if (client.id === hostId) {
             // allow
             client.emit('done_deco');
+            client.to(client.myRoomId).emit('done_deco');
 
             console.log('[ done_deco ] emit done_deco');
         } else {
