@@ -8,14 +8,14 @@ export class RedisService {
     constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {
         this.reset();
         const fs = require('fs');
-        fs.rmdirSync(Config.images.baseDirectory, { recursive: true }, (err) => {
+        fs.rmSync('./static', { recursive: true }, (err) => {
             if (err) {
                 console.log(err);
             } else {
                 console.log(Config.images.baseDirectory + ' 삭제...');
             }
         });
-        fs.mkdirSync(Config.images.baseDirectory, (err) => {
+        fs.mkdirSync('./static', (err) => {
             if (err) {
                 console.log(err);
             } else {

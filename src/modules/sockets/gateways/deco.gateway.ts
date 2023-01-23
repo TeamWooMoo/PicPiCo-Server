@@ -25,9 +25,20 @@ export class DecoGateway {
 
         const [socketId, toImgIdx, fromImgIdx] = data;
 
-        await this.roomService.deletePictureViewer(client.myRoomId, socketId, fromImgIdx);
-        await this.roomService.addPictureViewer(client.myRoomId, socketId, client.nickName, toImgIdx);
+        // await this.roomService.deletePictureViewer(client.myRoomId, socketId, fromImgIdx);
+        // await this.roomService.addPictureViewer(client.myRoomId, socketId, client.nickName, toImgIdx);
+
+        console.log('[ pick_deco ] data = ', data);
+
+        await this.roomService.changePictureViewer(client.myRoomId, socketId, fromImgIdx, toImgIdx);
+
         const pictures = await this.roomService.getSelectedPictures(client.myRoomId);
+
+        // console.log('[ pick_deco ] pictures = ', pictures);
+
+        for (const [picNo, decoPicture] of Object.entries(pictures)) {
+            console.log('[ pick_deco ] decoPicture = ', decoPicture.viewers);
+        }
 
         client.emit('pick_deco', pictures);
         client.to(client.myRoomId).emit('pick_deco', pictures);

@@ -34,6 +34,29 @@ export class CameraGateway {
         client.to(client.myRoomId).emit('reset_member', nickNameArr);
     }
 
+    @SubscribeMessage('change_layer')
+    async handleChangeLayer(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
+        const [oldIdx, newIdx] = data;
+
+        if (!(await this.roomService.isRoom(client.myRoomId))) {
+            client.disconnect(true);
+        }
+
+        if ((await this.roomService.getRoomHostId(client.myRoomId)) === client.id) {
+            const members = await this.roomService.reorderRoomMemberList(client.myRoomId, parseInt(oldIdx), parseInt(newIdx));
+
+            console.log('[ change_layer ] data = ', data);
+            console.log('[ change_layer ] members = ', members);
+
+            client.emit('change_layer', members);
+            client.to(client.myRoomId).emit('change_layer', members);
+        } else {
+            client.emit('permission_denied');
+
+            console.log('[ change_layer ] permission_denied');
+        }
+    }
+
     // 셔터 누른 사람
     @SubscribeMessage('click_shutter')
     async handleTakePic(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
@@ -141,10 +164,6 @@ export class CameraGateway {
         await imageToBase64(path + resultFile)
             .then(async (bs: string) => {
                 resultBase64 = Config.images.base64Header + bs;
-                // for (let i = 0; i < images.length; i++) {
-                //     await this.removeFile(images[i]['input']);
-                // }
-                // await this.removeFile(path + resultFile);
             })
             .catch((e) => {
                 console.log('웨용 뛔용');
@@ -168,17 +187,5 @@ export class CameraGateway {
         };
         await base64ToImage(base64, path, option);
         return fileName;
-    }
-
-    // 파일 삭제
-    async removeFile(fileName: string) {
-        const fs = require('fs');
-        fs.unlink(fileName, (err) => {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log(fileName + '을 삭제했어요');
-            }
-        });
     }
 }

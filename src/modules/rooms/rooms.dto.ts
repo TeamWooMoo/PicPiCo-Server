@@ -26,12 +26,7 @@ export class RawPicture {
     order: number;
     fileName: string;
 
-    constructor(
-        setId: string,
-        fileName: string,
-        socketId: string,
-        order: number,
-    ) {
+    constructor(setId: string, fileName: string, socketId: string, order: number) {
         this.setId = setId;
         this.fileName = fileName;
         this.socketId = socketId;
