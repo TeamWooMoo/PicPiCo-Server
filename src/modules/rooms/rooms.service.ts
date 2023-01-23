@@ -241,6 +241,7 @@ export class RoomsService {
 
         const user = await this.deletePictureViewer(roomId, socketId, fromImgIdx);
         await room.pictures[toImgIdx].viewers.push(user);
+        await this.redisService.setRoom(roomId, room);
     }
 
     // 꾸미기: 사진의 viewer 추가하기
