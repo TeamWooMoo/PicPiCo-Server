@@ -10,7 +10,7 @@ export class RoomsService {
 
     // 방이 있는지 확인하기
     async isRoom(roomId: string) {
-        return (await this.redisService.getRoom(roomId)) !== null;
+        return await this.redisService.getRoom(roomId);
     }
 
     // 방 삭제하기
