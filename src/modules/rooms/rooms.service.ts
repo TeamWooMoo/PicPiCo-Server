@@ -240,6 +240,7 @@ export class RoomsService {
         if (!room) return;
 
         const user = await this.deletePictureViewer(roomId, socketId, fromImgIdx);
+        console.log('changePictureViewer = ', user);
         await room.pictures[toImgIdx].viewers.push(user);
         await this.redisService.setRoom(roomId, room);
     }
