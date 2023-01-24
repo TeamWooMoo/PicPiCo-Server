@@ -1,10 +1,4 @@
-import {
-    SubscribeMessage,
-    WebSocketGateway,
-    ConnectedSocket,
-    MessageBody,
-    WebSocketServer,
-} from '@nestjs/websockets';
+import { SubscribeMessage, WebSocketGateway, ConnectedSocket, MessageBody, WebSocketServer } from '@nestjs/websockets';
 import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
 // import { RoomsService } from 'src/modules/rooms/rooms.service';
@@ -21,43 +15,21 @@ export class DrawingGateway {
     server: MyServer;
 
     @SubscribeMessage('mouse_down')
-    async handleMouseDown(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
+    async handleMouseDown(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         const [fromSocket, offX, offY, ImgIdx] = data;
-        client
-            .to(client.myRoomId)
-            .emit('mouse_down', fromSocket, offX, offY, ImgIdx);
+        client.to(client.myRoomId).emit('mouse_down', fromSocket, offX, offY, ImgIdx);
     }
 
     @SubscribeMessage('stroke_canvas')
-    async handleStrokeCanvas(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
+    async handleStrokeCanvas(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         const [roomId, offX, offY, color, fromSocket, ImgIdx, lineWidth] = data;
-        client
-            .to(roomId)
-            .emit(
-                'stroke_canvas',
-                offX,
-                offY,
-                color,
-                fromSocket,
-                ImgIdx,
-                lineWidth,
-            );
+        client.emit('stroke_canvas', offX, offY, color, fromSocket, ImgIdx, lineWidth);
+        client.to(roomId).emit('stroke_canvas', offX, offY, color, fromSocket, ImgIdx, lineWidth);
     }
 
     @SubscribeMessage('mouse_up')
-    async handleMouseUp(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
+    async handleMouseUp(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         const [fromSocket, offX, offY, ImgIdx] = data;
-        client
-            .to(client.myRoomId)
-            .emit('stroke_canvas', fromSocket, offX, offY, ImgIdx);
+        client.to(client.myRoomId).emit('stroke_canvas', fromSocket, offX, offY, ImgIdx);
     }
 }
