@@ -291,6 +291,9 @@ export class RoomsService {
     async submitDecoAddOne(roomId: string, clientId: string) {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
+
+        console.log(typeof room.submitDeco);
+
         const result = room.submitDeco.add(clientId).size;
         await this.redisService.setRoom(roomId, room);
         return result;
