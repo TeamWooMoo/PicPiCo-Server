@@ -75,20 +75,21 @@ export class DecoGateway {
     }
 
     @SubscribeMessage('submit_deco')
-    async handleSubmitDeco(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
+    async handleSubmitDeco(@ConnectedSocket() client: MySocket) {
         if (!(await this.roomService.isRoom(client.myRoomId))) {
             client.disconnect(true);
         }
 
         console.log('[ submit_deco ] on');
 
-        if (client.id === (await this.roomService.getRoomHostId(client.myRoomId))) {
-            client.emit('submit_deco', data);
-            client.to(client.myRoomId).emit('submit_deco', data);
-        } else {
-            client.emit('permission_denied');
+        const count = await this.roomService.submitDecoAddOne(client.myRoomId, client.id);
+        console.log('[ submit_deco ] count = ', count);
 
-            console.log('[ submit_deco ] emit permission_denied');
+        if (count === (await this.roomService.getAllMembers(client.myRoomId)).length) {
+            console.log('[ submit_deco ] emit = ', count);
+
+            client.emit('submit_deco');
+            client.to(client.myRoomId).emit('submit_deco');
         }
     }
 }

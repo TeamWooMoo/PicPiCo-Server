@@ -288,5 +288,11 @@ export class RoomsService {
         return returnValue;
     }
 
-    // 꾸미기: 한 사진의 viewer 리스트 꺼내기
+    async submitDecoAddOne(roomId: string, clientId: string) {
+        const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
+        const result = room.submitDeco.add(clientId).size;
+        await this.redisService.setRoom(roomId, room);
+        return result;
+    }
 }
