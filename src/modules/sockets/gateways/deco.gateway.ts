@@ -70,15 +70,16 @@ export class DecoGateway {
         }
 
         console.log('[ submit_deco ] on');
+        client.emit('submit_deco');
 
-        const count = await this.roomService.submitDecoAddOne(client.myRoomId, client.id);
-        console.log('[ submit_deco ] count = ', count);
+        // const count = await this.roomService.submitDecoAddOne(client.myRoomId, client.id);
+        // console.log('[ submit_deco ] count = ', count);
 
-        if (count === (await this.roomService.getAllMembers(client.myRoomId)).length) {
-            console.log('[ submit_deco ] emit = ', count);
+        // if (count === (await this.roomService.getAllMembers(client.myRoomId)).length) {
+        //     console.log('[ submit_deco ] emit = ', count);
 
-            client.emit('submit_deco');
-            client.to(client.myRoomId).emit('submit_deco');
-        }
+        //     client.emit('submit_deco');
+        //     client.to(client.myRoomId).emit('submit_deco');
+        // }
     }
 }
