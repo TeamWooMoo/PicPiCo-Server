@@ -24,8 +24,6 @@ export class DrawingGateway {
     @SubscribeMessage('stroke_canvas')
     async handleStrokeCanvas(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         const [roomId, offX, offY, color, fromSocket, ImgIdx, lineWidth] = data;
-        console.log('[ stroke_canvas ] 아라라라랄라ㅏㄱ,  ', data);
-
         client.emit('stroke_canvas', offX, offY, color, fromSocket, ImgIdx, lineWidth);
         client.to(roomId).emit('stroke_canvas', offX, offY, color, fromSocket, ImgIdx, lineWidth);
     }
