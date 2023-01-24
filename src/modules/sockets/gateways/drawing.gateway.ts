@@ -31,7 +31,7 @@ export class DrawingGateway {
     @SubscribeMessage('mouse_up')
     async handleMouseUp(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         const [fromSocket, offX, offY, ImgIdx] = data;
-        client.emit('stroke_canvas', fromSocket, offX, offY, ImgIdx);
-        client.to(client.myRoomId).emit('stroke_canvas', fromSocket, offX, offY, ImgIdx);
+        client.emit('mouse_up', fromSocket, offX, offY, ImgIdx);
+        client.to(client.myRoomId).emit('mouse_up', fromSocket, offX, offY, ImgIdx);
     }
 }
