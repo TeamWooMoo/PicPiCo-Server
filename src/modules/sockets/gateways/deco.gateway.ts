@@ -58,6 +58,7 @@ export class DecoGateway {
 
         console.log('[ done_deco ] client.id == ', client.id);
         console.log('[ done_deco ] host id == ', hostId);
+        console.log('[ done_deco ] client.myRoomId == ', client.myRoomId);
 
         // 호스트인지 여부 확인
         if (client.id === hostId) {
