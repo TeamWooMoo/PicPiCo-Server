@@ -1,11 +1,29 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { RoomValueDto } from '../modules/rooms/rooms.dto';
+import { Config } from '../config/configuration';
 
 @Injectable()
 export class RedisService {
     constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {
         this.reset();
+        const fs = require('fs');
+        if (fs.existsSync('./static')) {
+            fs.rmSync('./static', { recursive: true }, (err) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(Config.images.baseDirectory + ' 삭제...');
+                }
+            });
+        }
+        fs.mkdirSync('./static', (err) => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(Config.images.baseDirectory + ' 생성...');
+            }
+        });
     }
 
     async getRoom(roomId: string): Promise<RoomValueDto> | null {

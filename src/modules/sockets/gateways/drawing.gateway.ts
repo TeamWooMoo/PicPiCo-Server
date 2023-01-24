@@ -7,7 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
-import { RoomsService } from 'src/modules/rooms/rooms.service';
+// import { RoomsService } from 'src/modules/rooms/rooms.service';
 
 @WebSocketGateway({
     cors: {
@@ -16,8 +16,7 @@ import { RoomsService } from 'src/modules/rooms/rooms.service';
     },
 })
 export class DrawingGateway {
-    constructor(private readonly roomService: RoomsService) {}
-
+    // constructor(private readonly roomService: RoomsService) {}
     @WebSocketServer()
     server: MyServer;
 
@@ -26,8 +25,10 @@ export class DrawingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        const [fromSocket, offX, offY] = data;
-        client.to(client.myRoomId).emit('mouse_down', fromSocket, offX, offY);
+        const [fromSocket, offX, offY, ImgIdx] = data;
+        client
+            .to(client.myRoomId)
+            .emit('mouse_down', fromSocket, offX, offY, ImgIdx);
     }
 
     @SubscribeMessage('stroke_canvas')
@@ -35,54 +36,28 @@ export class DrawingGateway {
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        const [roomId, offX, offY, color, fromSocket, ImgIdx] = data;
+        const [roomId, offX, offY, color, fromSocket, ImgIdx, lineWidth] = data;
         client
             .to(roomId)
-            .emit('stroke_canvas', offX, offY, color, fromSocket, ImgIdx);
+            .emit(
+                'stroke_canvas',
+                offX,
+                offY,
+                color,
+                fromSocket,
+                ImgIdx,
+                lineWidth,
+            );
     }
 
-    @SubscribeMessage('sticker_on')
-    async handleStickerOn(
+    @SubscribeMessage('mouse_up')
+    async handleMouseUp(
         @ConnectedSocket() client: MySocket,
         @MessageBody() data: any,
     ) {
-        const [roomId, stickerId] = data;
-
-        client.emit('sticker_on');
-        client.to(roomId).emit('sticker_on');
-
-        // client.to(roomId).emit('sticker_on', offX, offY, fromSocket);
-    }
-
-    @SubscribeMessage('sticker_move')
-    async handleStickerMove(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
-        const [roomId, offX, offY, fromSocket] = data;
-        client.to(roomId).emit('sticker_move', offX, offY, fromSocket);
-    }
-
-    @SubscribeMessage('done_deco')
-    async handleDoneDeco(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
-        console.log('[ done_deco ] on');
-
-        const [roomId, clientId] = data;
-
-        // 호스트인지 여부 확인
-        if (client.id === (await this.roomService.getRoomHostId(roomId))) {
-            // allow
-            client.emit('done_deco');
-            client.to(roomId).emit('done_deco');
-
-            console.log('[ done_deco ] emit done_deco');
-        } else {
-            // deny
-            client.emit('permission_denied');
-            console.log('[ done_deco ] emit permission_denied');
-        }
+        const [fromSocket, offX, offY, ImgIdx] = data;
+        client
+            .to(client.myRoomId)
+            .emit('stroke_canvas', fromSocket, offX, offY, ImgIdx);
     }
 }

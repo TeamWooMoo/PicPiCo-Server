@@ -20,8 +20,8 @@ export class RoomsController {
 
     @Get(':roomId')
     async getRoom(@Param('roomId') roomId: string, @Res() res: Response) {
-        console.log('GET: roomId: ', roomId);
         if (await this.roomService.isRoom(roomId)) {
+            console.log('GET: roomId: ', roomId);
             res.send({ roomId: roomId });
         } else {
             res.status(404).send('잘못된 방 아이디 입니다.');

@@ -6,6 +6,7 @@ import {
     WebSocketServer,
     OnGatewayConnection,
     OnGatewayDisconnect,
+    OnGatewayInit,
 } from '@nestjs/websockets';
 import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
@@ -17,9 +18,7 @@ import { RoomsService } from '../../rooms/rooms.service';
         credentials: Config.socket.SOCKET_SIGNALING_CREDENTIALS,
     },
 })
-export class SignalingGateway
-    implements OnGatewayConnection, OnGatewayDisconnect
-{
+export class SignalingGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor(private readonly roomService: RoomsService) {}
 
     @WebSocketServer()
@@ -28,6 +27,7 @@ export class SignalingGateway
     async handleConnection(@ConnectedSocket() client: MySocket) {
         client.myRoomId = Config.socket.DEFAULT_ROOM;
         console.log('[ 연결 성공 ] client.id = ', client.id);
+        client.setMaxListeners(100);
     }
 
     async handleDisconnect(@ConnectedSocket() client: MySocket) {
@@ -39,9 +39,7 @@ export class SignalingGateway
             console.log(`[ 연결 종료 ] ${client.id} 이 나감.`);
 
             await this.roomService.leaveRoom(client.myRoomId, client.nickName);
-            const members = await this.roomService.getAllMembers(
-                client.myRoomId,
-            );
+            const members = await this.roomService.getAllMembers(client.myRoomId);
             if (members.length === 0) {
                 await this.roomService.destroyRoom(client.myRoomId);
             }
@@ -50,14 +48,16 @@ export class SignalingGateway
     }
 
     @SubscribeMessage('join_room')
-    async handleJoinRoom(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
+    async handleJoinRoom(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         console.log('[ join_room ] on');
 
         const [roomId, newSocketId] = data;
-        if (await this.roomService.isRoom(roomId)) {
+
+        if (!(await this.roomService.isRoom(roomId))) {
+            client.disconnect(true);
+        }
+
+        if ((await this.roomService.getAllMembers(roomId)).length < 5) {
             client.join(roomId);
             client.myRoomId = roomId;
 
@@ -65,44 +65,26 @@ export class SignalingGateway
             console.log(`[ join_room ] ${newSocketId} 입장`);
 
             client.to(roomId).emit('welcome', newSocketId);
-
-            console.log(`[ join_room ] emit welcome`);
+        } else {
+            return { msg: '못들어가지롱' };
         }
     }
 
     @SubscribeMessage('offer')
     handleOffer(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
-        console.log(`[ offer ] on`);
-
         const [offer, newSocketId, oldSocketId] = data;
         client.to(newSocketId).emit('offer', offer, oldSocketId);
-
-        console.log(`[ offer ] emit offer`);
     }
 
     @SubscribeMessage('answer')
-    handleAnswer(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
-        console.log(`[ answer ] on`);
-
+    handleAnswer(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         const [answer, oldSocketId, newSocketId] = data;
         client.to(oldSocketId).emit('answer', answer, newSocketId);
-
-        console.log(`[ answer ] emit answer`);
     }
 
     @SubscribeMessage('ice')
-    handleWelcome(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
-        console.log(`[ ice ] on`);
-
+    handleWelcome(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         const [ice, peerSocketId, currentSocketId] = data;
         client.to(peerSocketId).emit('ice', ice, currentSocketId);
-
-        console.log(`[ ice ] emit ice`);
     }
 }

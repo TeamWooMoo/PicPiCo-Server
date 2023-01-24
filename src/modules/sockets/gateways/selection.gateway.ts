@@ -1,13 +1,8 @@
-import {
-    SubscribeMessage,
-    WebSocketGateway,
-    ConnectedSocket,
-    MessageBody,
-    WebSocketServer,
-} from '@nestjs/websockets';
+import { SubscribeMessage, WebSocketGateway, ConnectedSocket, MessageBody, WebSocketServer, OnGatewayInit } from '@nestjs/websockets';
 import { MyServer, MySocket } from '../socket.interface';
 import { Config } from '../../../config/configuration';
 import { RoomsService } from '../../rooms/rooms.service';
+// import { sharp } from 'sharp';
 
 @WebSocketGateway({
     cors: {
@@ -15,50 +10,55 @@ import { RoomsService } from '../../rooms/rooms.service';
         credentials: Config.socket.SOCKET_SIGNALING_CREDENTIALS,
     },
 })
-export class SelectionGateway {
+export class SelectionGateway implements OnGatewayInit {
     constructor(private readonly roomService: RoomsService) {}
 
     @WebSocketServer()
     server: MyServer;
 
+    afterInit(server: MyServer) {
+        server.setMaxListeners(100);
+    }
+
     @SubscribeMessage('pick_pic')
-    async handlePickPic(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
+    async handlePickPic(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         const [roomId, picIdx] = data;
 
+        if (!(await this.roomService.isRoom(roomId))) {
+            client.disconnect(true);
+        }
+
         console.log(`[ pick_pic ] on`);
-        console.log(`[ pick_pic ] picIdx = ${picIdx}`);
 
         if ((await this.roomService.getRoomHostId(roomId)) === client.id) {
             await this.roomService.selectPicture(roomId, picIdx);
             client.emit('pick_pic', picIdx);
             client.to(roomId).emit('pick_pic', picIdx);
 
+            console.log(`[ pick_pic ] picIdx = ${picIdx}`);
             console.log(`[ pick_pic ] emit pick_pic`);
         } else {
             client.emit('permission_denied');
+
             console.log(`[ pick_pic ] emit permission_denied`);
         }
     }
 
     @SubscribeMessage('done_pick')
-    async handleDonePic(
-        @ConnectedSocket() client: MySocket,
-        @MessageBody() data: any,
-    ) {
+    async handleDonePic(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         console.log('[ done_pic ] on');
 
         const [roomId, socketId] = data;
 
+        if (!(await this.roomService.isRoom(roomId))) {
+            client.disconnect(true);
+        }
+
         if (client.id === (await this.roomService.getRoomHostId(roomId))) {
-            console.log('[ done_pic ] ' + client.id + '는 방장 맞음');
+            console.log('[ done_pic ] ' + client.id + ' === 방장');
 
             await this.roomService.initPictureViewers(roomId);
-            const selectedPictures = await this.roomService.getSelectedPictures(
-                roomId,
-            );
+            const selectedPictures = await this.roomService.getSelectedPictures(roomId);
 
             const pickNum = selectedPictures.size;
             client.emit('done_pick', selectedPictures);
@@ -78,7 +78,7 @@ export class SelectionGateway {
         } else {
             client.emit('permission_denied');
 
-            console.log('[ done_pic ] ' + client.id + '는 방장 아님....');
+            console.log('[ done_pic ] ' + client.id + ' !== 방장');
         }
     }
 }
