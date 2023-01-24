@@ -3,12 +3,14 @@ export class RoomValueDto {
     members: Array<User>;
     prevPictures: Map<string, Array<RawPicture>>;
     pictures: Map<string, DecoPicture>;
+    submitDeco: Map<string, number>;
 
     constructor(host_: string, id_: string) {
         this.host = new User(host_, id_);
         this.members = new Array<User>();
         this.prevPictures = new Map<string, Array<RawPicture>>();
         this.pictures = new Map<string, DecoPicture>();
+        this.submitDeco = new Map<string, number>();
     }
 }
 
