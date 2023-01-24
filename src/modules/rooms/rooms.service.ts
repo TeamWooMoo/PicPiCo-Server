@@ -293,8 +293,11 @@ export class RoomsService {
         if (!room) return;
 
         console.log(typeof room.submitDeco);
+        console.log(room.submitDeco);
+        const index = room.submitDeco.size;
+        room.submitDeco[index] = clientId;
 
-        const result = room.submitDeco.add(clientId).size;
+        const result = room.submitDeco.size;
         await this.redisService.setRoom(roomId, room);
         return result;
     }
