@@ -67,7 +67,8 @@ export class RoomsService {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
 
-        room.host = room.members[0];
+        room.host.nickName = room.members[0].nickName;
+        room.host.socketId = room.members[0].socketId;
         await this.redisService.setRoom(roomId, room);
     }
 
