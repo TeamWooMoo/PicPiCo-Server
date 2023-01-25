@@ -32,14 +32,21 @@ export class SignalingGateway implements OnGatewayConnection, OnGatewayDisconnec
 
     async handleDisconnect(@ConnectedSocket() client: MySocket) {
         console.log('[ 연결 종료 ] client.id = ', client.id);
+
         if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
             client.to(client.myRoomId).emit('gone', client.id);
 
             console.log(`[ 연결 종료 ] ${client.myRoomId} 에서`);
             console.log(`[ 연결 종료 ] ${client.id} 이 나감.`);
 
+            // 참여자가 남아있는데 방장의 연결이 끊긴 경우, 참여자 중 한명에게 방장을 상속한다
+            if ((await this.roomService.getRoomHostId(client.myRoomId)) === client.id && (await this.roomService.getAllMembers(client.myRoomId)).length > 1) {
+                await this.roomService.changeRoomHost(client.myRoomId);
+            }
+
             await this.roomService.leaveRoom(client.myRoomId, client.nickName);
             const members = await this.roomService.getAllMembers(client.myRoomId);
+
             if (members.length === 0) {
                 await this.roomService.destroyRoom(client.myRoomId);
             }

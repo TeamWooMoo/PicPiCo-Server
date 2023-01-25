@@ -30,6 +30,7 @@ export class SelectionGateway implements OnGatewayInit {
 
         if ((await this.roomService.getRoomHostId(roomId)) === client.id) {
             await this.roomService.selectPicture(roomId, picIdx);
+
             client.emit('pick_pic', picIdx);
             client.to(roomId).emit('pick_pic', picIdx);
 

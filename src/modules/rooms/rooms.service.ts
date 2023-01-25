@@ -63,6 +63,14 @@ export class RoomsService {
         await this.redisService.setRoom(roomId, room);
     }
 
+    async changeRoomHost(roomId: string) {
+        const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
+
+        room.host = room.members[0];
+        await this.redisService.setRoom(roomId, room);
+    }
+
     // 방: 방의 호스트 아이디 반환
     async getRoomHostId(roomId: string): Promise<string> {
         const room = await this.redisService.getRoom(roomId);
