@@ -64,7 +64,7 @@ export class CameraGateway {
         console.log('[ click_shutter] on');
         console.log('[ click_shutter] setIdx', setIdx);
 
-        this.roomService.initPrevPicture(client.myRoomId, setIdx);
+        this.roomService.initRawPictures(client.myRoomId, setIdx);
 
         client.emit('click_shutter', setIdx);
         client.to(client.myRoomId).emit('click_shutter', setIdx);

@@ -8,12 +8,13 @@ export class RoomsService {
     fs = require('fs');
     constructor(private readonly redisService: RedisService) {}
 
-    // 방이 있는지 확인하기
-    async isRoom(roomId: string) {
-        return await this.redisService.getRoom(roomId);
+    // 방: 방 만들기
+    async createRoom(roomId: string, hostName: string, hostId: string): Promise<void> {
+        await this.fs.mkdirSync(Config.images.baseDirectory + roomId);
+        await this.redisService.setRoom(roomId, new RoomValueDto(hostName, hostId));
     }
 
-    // 방 삭제하기
+    // 방: 방 삭제하기
     async destroyRoom(roomId: string) {
         console.log('방에 남은 사람=' + (await this.getAllMembers(roomId)).length + ': 방을 삭제합니다.');
 
@@ -27,7 +28,20 @@ export class RoomsService {
         await this.redisService.deleteRoom(roomId);
     }
 
-    // 방에서 나가기
+    // 방: 방에 입장하기
+    async joinRoom(roomId: string, memberNickname: string, memberSocketId: string): Promise<void> {
+        const room = await this.redisService.getRoom(roomId);
+        if (!room) return;
+        room.members.push(new User(memberNickname, memberSocketId));
+        await this.redisService.setRoom(roomId, room);
+    }
+
+    // 방: 방이 존재하는지 확인하기
+    async isRoom(roomId: string) {
+        return await this.redisService.getRoom(roomId);
+    }
+
+    // 방: 방에서 나가기
     async leaveRoom(roomId: string, nickName: string) {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
@@ -49,25 +63,14 @@ export class RoomsService {
         await this.redisService.setRoom(roomId, room);
     }
 
-    async getRoomHostName(roomId: string): Promise<string> {
-        const room = await this.redisService.getRoom(roomId);
-        if (!room) return;
-        return room.host.nickName;
-    }
-
+    // 방: 방의 호스트 아이디 반환
     async getRoomHostId(roomId: string): Promise<string> {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
         return room.host.socketId;
     }
 
-    async setRoomHost(roomId: string, socketId: string): Promise<void> {
-        const room = await this.redisService.getRoom(roomId);
-        if (!room) return;
-        room.host.socketId = socketId;
-        await this.redisService.setRoom(roomId, room);
-    }
-
+    // 촬영 - 개별 사진: 참여자들의 순서 바꾸기, 변경된 멤버 리스트 반환
     async reorderRoomMemberList(roomId: string, oldIdx: number, newIdx: number) {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
@@ -80,35 +83,22 @@ export class RoomsService {
         return room.members;
     }
 
-    // 카메라: 새로운 방 만들기
-    async createRoom(roomId: string, hostName: string, hostId: string): Promise<void> {
-        await this.fs.mkdirSync(Config.images.baseDirectory + roomId);
-        await this.redisService.setRoom(roomId, new RoomValueDto(hostName, hostId));
-    }
-
-    // 카메라: 방에 입장하기
-    async joinRoom(roomId: string, memberNickname: string, memberSocketId: string): Promise<void> {
-        const room = await this.redisService.getRoom(roomId);
-        if (!room) return;
-        room.members.push(new User(memberNickname, memberSocketId));
-        await this.redisService.setRoom(roomId, room);
-    }
-
-    // 카메라: 방의 멤버들 리스트 꺼내기
+    // 촬영 - 개별 사진: 방의 멤버들 리스트 꺼내기
     async getAllMembers(roomId: string): Promise<User[]> {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
         return room.members;
     }
 
-    // 사진 찍기 준비
-    async initPrevPicture(roomId: string, setId: string) {
+    // 촬영 - 개별 사진: 촬영된 개별 사진을 담을 객체 생성
+    async initRawPictures(roomId: string, setId: string) {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
         room.prevPictures[setId] = new Array<RawPicture>();
         await this.redisService.setRoom(roomId, room);
     }
 
+    // 촬영 - 개별 사진: 촬영된 개별 사진을 저장
     async takeRawPicture(roomId: string, setId: string, fileName: string, socketId: string, orderIdx: string) {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
@@ -123,38 +113,19 @@ export class RoomsService {
         await this.redisService.setRoom(roomId, room);
     }
 
-    async getRawPictureSize(roomId: string, setId: string): Promise<number> {
+    // 촬영 - 개별 사진: 촬영된 모든 개별 사진 Object를 반환
+    async getAllRawPictures(roomId: string): Promise<Map<string, Array<RawPicture>>> {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
-        return room.prevPictures[setId].length;
+        return room.prevPictures;
     }
 
-    async removePrevPicture(roomId: string) {
-        const room = await this.redisService.getRoom(roomId);
-        if (!room) return;
-        // 삭제 작업 아직 구현 안됨
-        await this.redisService.setRoom(roomId, room);
-    }
-
-    async getRawPicture(roomId: string, setId: string): Promise<Array<RawPicture>> {
-        const room = await this.redisService.getRoom(roomId);
-        if (!room) return;
-        return room.prevPictures[setId];
-    }
-
-    // 카메라: 방에 찍은 사진 보관하기
+    //? 촬영 - 합성 사진: 개별 사진들의 합성 사진을 저장
     async takePicture(roomId: string, picNo: string, picture: string) {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
 
         const pictureValue = new DecoPicture(picture);
-
-        // 첫번째로 찍은 사진에 모든 멤버를 다 넣어줌
-        // if (room.pictures.size === 1) {
-        //     for (let i = 0; i < room.members.length; i++) {
-        //         pictureValue.viewers.push(room.members[i]);
-        //     }
-        // }
 
         if (room.pictures === null) {
             console.log('[ERROR] takePicture(): room.pictures === undefined');
@@ -164,6 +135,7 @@ export class RoomsService {
         await this.redisService.setRoom(roomId, room);
     }
 
+    // 촬영 - 합성 사진: pictureObj에 담긴 합성 사진들의 이미지 데이터를 저장
     async takeAllPictures(roomId: string, pictureObj: Map<string, string>) {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
@@ -176,23 +148,11 @@ export class RoomsService {
         await this.redisService.setRoom(roomId, room);
     }
 
-    async getAllRawPictures(roomId: string): Promise<Map<string, Array<RawPicture>>> {
-        const room = await this.redisService.getRoom(roomId);
-        if (!room) return;
-        return room.prevPictures;
-    }
-
-    // 카메라: 찍은 사진 목록 모두 꺼내오기
-    async getAllPictures(roomId: string) {
-        const room = await this.redisService.getRoom(roomId);
-        if (!room) return;
-        return room.pictures;
-    }
-
-    // 사진선택: 찍은 사진의 선택 여부 변경하기
+    // 사진선택: 사진의 선택 여부 변경하기
     async selectPicture(roomId: string, picNo: string) {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
+
         if (room.pictures[picNo]) {
             let selectFlag = room.pictures[picNo].selected;
             room.pictures[picNo].selected = !selectFlag;
@@ -202,10 +162,11 @@ export class RoomsService {
         }
     }
 
-    // 꾸미기: 선택된 사진들만 불러오기
+    // 사진선택: 선택된 사진 목록 반환
     async getSelectedPictures(roomId: string): Promise<Map<string, DecoPicture>> {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
+
         const pictures = room.pictures;
         let selectedPictures = new Map<string, DecoPicture>();
 
@@ -217,7 +178,7 @@ export class RoomsService {
         return selectedPictures;
     }
 
-    // 꾸미기: 첫번째 사진에 viewer다 넣기
+    // 꾸미기: 첫번째 사진의 viewers 배열에 모든 멤버를 다 넣기
     async initPictureViewers(roomId: string) {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
@@ -233,72 +194,37 @@ export class RoomsService {
         await this.redisService.setRoom(roomId, room);
     }
 
+    // 꾸미기: 꾸미는 사진 변경하기
     async changePictureViewer(roomId: string, socketId: string, fromImgIdx: string, toImgIdx: string) {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
 
-        let user: User;
-
         for (let i = 0; i < room.pictures[fromImgIdx].viewers.length; i++) {
             if (room.pictures[fromImgIdx].viewers[i].socketId === socketId) {
-                user = room.pictures[fromImgIdx].viewers[i];
-                console.log('deletePictureViewer() ', user);
+                let user = room.pictures[fromImgIdx].viewers[i];
                 room.pictures[fromImgIdx].viewers.splice(i, 1);
+                await room.pictures[toImgIdx].viewers.push(user);
                 break;
             }
         }
-
-        // const user = await this.deletePictureViewer(roomId, socketId, fromImgIdx);
-        console.log('changePictureViewer = ', user);
-
-        await room.pictures[toImgIdx].viewers.push(user);
-        await this.redisService.setRoom(roomId, room);
-    }
-
-    // 꾸미기: 사진의 viewer 추가하기
-    async addPictureViewer(roomId: string, socketId: string, nickname: string, imgIdx: string) {
-        const room = await this.redisService.getRoom(roomId);
-        if (!room) return;
-        room.pictures[imgIdx].viewers.push(new User(nickname, socketId));
 
         await this.redisService.setRoom(roomId, room);
     }
 
     // 꾸미기: 사진의 viewer 삭제하기
-    async deletePictureViewer(roomId: string, socketId: string, imgIdx: string) {
+    async deletePictureViewer(roomId: string, socketId: string, imgIdx: string): Promise<User> {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
 
-        if (!room.pictures[imgIdx]) {
-            console.log('deletePictureViewer() ', imgIdx);
-            return;
-        }
-
-        let returnValue: User;
+        let user: User;
         for (let i = 0; i < room.pictures[imgIdx].viewers.length; i++) {
             if (room.pictures[imgIdx].viewers[i].socketId === socketId) {
-                returnValue = room.pictures[imgIdx].viewers[i];
-                console.log('deletePictureViewer() ', returnValue);
+                user = room.pictures[imgIdx].viewers[i];
                 room.pictures[imgIdx].viewers.splice(i, 1);
                 break;
             }
         }
-
         await this.redisService.setRoom(roomId, room);
-        return returnValue;
-    }
-
-    async submitDecoAddOne(roomId: string, clientId: string) {
-        const room = await this.redisService.getRoom(roomId);
-        if (!room) return;
-
-        console.log(typeof room.submitDeco);
-        console.log(room.submitDeco);
-        const index = Object.keys(room.submitDeco).length;
-        room.submitDeco[clientId] = index;
-
-        const result = Object.keys(room.submitDeco).length;
-        await this.redisService.setRoom(roomId, room);
-        return result;
+        return user;
     }
 }
