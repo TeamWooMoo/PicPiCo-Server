@@ -66,7 +66,8 @@ export class SignalingGateway implements OnGatewayConnection, OnGatewayDisconnec
 
             client.to(roomId).emit('welcome', newSocketId);
         } else {
-            return { msg: '못들어가지롱' };
+            // return { msg: '못들어가지롱' };
+            console.log(`[ join_room ] ${roomId} 입장 인원 초과`);
         }
     }
 
