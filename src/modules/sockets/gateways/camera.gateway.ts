@@ -45,8 +45,8 @@ export class CameraGateway {
         if ((await this.roomService.getRoomHostId(client.myRoomId)) === client.id) {
             const members = await this.roomService.reorderRoomMemberList(client.myRoomId, parseInt(oldIdx), parseInt(newIdx));
 
-            console.log('[ change_layer ] data = ', data);
-            console.log('[ change_layer ] members = ', members);
+            console.log('[ change_layer ] on');
+            // console.log('[ change_layer ] members = ', members);
 
             client.emit('change_layer', members);
             client.to(client.myRoomId).emit('change_layer', members);

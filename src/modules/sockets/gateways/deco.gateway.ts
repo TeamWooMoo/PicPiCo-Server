@@ -25,20 +25,8 @@ export class DecoGateway {
 
         const [socketId, toImgIdx, fromImgIdx] = data;
 
-        // await this.roomService.deletePictureViewer(client.myRoomId, socketId, fromImgIdx);
-        // await this.roomService.addPictureViewer(client.myRoomId, socketId, client.nickName, toImgIdx);
-
-        console.log('[ pick_deco ] data = ', data);
-
         await this.roomService.changePictureViewer(client.myRoomId, socketId, fromImgIdx, toImgIdx);
-
         const pictures = await this.roomService.getSelectedPictures(client.myRoomId);
-
-        // console.log('[ pick_deco ] pictures = ', pictures);
-
-        for (const [picNo, decoPicture] of Object.entries(pictures)) {
-            console.log('[ pick_deco ] decoPicture = ', decoPicture.viewers);
-        }
 
         client.emit('pick_deco', pictures);
         client.to(client.myRoomId).emit('pick_deco', pictures);
@@ -82,15 +70,16 @@ export class DecoGateway {
         }
 
         console.log('[ submit_deco ] on');
+        client.emit('submit_deco');
 
-        const count = await this.roomService.submitDecoAddOne(client.myRoomId, client.id);
-        console.log('[ submit_deco ] count = ', count);
+        // const count = await this.roomService.submitDecoAddOne(client.myRoomId, client.id);
+        // console.log('[ submit_deco ] count = ', count);
 
-        if (count === (await this.roomService.getAllMembers(client.myRoomId)).length) {
-            console.log('[ submit_deco ] emit = ', count);
+        // if (count === (await this.roomService.getAllMembers(client.myRoomId)).length) {
+        //     console.log('[ submit_deco ] emit = ', count);
 
-            client.emit('submit_deco');
-            client.to(client.myRoomId).emit('submit_deco');
-        }
+        //     client.emit('submit_deco');
+        //     client.to(client.myRoomId).emit('submit_deco');
+        // }
     }
 }

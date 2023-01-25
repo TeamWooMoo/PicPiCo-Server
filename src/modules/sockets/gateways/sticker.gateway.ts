@@ -18,7 +18,6 @@ export class StickerGateway {
     @SubscribeMessage('pick_sticker')
     async handlePickSticker(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         let [url, targetImgIdx, stickerId] = data;
-        console.log('pick_sticker : ', data);
 
         client.emit('pick_sticker', url, targetImgIdx, stickerId);
         client.to(client.myRoomId).emit('pick_sticker', url, targetImgIdx, stickerId);
