@@ -53,14 +53,14 @@ export class DecoGateway {
             client.disconnect(true);
         }
 
-        const hostId = await this.roomService.getRoomHostId(roomId);
+        let hostId = await this.roomService.getRoomHostId(roomId);
 
-        console.log('[ done_deco ] client.id == ', client.id);
-        console.log('[ done_deco ] host id == ', hostId);
-        console.log('[ done_deco ] client.myRoomId == ', client.myRoomId);
+        console.log(`[ done_deco ] host ID   == ${hostId}`);
+        console.log(`[ done_deco ] client.id == ${client.id}`);
+        console.log(`[ done_deco ] roomId    == ${client.myRoomId}`);
 
         // 호스트인지 여부 확인
-        if (client.id === hostId || !hostId) {
+        if ((hostId = await this.roomService.getRoomHostId(roomId)) === client.id) {
             // allow
             client.emit('done_deco');
             client.to(client.myRoomId).emit('done_deco');
@@ -77,7 +77,7 @@ export class DecoGateway {
         }
 
         console.log('[ submit_deco ] on');
-        console.log('[ submit_deco ] client.id == ', client.id);
+
         client.emit('submit_deco');
     }
 }
