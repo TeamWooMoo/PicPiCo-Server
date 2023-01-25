@@ -20,16 +20,27 @@ export class DecoGateway {
         if (!(await this.roomService.isRoom(client.myRoomId))) {
             client.disconnect(true);
         }
-
-        console.log('[ pick_deco ] on');
-
         const [socketId, toImgIdx, fromImgIdx] = data;
+
+        console.log(`[ pick_deco ] ${socketId} : ${toImgIdx} -> ${fromImgIdx}`);
 
         await this.roomService.changePictureViewer(client.myRoomId, socketId, fromImgIdx, toImgIdx);
         const pictures = await this.roomService.getSelectedPictures(client.myRoomId);
 
         client.emit('pick_deco', pictures);
         client.to(client.myRoomId).emit('pick_deco', pictures);
+    }
+
+    @SubscribeMessage('pick_bg')
+    async handlePickBackGround(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
+        if (!(await this.roomService.isRoom(client.myRoomId))) {
+            client.disconnect(true);
+        }
+
+        const [bgIdx, setIdx] = data;
+
+        client.emit('pick_bg', bgIdx, setIdx);
+        client.to(client.myRoomId).emit('pick_bg', bgIdx, setIdx);
     }
 
     @SubscribeMessage('done_deco')
@@ -53,13 +64,9 @@ export class DecoGateway {
             // allow
             client.emit('done_deco');
             client.to(client.myRoomId).emit('done_deco');
-
-            console.log('[ done_deco ] emit done_deco');
         } else {
             // deny
             client.emit('permission_denied');
-
-            console.log('[ done_deco ] emit permission_denied');
         }
     }
 

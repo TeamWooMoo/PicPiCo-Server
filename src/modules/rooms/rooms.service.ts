@@ -16,7 +16,7 @@ export class RoomsService {
 
     // 방: 방 삭제하기
     async destroyRoom(roomId: string) {
-        console.log('방에 남은 사람=' + (await this.getAllMembers(roomId)).length + ': 방을 삭제합니다.');
+        console.log('방을 삭제합니다. : ', roomId);
 
         await this.fs.rm(Config.images.baseDirectory + roomId + '/', { recursive: true }, (err) => {
             if (err) {
@@ -108,7 +108,7 @@ export class RoomsService {
         if (room.prevPictures[setId]) {
             room.prevPictures[setId].push(new RawPicture(setId, fileName, socketId, order));
         } else {
-            console.log('takePrevPicture() :: 잘못된 setID:', setId);
+            console.log('takeRawPicture() :: 잘못된 setID:', setId);
         }
         await this.redisService.setRoom(roomId, room);
     }
