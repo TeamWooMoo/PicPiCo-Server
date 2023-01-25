@@ -32,6 +32,7 @@ export class SignalingGateway implements OnGatewayConnection, OnGatewayDisconnec
 
     async handleDisconnect(@ConnectedSocket() client: MySocket) {
         console.log('[ 연결 종료 ] client.id = ', client.id);
+
         if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
             client.to(client.myRoomId).emit('gone', client.id);
 
@@ -39,11 +40,21 @@ export class SignalingGateway implements OnGatewayConnection, OnGatewayDisconnec
             console.log(`[ 연결 종료 ] ${client.id} 이 나감.`);
 
             await this.roomService.leaveRoom(client.myRoomId, client.nickName);
+
+            // 참여자가 남아있는데 방장의 연결이 끊긴 경우, 참여자 중 한명에게 방장을 상속한다
+            if ((await this.roomService.getRoomHostId(client.myRoomId)) === client.id && (await this.roomService.getAllMembers(client.myRoomId)).length > 0) {
+                console.log('아직 참여자가 남아있는데 호스트가 나갔습니다 이럴수가 ', client.id);
+                await this.roomService.changeRoomHost(client.myRoomId);
+                console.log('호스트 교체 완료 ', await this.roomService.getRoomHostId(client.myRoomId));
+            }
+
             const members = await this.roomService.getAllMembers(client.myRoomId);
+
             if (members.length === 0) {
                 await this.roomService.destroyRoom(client.myRoomId);
+            } else {
+                client.to(client.myRoomId).emit('reset_member', members);
             }
-            client.to(client.myRoomId).emit('reset_member', members);
         }
     }
 
@@ -66,7 +77,8 @@ export class SignalingGateway implements OnGatewayConnection, OnGatewayDisconnec
 
             client.to(roomId).emit('welcome', newSocketId);
         } else {
-            return { msg: '못들어가지롱' };
+            //! 예외 처리 필요
+            console.log(`[ join_room ] ${roomId} 입장 인원 초과`);
         }
     }
 

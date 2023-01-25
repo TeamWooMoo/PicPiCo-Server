@@ -46,7 +46,6 @@ export class CameraGateway {
             const members = await this.roomService.reorderRoomMemberList(client.myRoomId, parseInt(oldIdx), parseInt(newIdx));
 
             console.log('[ change_layer ] on');
-            // console.log('[ change_layer ] members = ', members);
 
             client.emit('change_layer', members);
             client.to(client.myRoomId).emit('change_layer', members);
@@ -64,7 +63,7 @@ export class CameraGateway {
         console.log('[ click_shutter] on');
         console.log('[ click_shutter] setIdx', setIdx);
 
-        this.roomService.initPrevPicture(client.myRoomId, setIdx);
+        this.roomService.initRawPictures(client.myRoomId, setIdx);
 
         client.emit('click_shutter', setIdx);
         client.to(client.myRoomId).emit('click_shutter', setIdx);
@@ -117,6 +116,7 @@ export class CameraGateway {
 
             await this.roomService.takeAllPictures(roomId, resultImages);
 
+            //! 예외 처리 필요
             // if (pictures.size === 4) {
             //     // 4장 미만으로 찍었을 경우 4장 이상으로 찍어야 한다는 사실 알려주는 이벤트 있어야함
             //     // 클라이언트에서 어떻게 출력되는지 확인 필요

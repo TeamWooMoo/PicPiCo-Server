@@ -20,16 +20,27 @@ export class DecoGateway {
         if (!(await this.roomService.isRoom(client.myRoomId))) {
             client.disconnect(true);
         }
-
-        console.log('[ pick_deco ] on');
-
         const [socketId, toImgIdx, fromImgIdx] = data;
+
+        console.log(`[ pick_deco ] ${socketId} : ${toImgIdx} -> ${fromImgIdx}`);
 
         await this.roomService.changePictureViewer(client.myRoomId, socketId, fromImgIdx, toImgIdx);
         const pictures = await this.roomService.getSelectedPictures(client.myRoomId);
 
         client.emit('pick_deco', pictures);
         client.to(client.myRoomId).emit('pick_deco', pictures);
+    }
+
+    @SubscribeMessage('pick_bg')
+    async handlePickBackGround(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
+        if (!(await this.roomService.isRoom(client.myRoomId))) {
+            client.disconnect(true);
+        }
+
+        const [bgIdx, setIdx] = data;
+
+        client.emit('pick_bg', bgIdx, setIdx);
+        client.to(client.myRoomId).emit('pick_bg', bgIdx, setIdx);
     }
 
     @SubscribeMessage('done_deco')
@@ -42,24 +53,20 @@ export class DecoGateway {
             client.disconnect(true);
         }
 
-        const hostId = await this.roomService.getRoomHostId(roomId);
+        let hostId = await this.roomService.getRoomHostId(roomId);
 
-        console.log('[ done_deco ] client.id == ', client.id);
-        console.log('[ done_deco ] host id == ', hostId);
-        console.log('[ done_deco ] client.myRoomId == ', client.myRoomId);
+        console.log(`[ done_deco ] host ID   == ${hostId}`);
+        console.log(`[ done_deco ] client.id == ${client.id}`);
+        console.log(`[ done_deco ] roomId    == ${client.myRoomId}`);
 
         // 호스트인지 여부 확인
-        if (client.id === hostId) {
+        if ((hostId = await this.roomService.getRoomHostId(roomId)) === client.id) {
             // allow
             client.emit('done_deco');
             client.to(client.myRoomId).emit('done_deco');
-
-            console.log('[ done_deco ] emit done_deco');
         } else {
             // deny
             client.emit('permission_denied');
-
-            console.log('[ done_deco ] emit permission_denied');
         }
     }
 
@@ -70,16 +77,7 @@ export class DecoGateway {
         }
 
         console.log('[ submit_deco ] on');
+
         client.emit('submit_deco');
-
-        // const count = await this.roomService.submitDecoAddOne(client.myRoomId, client.id);
-        // console.log('[ submit_deco ] count = ', count);
-
-        // if (count === (await this.roomService.getAllMembers(client.myRoomId)).length) {
-        //     console.log('[ submit_deco ] emit = ', count);
-
-        //     client.emit('submit_deco');
-        //     client.to(client.myRoomId).emit('submit_deco');
-        // }
     }
 }

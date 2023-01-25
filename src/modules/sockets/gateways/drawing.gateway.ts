@@ -17,6 +17,7 @@ export class DrawingGateway {
     @SubscribeMessage('mouse_down')
     async handleMouseDown(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         const [fromSocket, offX, offY, ImgIdx] = data;
+
         client.emit('mouse_down', fromSocket, offX, offY, ImgIdx);
         client.to(client.myRoomId).emit('mouse_down', fromSocket, offX, offY, ImgIdx);
     }
@@ -24,6 +25,7 @@ export class DrawingGateway {
     @SubscribeMessage('stroke_canvas')
     async handleStrokeCanvas(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         const [roomId, offX, offY, color, fromSocket, ImgIdx, lineWidth] = data;
+
         client.emit('stroke_canvas', offX, offY, color, fromSocket, ImgIdx, lineWidth);
         client.to(roomId).emit('stroke_canvas', offX, offY, color, fromSocket, ImgIdx, lineWidth);
     }
@@ -31,6 +33,7 @@ export class DrawingGateway {
     @SubscribeMessage('mouse_up')
     async handleMouseUp(@ConnectedSocket() client: MySocket, @MessageBody() data: any) {
         const [fromSocket, offX, offY, ImgIdx] = data;
+
         client.emit('stroke_canvas', fromSocket, offX, offY, ImgIdx);
         client.to(client.myRoomId).emit('stroke_canvas', fromSocket, offX, offY, ImgIdx);
     }
