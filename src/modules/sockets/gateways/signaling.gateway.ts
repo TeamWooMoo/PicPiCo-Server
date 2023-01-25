@@ -39,14 +39,15 @@ export class SignalingGateway implements OnGatewayConnection, OnGatewayDisconnec
             console.log(`[ 연결 종료 ] ${client.myRoomId} 에서`);
             console.log(`[ 연결 종료 ] ${client.id} 이 나감.`);
 
+            await this.roomService.leaveRoom(client.myRoomId, client.nickName);
+
             // 참여자가 남아있는데 방장의 연결이 끊긴 경우, 참여자 중 한명에게 방장을 상속한다
-            if ((await this.roomService.getRoomHostId(client.myRoomId)) === client.id && (await this.roomService.getAllMembers(client.myRoomId)).length > 1) {
+            if ((await this.roomService.getRoomHostId(client.myRoomId)) === client.id && (await this.roomService.getAllMembers(client.myRoomId)).length > 0) {
                 console.log('아직 참여자가 남아있는데 호스트가 나갔습니다 이럴수가 ', client.id);
                 await this.roomService.changeRoomHost(client.myRoomId);
                 console.log('호스트 교체 완료 ', await this.roomService.getRoomHostId(client.myRoomId));
             }
 
-            await this.roomService.leaveRoom(client.myRoomId, client.nickName);
             const members = await this.roomService.getAllMembers(client.myRoomId);
 
             if (members.length === 0) {
