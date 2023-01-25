@@ -15,7 +15,7 @@ export class RoomsService {
 
     // 방 삭제하기
     async destroyRoom(roomId: string) {
-        console.log('방에 남은 사람=' + (await this.getAllMembers(roomId)).length + ': 방을 삭제합니다.');
+        console.log('방을 삭제합니다. : ', roomId);
 
         await this.fs.rm(Config.images.baseDirectory + roomId + '/', { recursive: true }, (err) => {
             if (err) {
@@ -49,23 +49,10 @@ export class RoomsService {
         await this.redisService.setRoom(roomId, room);
     }
 
-    async getRoomHostName(roomId: string): Promise<string> {
-        const room = await this.redisService.getRoom(roomId);
-        if (!room) return;
-        return room.host.nickName;
-    }
-
     async getRoomHostId(roomId: string): Promise<string> {
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
         return room.host.socketId;
-    }
-
-    async setRoomHost(roomId: string, socketId: string): Promise<void> {
-        const room = await this.redisService.getRoom(roomId);
-        if (!room) return;
-        room.host.socketId = socketId;
-        await this.redisService.setRoom(roomId, room);
     }
 
     async reorderRoomMemberList(roomId: string, oldIdx: number, newIdx: number) {
@@ -118,7 +105,7 @@ export class RoomsService {
         if (room.prevPictures[setId]) {
             room.prevPictures[setId].push(new RawPicture(setId, fileName, socketId, order));
         } else {
-            console.log('takePrevPicture() :: 잘못된 setID:', setId);
+            console.log('takeRawPicture() :: 잘못된 setID:', setId);
         }
         await this.redisService.setRoom(roomId, room);
     }
@@ -150,12 +137,6 @@ export class RoomsService {
         const pictureValue = new DecoPicture(picture);
 
         // 첫번째로 찍은 사진에 모든 멤버를 다 넣어줌
-        // if (room.pictures.size === 1) {
-        //     for (let i = 0; i < room.members.length; i++) {
-        //         pictureValue.viewers.push(room.members[i]);
-        //     }
-        // }
-
         if (room.pictures === null) {
             console.log('[ERROR] takePicture(): room.pictures === undefined');
         } else {
@@ -286,19 +267,5 @@ export class RoomsService {
 
         await this.redisService.setRoom(roomId, room);
         return returnValue;
-    }
-
-    async submitDecoAddOne(roomId: string, clientId: string) {
-        const room = await this.redisService.getRoom(roomId);
-        if (!room) return;
-
-        console.log(typeof room.submitDeco);
-        console.log(room.submitDeco);
-        const index = Object.keys(room.submitDeco).length;
-        room.submitDeco[clientId] = index;
-
-        const result = Object.keys(room.submitDeco).length;
-        await this.redisService.setRoom(roomId, room);
-        return result;
     }
 }

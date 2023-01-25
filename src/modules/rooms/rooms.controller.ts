@@ -12,16 +12,20 @@ export class RoomsController {
         let roomId = roomInfo['roomId'];
         let nickname = roomInfo['nickname'];
         let socketId = roomInfo['socketId'];
-        // Id가 roomId인 room을 메모리에 저장
-        await this.roomService.createRoom(roomId, nickname, socketId);
-        console.log('POST: roomId: ', roomId);
-        return { roomId: roomId };
+
+        if (!(await this.roomService.isRoom(roomId))) {
+            await this.roomService.createRoom(roomId, nickname, socketId);
+            console.log(`방 생성 완료 : ${roomId}`);
+            return { roomId: roomId };
+        } else {
+            // res.status(404).send('잘못된 방 아이디 입니다.');
+        }
     }
 
     @Get(':roomId')
     async getRoom(@Param('roomId') roomId: string, @Res() res: Response) {
         if (await this.roomService.isRoom(roomId)) {
-            console.log('GET: roomId: ', roomId);
+            console.log(`방 입장 성공 : ${roomId}`);
             res.send({ roomId: roomId });
         } else {
             res.status(404).send('잘못된 방 아이디 입니다.');

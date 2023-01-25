@@ -28,8 +28,6 @@ export class SelectionGateway implements OnGatewayInit {
             client.disconnect(true);
         }
 
-        console.log(`[ pick_pic ] on`);
-
         if ((await this.roomService.getRoomHostId(roomId)) === client.id) {
             await this.roomService.selectPicture(roomId, picIdx);
             client.emit('pick_pic', picIdx);
@@ -64,6 +62,7 @@ export class SelectionGateway implements OnGatewayInit {
             client.emit('done_pick', selectedPictures);
             client.to(roomId).emit('done_pick', selectedPictures);
 
+            //! 예외 처리 필요
             // if (pickNum === 4) {
             //     console.log('다 좋아요');
             //     client.emit('done_pick', selectedPictures);
