@@ -112,7 +112,9 @@ export class RoomsService {
 
     // 촬영 - 개별 사진: 촬영된 개별 사진을 저장
     async takeRawPicture(roomId: string, setId: string, fileName: string, socketId: string, orderIdx: string) {
+        await this.lock.promise;
         this.lock.enable();
+
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
 
@@ -124,6 +126,7 @@ export class RoomsService {
             console.log('takeRawPicture() :: 잘못된 setID:', setId);
         }
         await this.redisService.setRoom(roomId, room);
+
         this.lock.disable();
     }
 
