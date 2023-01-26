@@ -24,14 +24,16 @@ export class CameraGateway {
             client.disconnect(true);
         }
 
-        client.nickName = newNickName;
-        client.myRoomId = roomId;
+        if (newNickName !== 'user') {
+            client.nickName = newNickName;
+            client.myRoomId = roomId;
 
-        await this.roomService.joinRoom(roomId, newNickName, client.id);
-        const nickNameArr = await this.roomService.getAllMembers(roomId);
+            await this.roomService.joinRoom(roomId, newNickName, client.id);
+            const nickNameArr = await this.roomService.getAllMembers(roomId);
 
-        client.emit('reset_member', nickNameArr);
-        client.to(client.myRoomId).emit('reset_member', nickNameArr);
+            client.emit('reset_member', nickNameArr);
+            client.to(client.myRoomId).emit('reset_member', nickNameArr);
+        }
     }
 
     @SubscribeMessage('change_layer')
