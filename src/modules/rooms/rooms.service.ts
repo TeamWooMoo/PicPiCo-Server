@@ -6,7 +6,10 @@ import { Config } from '../../config/configuration';
 @Injectable()
 export class RoomsService {
     fs = require('fs');
-    constructor(private readonly redisService: RedisService) {}
+    lock: AsyncLock;
+    constructor(private readonly redisService: RedisService) {
+        this.lock = new AsyncLock();
+    }
 
     // 방: 방 만들기
     async createRoom(roomId: string, hostName: string, hostId: string): Promise<void> {
@@ -109,6 +112,7 @@ export class RoomsService {
 
     // 촬영 - 개별 사진: 촬영된 개별 사진을 저장
     async takeRawPicture(roomId: string, setId: string, fileName: string, socketId: string, orderIdx: string) {
+        this.lock.enable();
         const room = await this.redisService.getRoom(roomId);
         if (!room) return;
 
@@ -120,6 +124,7 @@ export class RoomsService {
             console.log('takeRawPicture() :: 잘못된 setID:', setId);
         }
         await this.redisService.setRoom(roomId, room);
+        this.lock.disable();
     }
 
     // 촬영 - 개별 사진: 촬영된 모든 개별 사진 Object를 반환
@@ -235,5 +240,19 @@ export class RoomsService {
         }
         await this.redisService.setRoom(roomId, room);
         return user;
+    }
+}
+
+class AsyncLock {
+    disable;
+    promise;
+
+    constructor() {
+        this.disable = () => {};
+        this.promise = Promise.resolve();
+    }
+
+    enable() {
+        this.promise = new Promise((resolve) => (this.disable = resolve));
     }
 }
