@@ -131,13 +131,9 @@ export class CameraGateway {
         }
     }
 
-    async composite(rawPictures, roomId: string) {
-        const sharp = require('sharp');
-        const imageToBase64 = require('image-to-base64');
-
-        const path = Config.images.baseDirectory + roomId + '/';
+    async getImages(rawPictures, roomId: string, path: string) {
+        // const path = Config.images.baseDirectory + roomId + '/';
         const type = Config.images.defaultType;
-        const resultFile = uuid() + 'result.png';
         let images = [];
 
         for (let i = 0; i < rawPictures.length; i++) {
@@ -145,6 +141,26 @@ export class CameraGateway {
             let fileName = curPic.fileName;
             images.push({ input: `${path}${fileName}.${type}` });
         }
+
+        return images;
+    }
+
+    async composite(rawPictures, roomId: string) {
+        const sharp = require('sharp');
+        const imageToBase64 = require('image-to-base64');
+
+        const path = Config.images.baseDirectory + roomId + '/';
+        // const type = Config.images.defaultType;
+        const resultFile = uuid() + 'result.png';
+        // let images = [];
+
+        // for (let i = 0; i < rawPictures.length; i++) {
+        //     let curPic = rawPictures[i];
+        //     let fileName = curPic.fileName;
+        //     images.push({ input: `${path}${fileName}.${type}` });
+        // }
+
+        const images = await this.getImages(rawPictures, roomId, path);
 
         let resultBase64: string;
 
