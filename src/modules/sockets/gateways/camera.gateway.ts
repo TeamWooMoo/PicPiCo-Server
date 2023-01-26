@@ -82,7 +82,8 @@ export class CameraGateway {
         const room = client.myRoomId;
 
         const fileName = await this.base64ToImage(picture, client.id, client.myRoomId);
-        await this.roomService.takeRawPicture(room, setId, fileName, client.id, orderId);
+        // await this.roomService.takeRawPicture(room, setId, fileName, client.id, orderId);
+        this.roomService.takeRawPicture(room, setId, fileName, client.id, orderId);
     }
 
     @SubscribeMessage('done_take')
@@ -100,7 +101,7 @@ export class CameraGateway {
             const rawPictures = await this.roomService.getAllRawPictures(roomId);
             const resultImages = new Map<string, string>();
 
-            for (const [setId, rawPictureArray] of Object.entries(rawPictures)) {
+            for await (const [setId, rawPictureArray] of Object.entries(rawPictures)) {
                 rawPictureArray.sort((a, b) => {
                     return a.order - b.order;
                 });
@@ -131,20 +132,37 @@ export class CameraGateway {
         }
     }
 
+    async getImages(rawPictures, roomId: string, path: string) {
+        // const path = Config.images.baseDirectory + roomId + '/';
+        const type = Config.images.defaultType;
+        let images = [];
+
+        // for await (let i = 0; i < rawPictures.length; i++) {
+        for await (const curPic of rawPictures) {
+            // let curPic = rawPictures[i];
+            let fileName = curPic.fileName;
+            images.push({ input: `${path}${fileName}.${type}` });
+        }
+
+        return images;
+    }
+
     async composite(rawPictures, roomId: string) {
         const sharp = require('sharp');
         const imageToBase64 = require('image-to-base64');
 
         const path = Config.images.baseDirectory + roomId + '/';
-        const type = Config.images.defaultType;
+        // const type = Config.images.defaultType;
         const resultFile = uuid() + 'result.png';
-        let images = [];
+        // let images = [];
 
-        for (let i = 0; i < rawPictures.length; i++) {
-            let curPic = rawPictures[i];
-            let fileName = curPic.fileName;
-            images.push({ input: `${path}${fileName}.${type}` });
-        }
+        // for (let i = 0; i < rawPictures.length; i++) {
+        //     let curPic = rawPictures[i];
+        //     let fileName = curPic.fileName;
+        //     images.push({ input: `${path}${fileName}.${type}` });
+        // }
+
+        const images = await this.getImages(rawPictures, roomId, path);
 
         let resultBase64: string;
 
@@ -160,6 +178,8 @@ export class CameraGateway {
             console.log('띠용 삐용');
             console.log(e);
         }
+
+        console.log('composite >>> ', images);
 
         await imageToBase64(path + resultFile)
             .then(async (bs: string) => {
