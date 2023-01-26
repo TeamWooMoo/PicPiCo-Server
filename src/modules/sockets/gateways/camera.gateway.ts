@@ -177,6 +177,8 @@ export class CameraGateway {
             console.log(e);
         }
 
+        console.log('composite >>> ', images);
+
         await imageToBase64(path + resultFile)
             .then(async (bs: string) => {
                 resultBase64 = Config.images.base64Header + bs;
