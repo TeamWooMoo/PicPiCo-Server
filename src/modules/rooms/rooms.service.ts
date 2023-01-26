@@ -115,7 +115,7 @@ export class RoomsService {
         const order = parseInt(orderIdx);
 
         if (room.prevPictures[setId]) {
-            room.prevPictures[setId].push(new RawPicture(setId, fileName, socketId, order));
+            await room.prevPictures[setId].push(new RawPicture(setId, fileName, socketId, order));
         } else {
             console.log('takeRawPicture() :: 잘못된 setID:', setId);
         }

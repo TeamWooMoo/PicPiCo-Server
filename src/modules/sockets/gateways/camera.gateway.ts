@@ -101,7 +101,7 @@ export class CameraGateway {
             const rawPictures = await this.roomService.getAllRawPictures(roomId);
             const resultImages = new Map<string, string>();
 
-            for (const [setId, rawPictureArray] of Object.entries(rawPictures)) {
+            for await (const [setId, rawPictureArray] of Object.entries(rawPictures)) {
                 rawPictureArray.sort((a, b) => {
                     return a.order - b.order;
                 });
