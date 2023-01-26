@@ -43,13 +43,15 @@ export class SignalingGateway implements OnGatewayConnection, OnGatewayDisconnec
 
             const members = await this.roomService.getAllMembers(client.myRoomId);
 
-            if (members.length > 0) {
-                if ((await this.roomService.getRoomHostId(client.myRoomId)) === client.id) {
-                    await this.roomService.changeRoomHost(client.myRoomId);
+            if (members) {
+                if (members.length > 0) {
+                    if ((await this.roomService.getRoomHostId(client.myRoomId)) === client.id) {
+                        await this.roomService.changeRoomHost(client.myRoomId);
+                    }
+                    client.to(client.myRoomId).emit('reset_member', members);
+                } else {
+                    await this.roomService.destroyRoom(client.myRoomId);
                 }
-                client.to(client.myRoomId).emit('reset_member', members);
-            } else {
-                await this.roomService.destroyRoom(client.myRoomId);
             }
 
             // // 참여자가 남아있는데 방장의 연결이 끊긴 경우, 참여자 중 한명에게 방장을 상속한다
