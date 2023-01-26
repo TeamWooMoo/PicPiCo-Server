@@ -50,15 +50,17 @@ export class RoomsService {
         if (!room) return;
         let removed = false;
 
-        for (let i = 0; i < room.members.length; i++) {
-            try {
-                if (room.members[i]['nickName'] === nickName) {
-                    room.members.splice(i, 1);
-                    removed = true;
-                    break;
+        if (room.members) {
+            for (let i = 0; i < room.members.length; i++) {
+                try {
+                    if (room.members[i]['nickName'] === nickName) {
+                        room.members.splice(i, 1);
+                        removed = true;
+                        break;
+                    }
+                } catch (e) {
+                    console.log(e);
                 }
-            } catch (e) {
-                console.log(e);
             }
         }
 

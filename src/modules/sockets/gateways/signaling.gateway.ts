@@ -26,6 +26,7 @@ export class SignalingGateway implements OnGatewayConnection, OnGatewayDisconnec
 
     async handleConnection(@ConnectedSocket() client: MySocket) {
         client.myRoomId = Config.socket.DEFAULT_ROOM;
+        client.isObserver = false;
         console.log('[ 연결 성공 ] client.id = ', client.id);
         client.setMaxListeners(100);
     }
