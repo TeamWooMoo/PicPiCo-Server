@@ -160,8 +160,9 @@ export class CameraGateway {
             console.log('띠용 삐용');
             console.log(e);
         }
+        console.log('[ 합성 ] ', images);
 
-        await imageToBase64(path + resultFile)
+        imageToBase64(path + resultFile)
             .then(async (bs: string) => {
                 resultBase64 = Config.images.base64Header + bs;
             })
@@ -180,8 +181,8 @@ export class CameraGateway {
     async base64ToImage(base64: string, socketId: string, roomId: string): Promise<string> {
         const base64ToImage = require('base64-to-image');
         const path = Config.images.baseDirectory + roomId + '/';
-        let fileName = `file_${socketId}_${Date.now()}`;
-        let option = {
+        const fileName = `file_${socketId}_${Date.now()}`;
+        const option = {
             fileName: fileName,
             type: Config.images.defaultType,
         };
