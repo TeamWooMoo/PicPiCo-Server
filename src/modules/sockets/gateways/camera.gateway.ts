@@ -137,8 +137,9 @@ export class CameraGateway {
         const type = Config.images.defaultType;
         let images = [];
 
-        for await (let i = 0; i < rawPictures.length; i++) {
-            let curPic = rawPictures[i];
+        // for await (let i = 0; i < rawPictures.length; i++) {
+        for await (const curPic of rawPictures) {
+            // let curPic = rawPictures[i];
             let fileName = curPic.fileName;
             images.push({ input: `${path}${fileName}.${type}` });
         }
