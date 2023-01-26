@@ -33,7 +33,7 @@ export class SignalingGateway implements OnGatewayConnection, OnGatewayDisconnec
     async handleDisconnect(@ConnectedSocket() client: MySocket) {
         console.log('[ 연결 종료 ] client.id = ', client.id);
 
-        if (client.myRoomId !== Config.socket.DEFAULT_ROOM) {
+        if (client.myRoomId !== Config.socket.DEFAULT_ROOM || client.nickName !== 'user') {
             client.to(client.myRoomId).emit('gone', client.id);
 
             await this.roomService.leaveRoom(client.myRoomId, client.nickName);

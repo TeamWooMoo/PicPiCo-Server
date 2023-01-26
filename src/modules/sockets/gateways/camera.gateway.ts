@@ -24,8 +24,9 @@ export class CameraGateway {
             client.disconnect(true);
         }
 
+        client.nickName = newNickName;
+
         if (newNickName !== 'user') {
-            client.nickName = newNickName;
             client.myRoomId = roomId;
 
             await this.roomService.joinRoom(roomId, newNickName, client.id);
