@@ -82,7 +82,8 @@ export class CameraGateway {
         const room = client.myRoomId;
 
         const fileName = await this.base64ToImage(picture, client.id, client.myRoomId);
-        await this.roomService.takeRawPicture(room, setId, fileName, client.id, orderId);
+        // await this.roomService.takeRawPicture(room, setId, fileName, client.id, orderId);
+        this.roomService.takeRawPicture(room, setId, fileName, client.id, orderId);
     }
 
     @SubscribeMessage('done_take')
