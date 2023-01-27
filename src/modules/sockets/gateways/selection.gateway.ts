@@ -28,19 +28,20 @@ export class SelectionGateway implements OnGatewayInit {
             client.disconnect(true);
         }
 
-        if ((await this.roomService.getRoomHostId(roomId)) === client.id) {
-            await this.roomService.selectPicture(roomId, picIdx);
+        await this.roomService.selectPicture(roomId, picIdx);
 
-            client.emit('pick_pic', picIdx);
-            client.to(roomId).emit('pick_pic', picIdx);
+        client.emit('pick_pic', picIdx);
+        client.to(roomId).emit('pick_pic', picIdx);
 
-            console.log(`[ pick_pic ] picIdx = ${picIdx}`);
-            console.log(`[ pick_pic ] emit pick_pic`);
-        } else {
-            client.emit('permission_denied');
+        console.log(`[ pick_pic ] picIdx = ${picIdx}`);
+        console.log(`[ pick_pic ] emit pick_pic`);
 
-            console.log(`[ pick_pic ] emit permission_denied`);
-        }
+        // if ((await this.roomService.getRoomHostId(roomId)) === client.id) {
+        // } else {
+        //     client.emit('permission_denied');
+
+        //     console.log(`[ pick_pic ] emit permission_denied`);
+        // }
     }
 
     @SubscribeMessage('done_pick')
