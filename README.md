@@ -1,73 +1,105 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# 📸 PicPiCo
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+### SW 정글 5기 나만의 무기
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+프로젝트 기간: 2022.12.22 ~ 2023.01.28
 
-## Description
+팀원: [강성우](https://github.com/midnightkang), [김재현](https://github.com/jaehyeonkim2358), [이원희](https://github.com/2wheeh), [정나린](https://github.com/jnl1128), [최다봄](https://github.com/choidabom)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 1. 소개
 
-## Installation
+*PicPiCo : take Pictures with Peer Connection* 
+
+**‘친구들과 실제로 만나서 즉석 사진 찍고 꾸미기’를 모바일 App으로 !**
+<p align=”center”><img width="80%" src="https://user-images.githubusercontent.com/48302257/215937547-400e3b3f-bc72-4b80-a1d1-b6eed4a13c74.png"/></p>
+
+**시연 및 발표 영상** : <a href="https://www.youtube.com/watch?v=elkzrjeqRK0&t=259s" target="_blank">YouTube Link</a> <br>
+**팀스페이스** : <a href="https://ambiguous-raver-03c.notion.site/PicPiCo-86bff05bebc540bf866a71ae0291e7cc" target="_blank">Notion Link</a> <br>
+**PC 크롬환경에서 가장 잘 동작합니다** : <a href="https://picpico.site">PicPiCo 해보기</a> 
+
+## 2. 주요 기능
+
+### 1. **음성 채팅 (Peer to Peer - N:N Mesh 구현)**
+📍 각 페이지 전반에 걸친 음성 채팅 기능
+    
+### 2. **사진 찍는 PicPiCo Booth**
+|Drag and Drop 시연|PicPiCo Booth 주요 기능|
+|:---:|:---|
+|<p align="center"><img width="65%" src="https://user-images.githubusercontent.com/48302257/215983465-d63a0653-c7f9-4577-a07f-b50f15b29a08.gif"></p>|📍 실제로 같이 있는 것처럼 합성된 캠화면 제공 <br><br> 📍 카카오톡 API를 활용한 참여자 리스트 확인 <br><br> 📍 참여자 리스트 상 순서에 따라 화면에서 참여자들의 앞, 뒤 순서가 정해짐 <br><br> 📍  **Drag and Drop**으로 이 순서를 조작 가능 <br><br> 📍 참여자간 음소거 여부 및 촬영 횟수 **동기화** <br><br> 📍 링크 모달로 카카오톡 공유하기 |
+    
+    
+### 3. **사진 고르는 Select Pic**
+
+📍 촬영한 사진 중 Best 4컷 선택
+
+### 4.  **사진 꾸미는 Decoration**
+|Drawing 시연|Sticker 시연|Decoration 주요 기능|
+|:---:|:---:|:---|
+|<p align="center"><img width="65%" src="https://user-images.githubusercontent.com/48302257/215988148-8e2b9073-7ec3-415d-9c73-4407ab3fe6be.gif"></p>|<p align="center"><img width="65%" src="https://user-images.githubusercontent.com/48302257/215988466-ac8ec178-abfe-4f24-86ee-4d18d678c1d7.gif"></p>| 📍 각 참여자가 어떤 사진을 꾸미고 있는 지 실시간 공유 <br> (**상단 닉네임 폰트 색 == 꾸미고 있는 사진 테두리의 색**) <br><br> 📍그리기 및 GIF 스티커 붙이기 동시 작업 지원 <br><br> 📍 가상 배경 추가 가능  |
+    
+### 5. **GIF 결과를 확인하는 Download**
+|GIF Download 시연|Download Page 주요 기능|
+|:---:|:---|
+|<p align="center"><img width="65%" src="https://user-images.githubusercontent.com/48302257/215992957-8d00d3ee-07d0-4263-88f3-c0bc7aced86a.gif"></p>|📍 꾸민 결과가 화면상에 보여지고, GIF형식으로 유저 각자의 로컬에 저장 가능  <br><br> 📍 모바일 환경에서는 기기의 사양에 따라 GIF 생성 완료까지 20~30초 시간 소요 <br><br> 📍  GIF 생성이 완료되면 다운로드 버튼이 나타남|
+
+## 3. 기술 스택과 라이브러리
+
+### 1. **기술 스택**
+
+기술스택 | 설명
+---|:---:
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white) | 자바스크립트 런타임
+![Nest.js](https://img.shields.io/badge/nest.js-E0234E?style=for-the-badge&logo=nestjs&logoColor=white) | 웹프레임워크
+![React.js](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=React&logoColor=white) | 웹 프론트엔드 프레임워크
+![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white) | 인메모리 저장소 (캐시)
+![WebRTC](https://img.shields.io/badge/webrtc-333333?style=for-the-badge&logo=webrtc&logoColor=white) | 화상 공유 및 음성 채팅(N:N Mesh)
+![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=for-the-badge&logo=Socket.io&logoColor=white) | 시그널링, 룸 입장, 사진 촬영 및 꾸미기 이벤트 처리
+![NginX](https://img.shields.io/badge/nginx-green?style=for-the-badge&logo=nginx&logoColor=white) | Proxy 서버 
+![COTURN](https://img.shields.io/badge/coturn-333333?style=for-the-badge) | 자체 TURN 서버 구축
+
+### 2. **주요 라이브러리** 
+라이브러리 | 설명
+---|:---:
+<img src='https://img.shields.io/badge/mediapipe/selfie_segmentation-0.1.16-lightgrey'> | 배경 제거를 위한 인물 segmentation
+<img src='https://img.shields.io/badge/gif_transparency-2.0.0-lightgrey'> | gif 생성
+<img src='https://img.shields.io/badge/uuid-2.0.0-lightgrey'> | 방 번호 랜덤 생성
+<img src='https://img.shields.io/badge/image_to_base64-1.0.2-lightgrey'> | 클라이언트-서버 간 이미지 데이터 parsing
+<img src='https://img.shields.io/badge/sharp-0.31.3-lightgrey'> | 촬영된 개별 이미지 합성 처리
+<img src='https://img.shields.io/badge/redux-8.0.5-lightgrey'> | 컴포넌트간 상태 관리
+<img src='https://img.shields.io/badge/redux/toolkit-1.9.1-lightgrey'>  | 컴포넌트간 상태 관리
+<img src='https://img.shields.io/badge/socket.io-4.5.4-lightgrey'>  | 클라이언트-서버간 실시간 통신
+<img src='https://img.shields.io/badge/webgl_utils-1.0.1-lightgrey'> | chroma-key 처리를 위한 webgl 사용
+
+
+## 4. 시작하기
+### BE
+
+[Nginx 설치와 설정, 실행](https://www.notion.so/Nginx-25887e5fc64d4e74b6051cc0cd3ac3df)
+
+[Redis 설치와 실행](https://www.notion.so/Redis-cb46d7742ab443c69ec69db756300844)
 
 ```bash
-$ npm install
-```
-
-## Running the app
-
-```bash
-# development
+$ git clone https://github.com/TeamWooMoo/picpico-server.git
+$ cd picpico-server
+$ npm i
 $ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
-## Test
+### FE
+
+[Nginx 설치와 설정, 실행](https://www.notion.so/Nginx-25887e5fc64d4e74b6051cc0cd3ac3df)
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+$ git clone https://github.com/TeamWooMoo/picpico-client.git
+$ cd picpico-client/front-src
+$ npm i
+$ npm run build
+$ cd ..
+$ npm i
+$ npm run start
 ```
 
-## Support
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## 5. 포스터
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+<p align=”center”><img src="https://user-images.githubusercontent.com/48302257/215937435-522d319a-b9ce-492a-a2d3-5f0da0b7a9ab.png" width="100%"></p>
